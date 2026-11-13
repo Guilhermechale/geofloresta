@@ -13,10 +13,15 @@
                 <ul class="catalogue">
                     @foreach ($studies as $s)
                         @php $l = $s->displayLocale($loc); @endphp
-                        <li class="catalogue__item">
-                            <p class="meta">{{ $s->published_at ? format_date($s->published_at, 'medium') : $s->year }}@if ($s->venue) · {{ $s->venue }}@endif</p>
+                        <li class="catalogue__item @if ($s->cover_image) catalogue__item--media @endif">
+                            @if ($s->cover_image)
+                                <a class="catalogue__thumb" href="{{ $s->url() }}" tabindex="-1" aria-hidden="true"><x-cover :path="$s->cover_image" :width="480" alt="" /></a>
+                            @endif
+                            <div class="catalogue__body">
+                            <p class="meta">{{ $s->published_at ? format_date($s->published_at, 'medium') : $s->year }}@if ($s->authors) · {{ $s->authors }}@endif @if ($s->venue) · {{ $s->venue }}@endif</p>
                             <h2 class="catalogue__title"><a href="{{ $s->url() }}" @if ($l !== $loc) lang="{{ $l }}" @endif>{{ $s->getTranslation('title', $l) }}</a></h2>
                             @if ($sum = $s->getTranslation('summary', $l, false))<p class="muted" @if ($l !== $loc) lang="{{ $l }}" @endif>{{ $sum }}</p>@endif
+                            </div>
                         </li>
                     @endforeach
                 </ul>

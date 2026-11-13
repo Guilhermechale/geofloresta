@@ -27,6 +27,8 @@ return [
         'areas' => 'Áreas de serviço',
         'territory' => 'Actuação',
         'founder' => 'Fundador',
+        'founder_role' => 'Engenheiro Florestal · Fundador da GEOFLORESTA',
+        'founder_alt' => 'Fotografia de Guilherme Francisco Fernando Chale, fundador da GEOFLORESTA',
         'linkedin' => 'Perfil no LinkedIn',
     ],
 

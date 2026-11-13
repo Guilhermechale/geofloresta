@@ -28,6 +28,8 @@ return [
         'areas' => 'Domaines de service',
         'territory' => 'Zone d’intervention',
         'founder' => 'Fondateur',
+        'founder_role' => 'Ingénieur forestier · Fondateur de GEOFLORESTA',
+        'founder_alt' => 'Photo de Guilherme Francisco Fernando Chale, fondateur de GEOFLORESTA',
         'linkedin' => 'Profil LinkedIn',
     ],
 

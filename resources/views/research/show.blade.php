@@ -26,6 +26,9 @@
     <div class="section section--tight">
         <div class="wrap">
             <article class="prose article" @if ($fallback) lang="{{ $locale }}" @endif>
+                @if ($study->cover_image)
+                    <figure class="cover-figure"><x-cover :path="$study->cover_image" :width="1200" :alt="$study->cover_alt ?? ''" :eager="true" /></figure>
+                @endif
                 @if ($fallback)
                     <p class="notice">{{ __('site.lang.only_in', ['language' => __('site.lang.names.'.$locale)]) }}</p>
                 @endif

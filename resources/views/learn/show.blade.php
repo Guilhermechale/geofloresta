@@ -33,6 +33,9 @@
     <div class="section section--tight">
         <div class="wrap">
             <article class="prose article" @if ($fallback) lang="{{ $locale }}" @endif data-copy-label="{{ __('content.tutorials.copy') }}" data-copied-label="{{ __('content.tutorials.copied') }}">
+                @if ($tutorial->cover_image)
+                    <figure class="cover-figure"><x-cover :path="$tutorial->cover_image" :width="1200" :alt="$tutorial->cover_alt ?? ''" :eager="true" /></figure>
+                @endif
                 @if ($fallback)
                     <p class="notice">{{ __('site.lang.only_in', ['language' => __('site.lang.names.'.$locale)]) }}</p>
                 @endif

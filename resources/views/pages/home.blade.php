@@ -93,9 +93,12 @@
             <ul class="entries span-7 start-6">
                 @foreach ($tutorials as $t)
                     @php $l = $t->displayLocale(app()->getLocale()); @endphp
-                    <li class="entry">
-                        <span class="meta">{{ __('content.tutorials.platforms.'.$t->platform) }}</span>
-                        <a href="{{ $t->url() }}" @if ($l !== app()->getLocale()) lang="{{ $l }}" @endif>{{ $t->getTranslation('title', $l) }}</a>
+                    <li class="entry @if ($t->cover_image) entry--media @endif">
+                        <x-cover :path="$t->cover_image" :width="320" alt="" class="entry__thumb" />
+                        <div class="entry__body">
+                            <span class="meta">{{ __('content.tutorials.platforms.'.$t->platform) }}</span>
+                            <a href="{{ $t->url() }}" @if ($l !== app()->getLocale()) lang="{{ $l }}" @endif>{{ $t->getTranslation('title', $l) }}</a>
+                        </div>
                     </li>
                 @endforeach
             </ul>
@@ -112,9 +115,12 @@
                 <ul class="entries span-7 start-6">
                     @foreach ($studies as $s)
                         @php $l = $s->displayLocale(app()->getLocale()); @endphp
-                        <li class="entry">
-                            <span class="meta">{{ $s->published_at ? format_date($s->published_at, 'medium') : '' }}</span>
-                            <a href="{{ $s->url() }}" @if ($l !== app()->getLocale()) lang="{{ $l }}" @endif>{{ $s->getTranslation('title', $l) }}</a>
+                        <li class="entry @if ($s->cover_image) entry--media @endif">
+                            <x-cover :path="$s->cover_image" :width="320" alt="" class="entry__thumb" />
+                            <div class="entry__body">
+                                <span class="meta">{{ $s->published_at ? format_date($s->published_at, 'medium') : '' }}</span>
+                                <a href="{{ $s->url() }}" @if ($l !== app()->getLocale()) lang="{{ $l }}" @endif>{{ $s->getTranslation('title', $l) }}</a>
+                            </div>
                         </li>
                     @endforeach
                 </ul>

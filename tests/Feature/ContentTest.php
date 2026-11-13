@@ -52,6 +52,39 @@ class ContentTest extends TestCase
         $this->get('/')->assertOk()->assertSee('Calcular NDVI no Earth Engine')->assertSee('Perda de cobertura arbórea em Moçambique');
     }
 
+    public function test_cover_images_in_lists_and_articles(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $img = new \Imagick();
+        $img->newImage(1600, 900, 'green');
+        $img->setImageFormat('webp');
+        \Illuminate\Support\Facades\Storage::disk('public')->put('conteudo/capa-teste.webp', $img->getImagesBlob());
+
+        $this->seedContent();
+        Tutorial::first()->update(['cover_image' => 'conteudo/capa-teste.webp', 'cover_alt' => 'Mapa NDVI']);
+        Study::first()->update(['cover_image' => 'conteudo/capa-teste.webp']);
+
+        $this->get('/tutoriais')->assertOk()->assertSee('thumbs/480/conteudo/capa-teste.webp', false);
+        $this->get('/pesquisas')->assertOk()->assertSee('thumbs/480/conteudo/capa-teste.webp', false);
+        $this->get('/gee-ndvi')->assertOk()->assertSee('thumbs/1200/conteudo/capa-teste.webp', false)->assertSee('alt="Mapa NDVI"', false);
+        $this->get('/')->assertOk()->assertSee('thumbs/320/conteudo/capa-teste.webp', false);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists('thumbs/480/conteudo/capa-teste.webp');
+        $this->assertSame(480, getimagesize(\Illuminate\Support\Facades\Storage::disk('public')->path('thumbs/480/conteudo/capa-teste.webp'))[0]);
+
+        // Sem ficheiro: nenhuma imagem quebrada
+        Tutorial::first()->update(['cover_image' => 'conteudo/nao-existe.webp']);
+        $this->get('/tutoriais')->assertOk()->assertDontSee('nao-existe.webp', false);
+    }
+
+    public function test_about_page_shows_founder_photo(): void
+    {
+        $this->seed(\Database\Seeders\ContentSeeder::class);
+        $this->get('/sobre')->assertOk()
+            ->assertSee('img/fundador-guilherme-chale.webp', false)
+            ->assertSee('Guilherme Francisco Fernando Chale');
+        $this->assertFileExists(public_path('img/fundador-guilherme-chale.webp'));
+    }
+
     public function test_navigation_has_only_the_two_content_categories(): void
     {
         $html = $this->get('/')->getContent();
