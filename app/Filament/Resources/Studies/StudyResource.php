@@ -49,7 +49,7 @@ class StudyResource extends Resource
                 TextInput::make("title.{$l}")->label('Título')->required($req)->maxLength(255)
                     ->helperText('Títulos oficiais de artigos científicos não se traduzem: deixe FR/EN vazios nesse caso.'),
                 Textarea::make("summary.{$l}")->label('Resumo')->rows(3),
-                Fields::richEditor("body.{$l}"),
+                Fields::richEditor("body.{$l}")->helperText(Fields::articleHelp()),
             ]),
             Section::make('Imagem')->schema([
                 Fields::image('cover_image', 'Imagem de capa'),

@@ -136,6 +136,15 @@ class Fields
             ->extraInputAttributes(['style' => 'min-height: 20rem']);
     }
 
+    /** Nota sobre gráficos e legendas para o corpo de tutoriais e pesquisas. */
+    public static function articleHelp(): string
+    {
+        $list = collect(\App\Support\Charts\Figures::CATALOGUE)->map(fn ($d, $k) => "[grafico:{$k}] — {$d}")->implode(' · ');
+
+        return 'Gráficos com dados da fonte: escreva a marca num parágrafo sozinho, seguido do parágrafo da legenda (ex.: "Figura 1. … Fonte: …"). Disponíveis: '.$list
+            .'. Uma imagem seguida de um parágrafo que comece por "Figura N." fica automaticamente com legenda.';
+    }
+
     public static function translationColumn(): TextColumn
     {
         return TextColumn::make('translations')->label('Idiomas')

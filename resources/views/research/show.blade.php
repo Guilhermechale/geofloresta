@@ -32,7 +32,7 @@
                 @if ($fallback)
                     <p class="notice">{{ __('site.lang.only_in', ['language' => __('site.lang.names.'.$locale)]) }}</p>
                 @endif
-                {!! $study->getTranslation('body', $locale) !!}
+                {!! \App\Support\ArticleBody::render($study->getTranslation('body', $locale)) !!}
                 @if ($study->doi || $study->external_url)
                     <p class="notice">
                         @if ($study->doi)<strong>{{ __('content.research.doi') }}:</strong> <a href="https://doi.org/{{ $study->doi }}" rel="noopener">{{ $study->doi }}</a>@endif

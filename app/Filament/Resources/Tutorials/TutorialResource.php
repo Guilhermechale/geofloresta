@@ -56,7 +56,7 @@ class TutorialResource extends Resource
                 ...Fields::titleWithSlug($l, $req),
                 Textarea::make("summary.{$l}")->label('Resumo')->rows(2)->maxLength(400),
                 Textarea::make("prerequisites.{$l}")->label('Pré-requisitos')->rows(2),
-                Fields::richEditor("body.{$l}", 'Corpo do tutorial'),
+                Fields::richEditor("body.{$l}", 'Corpo do tutorial')->helperText(Fields::articleHelp()),
             ], ['title', 'body', 'slug']),
 
             Section::make('Anexos (scripts e dados de exemplo)')->schema([

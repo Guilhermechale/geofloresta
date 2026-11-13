@@ -1,11 +1,89 @@
 /* Tutoriais e Pesquisas: artigo, imagens, código (dois temas de sintaxe) */
-.article { max-width: 72ch; }
-.article img { height: auto; border: 1px solid var(--c-rule); }
-.article figure { margin: var(--s-4) 0; }
-.article figcaption { font-size: var(--fs-sm); color: var(--c-muted); margin-top: .375rem; }
-.article table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); display: block; overflow-x: auto; }
-.article th, .article td { border-bottom: 1px solid var(--c-rule); padding: .5rem; text-align: left; vertical-align: top; }
+.article { max-width: 46rem; overflow-wrap: break-word; }
+.article > div > *:first-child, .article > *:first-child { margin-top: 0; }
+.article h2 { margin-top: var(--s-5); }
+.article h3 { margin-top: var(--s-4); }
+.article h4 { margin: var(--s-3) 0 var(--s-1); font-size: var(--fs-base); }
+.article img { height: auto; border-radius: var(--radius); }
 .article iframe { max-width: 100%; }
+
+/* Figuras (imagem + legenda) */
+.article figure, .article .figure { margin: var(--s-4) 0; }
+.article figure img { width: 100%; background: var(--c-surface); border: 1px solid var(--c-rule); }
+.article figcaption { font-size: var(--fs-sm); line-height: 1.5; color: var(--c-muted); margin-top: .625rem; padding-left: .75rem; border-left: 2px solid var(--c-moss); }
+.article figcaption strong { color: var(--c-ink); font-weight: 600; }
+
+/* Tabelas: deslocamento horizontal no telemóvel, números alinhados */
+.table-wrap { margin: var(--s-3) 0; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--c-rule); border-radius: var(--radius); background: var(--c-surface); }
+.table-wrap:focus-visible { outline-offset: 2px; }
+.article table { width: 100%; min-width: 32rem; border-collapse: collapse; font-size: var(--fs-sm); line-height: 1.45; font-variant-numeric: tabular-nums; }
+.article caption { caption-side: top; text-align: left; padding: .75rem .875rem; font-size: var(--fs-sm); color: var(--c-muted); border-bottom: 1px solid var(--c-rule); }
+.article caption strong { color: var(--c-ink); }
+.article th, .article td { border-bottom: 1px solid var(--c-rule); padding: .625rem .875rem; text-align: left; vertical-align: top; }
+.article thead th { font-weight: 600; background: var(--c-surface-2); white-space: nowrap; }
+.article tbody tr:last-child > * { border-bottom: 0; }
+.article td:not(:first-child) { white-space: nowrap; }
+
+/* Resumo, referências, como citar */
+.article .abstract { background: var(--c-surface); border: 1px solid var(--c-rule); border-left: 3px solid var(--c-moss); padding: var(--s-3); margin: 0 0 var(--s-4); }
+.article .abstract__title { display: block; font: 600 var(--fs-xs)/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--c-moss); margin-bottom: var(--s-1); }
+.article .abstract p:last-child { margin-bottom: 0; }
+.article .references p { font-size: var(--fs-sm); padding-left: 1.5rem; text-indent: -1.5rem; margin-bottom: .625rem; }
+.article .references p, .article .cite-box p { overflow-wrap: anywhere; }
+.article .cite-box { margin-top: var(--s-5); padding: var(--s-3); background: var(--c-surface-2); border-radius: var(--radius); font-size: var(--fs-sm); }
+.article .cite-box h3 { margin-top: 0; font-size: var(--fs-md); }
+
+/* Gráficos ([grafico:nome]) — cores validadas para daltonismo, nos dois temas */
+:root {
+    --chart-s1: #7FAE86; --chart-s2: #3F7A50; --chart-s3: #163D26;  /* ordinal (limiares) */
+    --chart-c1: #2A8A4A; --chart-c2: #C8601A;                       /* categórico */
+}
+[data-theme="dark"] {
+    --chart-s1: #3F6B4C; --chart-s2: #7FB08A; --chart-s3: #CDE6CF;
+    --chart-c1: #3FA35F; --chart-c2: #E07032;
+}
+.figure--chart { background: var(--c-surface); border: 1px solid var(--c-rule); border-radius: var(--radius); padding: var(--s-2) var(--s-2) var(--s-2); }
+.figure--chart figcaption { margin-top: var(--s-2); }
+.chart { position: relative; }
+.chart__svg { width: 100%; height: auto; overflow: visible; font-family: var(--f-sans); }
+.chart__svg--compact { display: none; }
+@media (max-width: 600px) {
+    .chart__svg--wide { display: none; }
+    .chart__svg--compact { display: block; }
+    .figure--chart { padding: .75rem; margin-inline: calc(var(--gutter) * -0.5); }
+}
+.ch-grid { stroke: var(--c-rule); stroke-width: 1; }
+.ch-base { stroke: var(--c-muted); }
+.ch-tick { fill: var(--c-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.chart__svg--wide .ch-tick { font-size: 13px; }
+.ch-label { fill: var(--c-ink); font-size: 13px; }
+.ch-value { fill: var(--c-ink); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ch-strong { font-weight: 600; }
+.ch-line { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.ch-line.c-s1 { stroke: var(--chart-s1); } .ch-line.c-s2 { stroke: var(--chart-s2); } .ch-line.c-s3 { stroke: var(--chart-s3); }
+.ch-line.c-c1 { stroke: var(--chart-c1); } .ch-line.c-c2 { stroke: var(--chart-c2); }
+.ch-bar.c-s1 { fill: var(--chart-s1); } .ch-bar.c-s2 { fill: var(--chart-s2); } .ch-bar.c-s3 { fill: var(--chart-s3); }
+.ch-bar.c-c1 { fill: var(--chart-c1); } .ch-bar.c-c2 { fill: var(--chart-c2); }
+.ch-bar { transition: opacity var(--t-fast); }
+.chart:hover .ch-bar[data-tip]:not(:hover) { opacity: .55; }
+.ch-hit { fill: transparent; cursor: crosshair; }
+.ch-cross { stroke: var(--c-muted); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; pointer-events: none; }
+.chart.is-active .ch-cross { opacity: 1; }
+.chart__tip {
+    position: absolute; z-index: 2; pointer-events: none; max-width: min(22rem, 90%);
+    background: var(--c-ink); color: var(--c-bg); font-size: var(--fs-xs); line-height: 1.45;
+    padding: .5rem .625rem; border-radius: var(--radius); box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.chart__data { margin-top: var(--s-2); font-size: var(--fs-sm); }
+.chart__data summary { cursor: pointer; font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--c-muted); }
+.chart__data summary:hover { color: var(--c-ink); }
+.chart__data .table-wrap { max-height: 22rem; overflow-y: auto; }
+.chart__data table { min-width: 0; }
+.chart__source { font-size: var(--fs-xs); color: var(--c-muted); margin: .5rem 0 0; }
+@media (forced-colors: active) {
+    .ch-line { stroke: CanvasText; } .ch-bar { fill: CanvasText; }
+}
+@media print { .chart__svg--wide { display: block !important; } .chart__svg--compact { display: none !important; } }
 .article pre { position: relative; white-space: pre; }
 .article pre.has-copy { padding-top: 2.5rem; }
 .copy-btn {

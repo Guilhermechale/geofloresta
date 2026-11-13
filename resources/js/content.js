@@ -38,3 +38,42 @@ document.querySelectorAll('.article pre').forEach((pre) => {
     pre.classList.add('has-copy');
     pre.prepend(btn);
 });
+
+/* Gráficos: tooltip ao passar o rato ou tocar (linha vertical nos gráficos de linhas). */
+document.querySelectorAll('.chart').forEach((chart) => {
+    const tip = chart.querySelector('.chart__tip');
+    if (!tip) return;
+
+    const show = (target, evt) => {
+        const text = target.dataset.tip;
+        if (!text) return;
+        tip.textContent = text;
+        tip.hidden = false;
+        const svg = target.ownerSVGElement;
+        const box = chart.getBoundingClientRect();
+        const cross = svg.querySelector('.ch-cross');
+        if (cross && target.dataset.x) {
+            cross.setAttribute('x1', target.dataset.x);
+            cross.setAttribute('x2', target.dataset.x);
+            chart.classList.add('is-active');
+        }
+        const r = target.getBoundingClientRect();
+        const x = evt && evt.clientX ? evt.clientX : r.left + r.width / 2;
+        const y = evt && evt.clientY ? evt.clientY : r.top;
+        let left = x - box.left + 12;
+        if (left + tip.offsetWidth > box.width) left = Math.max(0, x - box.left - tip.offsetWidth - 12);
+        tip.style.left = `${left}px`;
+        tip.style.top = `${Math.max(0, y - box.top - tip.offsetHeight - 10)}px`;
+    };
+    const hide = () => { tip.hidden = true; chart.classList.remove('is-active'); };
+
+    chart.addEventListener('pointermove', (e) => {
+        const t = e.target.closest('[data-tip]');
+        if (t && chart.contains(t)) show(t, e); else hide();
+    });
+    chart.addEventListener('pointerleave', hide);
+    chart.addEventListener('pointerdown', (e) => {
+        const t = e.target.closest('[data-tip]');
+        if (t) show(t, e);
+    });
+});

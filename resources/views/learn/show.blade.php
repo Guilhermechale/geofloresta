@@ -42,7 +42,7 @@
                 @if ($p = $tutorial->getTranslation('prerequisites', $locale, false))
                     <div class="notice"><p><strong>{{ __('content.tutorials.prerequisites') }}:</strong> {{ $p }}</p></div>
                 @endif
-                {!! $tutorial->getTranslation('body', $locale) !!}
+                {!! \App\Support\ArticleBody::render($tutorial->getTranslation('body', $locale)) !!}
 
                 @if ($tutorial->attachments->isNotEmpty())
                     <h2>{{ __('content.tutorials.attachments') }}</h2>

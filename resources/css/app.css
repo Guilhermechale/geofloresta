@@ -279,12 +279,15 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 
 /* ---------- Pilares: lista indexada, não cartões ---------- */
 .pillars { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--c-rule-strong); }
-.pillar { display: grid; grid-template-columns: 3.5rem 1fr; gap: var(--s-2); padding-block: var(--s-3); border-bottom: 1px solid var(--c-rule); }
+.pillar { display: grid; grid-template-columns: 3rem minmax(0, 1fr); column-gap: var(--s-2); row-gap: .25rem; padding-block: var(--s-3); border-bottom: 1px solid var(--c-rule); }
+.pillar > :not(.pillar__idx) { grid-column: 2; }
+.pillar__idx { grid-column: 1; grid-row: 1 / span 3; }
 .pillar__idx { font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--c-muted); padding-top: .4rem; }
 .pillar h3 { margin-bottom: var(--s-1); }
 .pillar p { color: var(--c-muted); margin-bottom: var(--s-1); }
 @media (min-width: 900px) {
     .pillar { grid-template-columns: 4rem 1fr 1.4fr auto; align-items: baseline; }
+    .pillar > * { grid-column: auto !important; grid-row: auto !important; }
     .pillar p { margin: 0; }
 }
 
