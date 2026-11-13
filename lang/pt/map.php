@@ -62,6 +62,7 @@ return [
     'aoi_help_world' => 'Use o país inteiro ou desenhe um polígono no mapa para contar e descarregar os focos dessa área. Os cálculos são feitos no seu navegador.',
     'aoi_country' => 'Usar o país inteiro',
     'aoi_polygon' => 'polígono',
+    'outline' => 'Contorno do país',
     'world_title' => 'Países com mais focos (7 dias)',
     'world_caption' => 'Focos de incêndio detectados (VIIRS NOAA-20 e NOAA-21) por país.',
     'col_country' => 'País',

@@ -40,8 +40,8 @@ class PrepareWorld extends Command
         foreach ($features as $f) {
             $p = array_change_key_case($f['properties'] ?? [], CASE_LOWER);
             $iso = $this->iso($p);
-            if (! $iso || ! $f['geometry']) {
-                continue;
+            if (! $iso || ! $f['geometry'] || isset($countries[$iso])) {
+                continue; // um registo por código (o primeiro, que é o país soberano)
             }
             $geom = Geometry::simplify($f['geometry'], 0.01, 4);
             $bbox = array_map(fn ($v) => round($v, 3), Geometry::bbox($f['geometry']));
@@ -69,15 +69,26 @@ class PrepareWorld extends Command
         return self::SUCCESS;
     }
 
-    protected function iso(array $p): ?string
+    /**
+     * Código do país. O iso_a3_eh só serve quando coincide com o adm0_a3 (França, Noruega…):
+     * territórios como as Ilhas Ashmore e Cartier têm iso_a3_eh = AUS e apagariam a Austrália.
+     */
+    public static function isoOf(array $p): ?string
     {
-        foreach (['iso_a3_eh', 'iso_a3', 'adm0_a3'] as $k) {
-            $v = strtoupper((string) ($p[$k] ?? ''));
-            if (preg_match('/^[A-Z]{3}$/', $v)) {
-                return $v;
-            }
+        $get = fn ($k) => strtoupper((string) ($p[$k] ?? ''));
+        $ok = fn ($v) => (bool) preg_match('/^[A-Z]{3}$/', $v);
+        if ($ok($get('iso_a3'))) {
+            return $get('iso_a3');
+        }
+        if ($ok($get('iso_a3_eh')) && $get('iso_a3_eh') === $get('adm0_a3')) {
+            return $get('iso_a3_eh');
         }
 
-        return null;
+        return $ok($get('adm0_a3')) ? $get('adm0_a3') : null;
+    }
+
+    protected function iso(array $p): ?string
+    {
+        return self::isoOf($p);
     }
 }

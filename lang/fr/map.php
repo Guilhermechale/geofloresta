@@ -63,6 +63,7 @@ return [
     'aoi_help_world' => 'Utilisez le pays entier ou dessinez un polygone sur la carte pour compter et télécharger les feux de cette zone. Les calculs sont faits dans votre navigateur.',
     'aoi_country' => 'Utiliser le pays entier',
     'aoi_polygon' => 'polygone',
+    'outline' => 'Contour du pays',
     'world_title' => 'Pays avec le plus de feux (7 jours)',
     'world_caption' => 'Foyers d’incendie détectés (VIIRS NOAA-20 et NOAA-21) par pays.',
     'col_country' => 'Pays',

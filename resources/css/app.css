@@ -597,3 +597,4 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
     .kit__item .btn { align-self: flex-start; }
     .country-search__row { flex-direction: column; }
 }
+.country-top .table tbody th[scope="row"] { font-family: var(--f-sans); text-transform: none; letter-spacing: 0; font-size: var(--fs-sm); font-weight: 500; border-bottom: 1px solid var(--c-rule); }

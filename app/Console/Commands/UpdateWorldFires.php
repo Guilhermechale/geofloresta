@@ -146,15 +146,7 @@ class UpdateWorldFires extends Command
     protected function index(array $features): void
     {
         foreach ($features as $f) {
-            $p = array_change_key_case($f['properties'] ?? [], CASE_LOWER);
-            $iso = null;
-            foreach (['iso_a3_eh', 'iso_a3', 'adm0_a3'] as $k) {
-                $v = strtoupper((string) ($p[$k] ?? ''));
-                if (preg_match('/^[A-Z]{3}$/', $v)) {
-                    $iso = $v;
-                    break;
-                }
-            }
+            $iso = PrepareWorld::isoOf(array_change_key_case($f['properties'] ?? [], CASE_LOWER));
             if (! $iso || ! $f['geometry']) {
                 continue;
             }

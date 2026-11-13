@@ -63,6 +63,7 @@ return [
     'aoi_help_world' => 'Use the whole country or draw a polygon on the map to count and download the fires in that area. Calculations run in your browser.',
     'aoi_country' => 'Use the whole country',
     'aoi_polygon' => 'polygon',
+    'outline' => 'Country outline',
     'world_title' => 'Countries with the most fires (7 days)',
     'world_caption' => 'Fire detections (VIIRS NOAA-20 and NOAA-21) by country.',
     'col_country' => 'Country',

@@ -77,6 +77,15 @@ class CountriesTest extends TestCase
         $this->get('/mapas?pais=zzz')->assertOk()->assertSee('"iso":"MOZ"', false);
     }
 
+    public function test_territories_do_not_take_the_code_of_their_country(): void
+    {
+        $iso = fn (array $p) => \App\Console\Commands\PrepareWorld::isoOf($p);
+        $this->assertSame('AUS', $iso(['iso_a3' => 'AUS', 'iso_a3_eh' => 'AUS', 'adm0_a3' => 'AUS']));
+        $this->assertSame('ATC', $iso(['iso_a3' => '-99', 'iso_a3_eh' => 'AUS', 'adm0_a3' => 'ATC'])); // Ilhas Ashmore e Cartier
+        $this->assertSame('FRA', $iso(['iso_a3' => '-99', 'iso_a3_eh' => 'FRA', 'adm0_a3' => 'FRA']));
+        $this->assertSame('KOS', $iso(['iso_a3' => '-99', 'iso_a3_eh' => 'XKX', 'adm0_a3' => 'KOS']));
+    }
+
     public function test_sitemap_lists_country_pages(): void
     {
         $this->world();
