@@ -51,7 +51,7 @@ return [
         'copy' => 'Copiar',
         'copied' => 'Copiado',
         'more' => 'Outras pesquisas',
-        'published_in' => 'Publicado em',
+        'published_in' => 'Publicação',
         'recent' => 'Pesquisas recentes',
     ],
     'published' => 'Publicado em :date',

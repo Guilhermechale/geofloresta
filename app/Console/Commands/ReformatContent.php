@@ -32,6 +32,13 @@ class ReformatContent extends Command
         'diretamente' => 'directamente', 'exatamente' => 'exactamente', 'estresse' => 'stress', 'equipe' => 'equipa',
     ];
 
+    /** Concordância depois da troca de palavras (ex.: monitoramento m. → monitorização f.). */
+    public const POST_FIX = [
+        'O monitorização' => 'A monitorização', 'No monitorização' => 'Na monitorização', 'do monitorização básico' => 'da monitorização básica',
+        'monitorização contínuo' => 'monitorização contínua', 'monitorização detalhado' => 'monitorização detalhada',
+        'e a fumo de' => 'e o fumo de', 'aberta na ecrã' => 'aberta no ecrã',
+    ];
+
     public function handle(): int
     {
         $only = array_filter(explode(',', (string) $this->option('only')));
@@ -187,6 +194,7 @@ class ReformatContent extends Command
 
             return preg_replace_callback($words, fn ($w) => self::PT_MZ[$w[1]], $m[2]);
         }, $out);
+        $out = strtr($out, self::POST_FIX);
 
         return $this->tidy($out);
     }

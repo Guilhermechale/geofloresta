@@ -51,7 +51,7 @@ return [
         'copy' => 'Copy',
         'copied' => 'Copied',
         'more' => 'More research',
-        'published_in' => 'Published in',
+        'published_in' => 'Publisher',
         'recent' => 'Recent research',
     ],
     'published' => 'Published on :date',
