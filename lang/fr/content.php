@@ -59,4 +59,5 @@ return [
     'read_more' => 'Lire',
     'back_tutorials' => 'Tous les tutoriels',
     'back_research' => 'Toutes les recherches',
+    'image_credit' => 'Image',
 ];

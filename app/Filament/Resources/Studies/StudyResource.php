@@ -63,6 +63,7 @@ class StudyResource extends Resource
             Section::make('Imagem')->schema([
                 Fields::image('cover_image', 'Imagem de capa'),
                 TextInput::make('cover_alt')->label('Texto alternativo')->maxLength(255),
+                TextInput::make('cover_credit')->label('Crédito da imagem')->helperText('Fonte e licença da imagem de capa, ex.: Sentinel-2 cloudless 2016 por EOX, CC BY 4.0')->maxLength(400),
             ])->columns(2)->collapsed(),
             Fields::publishing(),
             Fields::seo(),

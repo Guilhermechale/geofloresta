@@ -59,7 +59,7 @@
                 @endif
 
                 @if ($showCover)
-                    <figure class="cover-figure"><x-cover :path="$study->cover_image" :width="1200" :alt="$study->cover_alt ?? ''" /></figure>
+                    <figure class="cover-figure"><x-cover :path="$study->cover_image" :width="1200" :alt="$study->cover_alt ?? ''" />@if ($study->cover_credit)<figcaption class="cover-credit">{{ __('content.image_credit') }}: {{ $study->cover_credit }}</figcaption>@endif</figure>
                 @endif
 
                 @if (count($toc) > 2)

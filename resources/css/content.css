@@ -169,3 +169,5 @@
 
 /* Filtros por plataforma */
 .chips { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: var(--s-2); }
+
+.cover-credit { margin-top: .5rem; font-size: var(--fs-xs); color: var(--c-muted); line-height: 1.45; }

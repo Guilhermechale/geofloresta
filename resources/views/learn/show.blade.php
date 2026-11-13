@@ -50,7 +50,7 @@
                     <p class="notice">{{ __('site.lang.only_in', ['language' => __('site.lang.names.'.$locale)]) }}</p>
                 @endif
                 @if ($showCover)
-                    <figure class="cover-figure"><x-cover :path="$tutorial->cover_image" :width="1200" :alt="$tutorial->cover_alt ?? ''" :eager="true" /></figure>
+                    <figure class="cover-figure"><x-cover :path="$tutorial->cover_image" :width="1200" :alt="$tutorial->cover_alt ?? ''" :eager="true" />@if ($tutorial->cover_credit)<figcaption class="cover-credit">{{ __('content.image_credit') }}: {{ $tutorial->cover_credit }}</figcaption>@endif</figure>
                 @endif
 
                 @if ($objectives || $prereq)

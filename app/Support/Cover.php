@@ -43,6 +43,7 @@ class Cover
 
         $size = @getimagesize($disk->path($thumb));
 
-        return $size ? ['src' => asset('storage/'.$thumb), 'width' => $size[0], 'height' => $size[1]] : null;
+        // ?v= muda quando a capa é substituída (o navegador não mostra a versão antiga em cache)
+        return $size ? ['src' => asset('storage/'.$thumb).'?v='.$disk->lastModified($thumb), 'width' => $size[0], 'height' => $size[1]] : null;
     }
 }
