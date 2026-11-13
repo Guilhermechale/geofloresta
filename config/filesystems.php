@@ -30,6 +30,23 @@ return [
 
     'disks' => [
 
+        // Ficheiros de dados: privados, só saem pelo controlador de downloads.
+        'datasets' => [
+            'driver' => 'local',
+            'root' => storage_path('app/datasets'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        // Cache dos incêndios (FIRMS) e outros ficheiros gerados.
+        'cache' => [
+            'driver' => 'local',
+            'root' => storage_path('app/cache'),
+            'throw' => false,
+            'report' => false,
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),

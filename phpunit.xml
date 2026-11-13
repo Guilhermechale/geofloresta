@@ -19,6 +19,10 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_URL" value="https://teste.local"/>
+        <env name="ADMIN_PATH" value="painel-teste"/>
+        <env name="GA4_ID" value=""/>
+        <env name="FIRMS_MAP_KEY" value=""/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

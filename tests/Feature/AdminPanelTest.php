@@ -1,0 +1,93 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Dataset;
+use App\Models\Redirect;
+use App\Models\Tutorial;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\TestCase;
+
+class AdminPanelTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function admin(): User
+    {
+        // O segredo 2FA não é "fillable" (só o Filament o grava): forceFill no teste.
+        $u = (new User)->forceFill([
+            'name' => 'Admin', 'email' => 'admin@teste.local', 'password' => 'x-'.str_repeat('a', 20), 'is_admin' => true,
+            'app_authentication_secret' => 'JBSWY3DPEHPK3PXP',
+        ]);
+        $u->save();
+
+        return $u;
+    }
+
+    public static function panelPages(): array
+    {
+        return array_map(fn ($p) => [$p], [
+            '', 'pages', 'pages/create', 'services', 'services/create', 'studies', 'studies/create',
+            'datasets', 'datasets/create', 'tutorials', 'tutorials/create', 'courses', 'courses/create',
+            'contact-messages', 'redirects', 'redirects/create', 'site-settings',
+        ]);
+    }
+
+    #[DataProvider('panelPages')]
+    public function test_admin_sees_panel_page(string $page): void
+    {
+        $this->actingAs($this->admin())->get('/painel-teste/'.$page)->assertOk();
+    }
+
+    public function test_guest_is_sent_to_login(): void
+    {
+        $this->get('/painel-teste/datasets')->assertRedirect();
+    }
+
+    public function test_non_admin_is_refused(): void
+    {
+        $user = User::create(['name' => 'X', 'email' => 'x@teste.local', 'password' => 'y-'.str_repeat('b', 20), 'is_admin' => false]);
+        $this->actingAs($user)->get('/painel-teste/datasets')->assertForbidden();
+    }
+
+    public function test_edit_pages_render_with_translations(): void
+    {
+        $d = Dataset::create([
+            'slug' => ['pt' => 'cobertura-do-solo', 'en' => 'land-cover'],
+            'title' => ['pt' => 'Cobertura do solo', 'en' => 'Land cover'],
+            'summary' => ['pt' => 'Resumo'], 'theme' => 'land-cover', 'region' => 'sofala',
+            'source_name' => 'ESA', 'source_url' => 'https://esa-worldcover.org', 'licence_spdx' => 'CC-BY-4.0',
+            'attribution' => '© ESA WorldCover project 2021',
+        ]);
+        $this->actingAs($this->admin())->get("/painel-teste/datasets/{$d->id}/edit")
+            ->assertOk()->assertSee('Cobertura do solo')->assertSee('Land cover');
+        $this->assertSame(['pt' => true, 'fr' => false, 'en' => false], $d->translationStatus());
+    }
+
+    public function test_slug_change_on_published_content_creates_301(): void
+    {
+        $t = Tutorial::create([
+            'slug' => ['pt' => 'antigo', 'en' => 'old'], 'title' => ['pt' => 'T', 'en' => 'T'], 'body' => ['pt' => 'x', 'en' => 'x'],
+            'platform' => 'qgis', 'status' => 'published',
+        ]);
+        $t->setTranslation('slug', 'en', 'new')->save();
+
+        $r = Redirect::where('from_path', '/en/tutorials/old')->first();
+        $this->assertNotNull($r);
+        $this->assertSame('/en/tutorials/new', $r->to_url);
+        $this->assertSame(301, (int) $r->status_code);
+    }
+
+    public function test_search_text_contains_all_languages(): void
+    {
+        $t = Tutorial::create([
+            'slug' => ['pt' => 'a'], 'title' => ['pt' => 'Índice NDVI', 'fr' => 'Indice NDVI'], 'body' => ['pt' => '<p>texto</p>'],
+            'platform' => 'gee',
+        ]);
+        $this->assertStringContainsString('Índice NDVI', $t->search_text);
+        $this->assertStringContainsString('Indice NDVI', $t->search_text);
+        $this->assertStringNotContainsString('<p>', $t->search_text);
+    }
+}
