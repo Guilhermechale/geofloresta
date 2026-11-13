@@ -18,6 +18,7 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next, string $locale): Response
     {
+        Locales::setAlternates(null); // estado por pedido
         app()->setLocale($locale);
         Carbon::setLocale($locale);
 

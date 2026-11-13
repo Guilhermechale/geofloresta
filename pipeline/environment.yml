@@ -1,0 +1,9 @@
+# Ambiente do pipeline (conda/mamba, gratuito). Instalar com:
+#   conda env create -f environment.yml && conda activate geofloresta
+name: geofloresta
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - gdal>=3.8
+  - numpy>=1.26

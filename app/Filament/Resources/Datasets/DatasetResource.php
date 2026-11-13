@@ -42,7 +42,8 @@ class DatasetResource extends Resource
     ];
 
     public const LICENCES = [
-        'CC-BY-4.0' => 'CC BY 4.0', 'CC0-1.0' => 'CC0 1.0', 'ODbL-1.0' => 'ODbL 1.0', 'CC-BY-SA-4.0' => 'CC BY-SA 4.0',
+        'CC-BY-4.0' => 'CC BY 4.0', 'CC-BY-3.0-IGO' => 'CC BY 3.0 IGO', 'CC0-1.0' => 'CC0 1.0', 'ODbL-1.0' => 'ODbL 1.0', 'CC-BY-SA-4.0' => 'CC BY-SA 4.0',
+        'LicenseRef-HydroSHEDS' => 'HydroSHEDS License Agreement', 'LicenseRef-CEDA-ESA-CCI' => 'ESA CCI / CEDA (termos próprios)',
         'LicenseRef-NASA-Open-Data' => 'NASA — dados abertos (sem restrições, com atribuição)',
         'LicenseRef-Public-Domain' => 'Domínio público', 'LicenseRef-Other' => 'Outra (ver ligação)',
     ];

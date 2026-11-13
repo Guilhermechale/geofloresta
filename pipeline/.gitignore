@@ -1,0 +1,4 @@
+entregas/
+cache/
+__pycache__/
+*.vrt

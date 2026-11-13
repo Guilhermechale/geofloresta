@@ -66,31 +66,20 @@
                 <a class="link-arrow" href="{{ lroute('data') }}">{{ __('site.home.all_data') }}</a>
             </div>
             <div class="grid">
-                {{-- Protótipo M3: substituído pelos datasets publicados no M6 --}}
-                <article class="specimen span-6">
-                    <p class="meta">{{ __('site.status.preparing') }}</p>
-                    <h3 class="specimen__title">ESA WorldCover 2021 — Moçambique</h3>
-                    <dl>
-                        <dt>{{ __('site.specimen.source') }}</dt><dd>ESA WorldCover v200</dd>
-                        <dt>{{ __('site.specimen.licence') }}</dt><dd>CC-BY-4.0</dd>
-                        <dt>{{ __('site.specimen.resolution') }}</dt><dd>10 m</dd>
-                        <dt>{{ __('site.specimen.period') }}</dt><dd>2021</dd>
-                        <dt>{{ __('site.specimen.crs') }}</dt><dd>EPSG:4326</dd>
-                        <dt>{{ __('site.specimen.format') }}</dt><dd>GeoTIFF (COG)</dd>
-                    </dl>
-                </article>
-                <article class="specimen span-6">
-                    <p class="meta">{{ __('site.status.preparing') }}</p>
-                    <h3 class="specimen__title">Hansen/UMD Global Forest Change — Moçambique</h3>
-                    <dl>
-                        <dt>{{ __('site.specimen.source') }}</dt><dd>UMD/GLAD</dd>
-                        <dt>{{ __('site.specimen.version') }}</dt><dd>v1.12</dd>
-                        <dt>{{ __('site.specimen.resolution') }}</dt><dd>~30 m (1 arc-second)</dd>
-                        <dt>{{ __('site.specimen.period') }}</dt><dd>2001–2024</dd>
-                        <dt>{{ __('site.specimen.crs') }}</dt><dd>EPSG:4326</dd>
-                        <dt>{{ __('site.specimen.format') }}</dt><dd>CSV · GeoTIFF</dd>
-                    </dl>
-                </article>
+                @foreach ($datasets as $d)
+                    @php $l = $d->displayLocale(app()->getLocale()); @endphp
+                    <article class="specimen span-4">
+                        <p class="meta">{{ __('data.themes.'.$d->theme) }}</p>
+                        <h3 class="specimen__title"><a href="{{ $d->url() }}" @if ($l !== app()->getLocale()) lang="{{ $l }}" @endif>{{ $d->getTranslation('title', $l) }}</a></h3>
+                        <dl>
+                            <dt>{{ __('site.specimen.source') }}</dt><dd>{{ $d->source_name }}</dd>
+                            <dt>{{ __('site.specimen.licence') }}</dt><dd>{{ $d->licence_spdx }}</dd>
+                            @if ($d->period())<dt>{{ __('site.specimen.period') }}</dt><dd>{{ $d->period() }}</dd>@endif
+                            @if ($d->resolution)<dt>{{ __('site.specimen.resolution') }}</dt><dd>{{ $d->resolution }}</dd>@endif
+                            <dt>{{ __('site.specimen.format') }}</dt><dd>{{ $d->files->pluck('format')->unique()->map(fn ($f) => \App\Models\Dataset::FORMATS[$f] ?? $f)->implode(', ') ?: __('data.external') }}</dd>
+                        </dl>
+                    </article>
+                @endforeach
             </div>
         </div>
     </section>

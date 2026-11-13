@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ConsentController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DatasetController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\FallbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
@@ -40,12 +42,19 @@ foreach (Locales::all() as $locale) {
             Route::get($slug('search'), SearchController::class)->name('search')->middleware('throttle:60,1');
             Route::get($slug('sitemap'), [SitemapController::class, 'html'])->name('sitemap');
 
-            // Ainda em construção (M6–M8)
-            foreach (['studies', 'data', 'maps', 'learn', 'courses'] as $page) {
+            Route::get($slug('data'), [DatasetController::class, 'index'])->name('data');
+            Route::get($slug('data').'/{slug}', [DatasetController::class, 'show'])->name('data.show')->where('slug', '[a-z0-9-]+');
+
+            // Ainda em construção (M7–M8)
+            foreach (['studies', 'maps', 'learn', 'courses'] as $page) {
                 Route::get($slug($page), PlaceholderController::class)->name($page)->defaults('page', $page);
             }
         });
 }
+
+// Downloads de dados (um só URL para os três idiomas; o nome do ficheiro não se traduz)
+Route::get('/descarregar/{file}/{filename}', DownloadController::class)->name('download')
+    ->where(['file' => '[0-9]+', 'filename' => '[A-Za-z0-9._-]+'])->middleware('throttle:60,1');
 
 Route::get('/sitemap.xml', [SitemapController::class, 'xml'])->name('sitemap.xml');
 Route::get('/robots.txt', [WellKnownController::class, 'robots']);

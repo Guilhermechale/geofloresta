@@ -47,7 +47,7 @@ class Locales
         return route("{$locale}.{$name}", $params, $absolute);
     }
 
-    public static function setAlternates(array $urls): void
+    public static function setAlternates(?array $urls): void
     {
         self::$override = $urls;
     }

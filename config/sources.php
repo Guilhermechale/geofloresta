@@ -25,9 +25,9 @@ return [
     ],
     [
         'key' => 'firms', 'name' => 'NASA Fire Information for Resource Management System (FIRMS)', 'use' => 'fire', 'status' => 'hosted',
-        'url' => 'https://firms.modaps.eosdis.nasa.gov/', 'licence' => 'NASA Earth Science Data — open, no restrictions',
-        'attribution' => "We acknowledge the use of data and/or imagery from NASA's Fire Information for Resource Management System (FIRMS) (https://www.earthdata.nasa.gov/firms), part of NASA's Earth Science Data and Information System (ESDIS).",
-        'verified' => null,
+        'url' => 'https://firms.modaps.eosdis.nasa.gov/', 'licence' => 'NASA Earth Science Data — open data policy (no restrictions on reuse)',
+        'attribution' => 'We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS).',
+        'verified' => '2026-11-13',
     ],
     [
         'key' => 'worldcover', 'name' => 'ESA WorldCover 10 m (2020 v100, 2021 v200)', 'use' => 'land-cover', 'status' => 'hosted',
@@ -62,13 +62,13 @@ return [
     [
         'key' => 'naturalearth', 'name' => 'Natural Earth — Admin 1 (províncias)', 'use' => 'boundaries', 'status' => 'hosted',
         'url' => 'https://www.naturalearthdata.com/', 'licence' => 'Public domain',
-        'attribution' => 'Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.', 'verified' => null,
+        'attribution' => 'Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.', 'verified' => '2026-11-13',
     ],
     [
-        'key' => 'geoboundaries', 'name' => 'geoBoundaries — Moçambique ADM2 (distritos)', 'use' => 'boundaries', 'status' => 'link',
-        'url' => 'https://www.geoboundaries.org/', 'licence' => 'Por confirmar para Moçambique (varia por país)',
-        'attribution' => 'Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): e0231866.',
-        'verified' => null,
+        'key' => 'geoboundaries', 'name' => 'geoBoundaries — Moçambique ADM2 (distritos), fonte INE / OCHA ROSEA', 'use' => 'boundaries', 'status' => 'hosted',
+        'url' => 'https://www.geoboundaries.org/', 'licence' => 'CC-BY-3.0-IGO',
+        'attribution' => 'Mozambique INE (Instituto Nacional de Estatística), OCHA ROSEA, via geoBoundaries — Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): e0231866.',
+        'verified' => '2026-11-13',
     ],
     [
         'key' => 'cci-biomass', 'name' => 'ESA Climate Change Initiative — Biomass (v7)', 'use' => 'biomass', 'status' => 'link',
