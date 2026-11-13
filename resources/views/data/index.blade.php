@@ -59,6 +59,11 @@
             </aside>
 
             <section class="span-8 start-5" aria-live="polite">
+                <div class="notice country-cta">
+                    <h2 class="h3">{{ __('countries.title') }}</h2>
+                    <p>{{ __('countries.description') }}</p>
+                    <a class="btn btn--primary" href="{{ lroute('countries') }}">{{ __('countries.search') }}</a>
+                </div>
                 <p class="meta">{{ trans_choice('data.count', $datasets->count(), ['count' => $datasets->count()]) }}</p>
                 <ul class="catalogue">
                     @foreach ($datasets as $d)

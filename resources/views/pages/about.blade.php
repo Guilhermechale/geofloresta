@@ -34,7 +34,7 @@
                         <dt>{{ __('pages.about.founded') }}</dt><dd>2026</dd>
                         <dt>{{ __('pages.about.base') }}</dt><dd>Beira, Sofala</dd>
                         <dt>{{ __('pages.about.areas') }}</dt><dd>{{ $servicesCount ?: 4 }}</dd>
-                        <dt>{{ __('pages.about.territory') }}</dt><dd>{{ app()->getLocale() === 'pt' ? 'Moçambique' : 'Mozambique' }}</dd>
+                        <dt>{{ __('pages.about.territory') }}</dt><dd>{{ __('pages.about.territory_value') }}</dd>
                         <dt>{{ __('pages.about.founder') }}</dt><dd>Guilherme F. F. Chale</dd>
                         <dt>{{ __('pages.contact.email_label') }}</dt><dd><a href="mailto:{{ config('geofloresta.contact_email') }}">{{ config('geofloresta.contact_email') }}</a></dd>
                     </dl>

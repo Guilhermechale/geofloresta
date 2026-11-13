@@ -4,8 +4,8 @@
 return [
     'title' => 'Données',
     'licence_names' => ['LicenseRef-Public-Domain' => 'Domaine public', 'LicenseRef-NASA-Open-Data' => 'Données ouvertes de la NASA'],
-    'description' => 'Catalogue de données géospatiales du Mozambique à télécharger : limites administratives, foyers d’incendie, occupation du sol et plus, avec licence et attribution.',
-    'lede' => 'Jeux de données du Mozambique préparés à partir de sources ouvertes. Chaque fiche indique la source, la licence, l’attribution exacte et la somme de contrôle de chaque fichier. Sans inscription.',
+    'description' => 'Données géospatiales ouvertes à télécharger pour tous les pays du monde : feux actifs, limites administratives, rivières, bassins versants, forêt, population et plus, avec licence et attribution.',
+    'lede' => 'Données ouvertes de tous les pays du monde, dans « Données par pays », et jeux préparés par GEOFLORESTA à partir de sources ouvertes. Chaque fiche indique la source, la licence, l’attribution exacte et la somme de contrôle de chaque fichier. Sans inscription.',
     'filters' => 'Filtres',
     'search' => 'Rechercher dans le catalogue',
     'theme' => 'Thème',

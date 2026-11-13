@@ -18,6 +18,7 @@ const theme = () => document.documentElement.dataset.theme === 'dark' ? 'dark' :
 let fires = null;       // FeatureCollection dos últimos 7 dias
 let provinces = null;
 let districts = null;
+let outline = null;
 let aoi = null;         // Feature (Polygon/MultiPolygon) da área de interesse
 let aoiFires = [];
 let drawing = null;     // vértices em desenho
@@ -65,6 +66,10 @@ function addOverlays(map) {
         map.addSource('provinces', { type: 'geojson', data: provinces });
         map.addLayer({ id: 'provinces', type: 'line', source: 'provinces', layout: { visibility: s.provinces ? 'visible' : 'none' }, paint: { 'line-color': line, 'line-width': 1.2 } });
     }
+    if (outline && !provinces && !map.getSource('outline')) {
+        map.addSource('outline', { type: 'geojson', data: outline });
+        map.addLayer({ id: 'outline', type: 'line', source: 'outline', layout: { visibility: s.outline ? 'visible' : 'none' }, paint: { 'line-color': line, 'line-width': 1.4 } });
+    }
     if (districts && !map.getSource('districts')) {
         map.addSource('districts', { type: 'geojson', data: districts });
         map.addLayer({ id: 'districts', type: 'line', source: 'districts', layout: { visibility: s.districts ? 'visible' : 'none' }, paint: { 'line-color': line, 'line-width': 0.5, 'line-dasharray': [2, 2] } });
@@ -102,9 +107,26 @@ function empty() {
 
 async function loadJson(url) {
     if (!url) return null;
-    const r = await fetch(url, { credentials: 'same-origin' });
-    return r.ok ? r.json() : null;
+    try {
+        const r = await fetch(url, { credentials: 'same-origin' });
+        return r.ok ? await r.json() : null;
+    } catch { return null; }
 }
+
+// Ficheiro compacto por país: rows = [lon, lat, "AAAA-MM-DDTHH:MM", satélite (índice), confiança, FRP]
+function fromCompact(d) {
+    const sats = d.sats || [];
+    return {
+        type: 'FeatureCollection',
+        features: (d.rows || []).map(([x, y, t, s, c, frp]) => ({
+            type: 'Feature', geometry: { type: 'Point', coordinates: [x, y] },
+            properties: { acq: `${t}:00Z`, sat: sats[s] || '', conf: c, frp, prov: '', dist: '' },
+        })),
+    };
+}
+
+// Escolha do país: muda de página assim que se escolhe (o botão serve sem JavaScript)
+document.querySelector('[data-country] select')?.addEventListener('change', (e) => e.target.form.submit());
 
 async function init() {
     const map = new maplibregl.Map({
@@ -112,7 +134,6 @@ async function init() {
         style: cfg.styles[theme()],
         bounds: cfg.bounds,
         fitBoundsOptions: { padding: 20 },
-        maxBounds: [[20, -35], [50, -2]],
         attributionControl: false,
         cooperativeGestures: matchMedia('(pointer: coarse)').matches,
         locale: {},
@@ -123,7 +144,8 @@ async function init() {
     map.addControl(new maplibregl.AttributionControl({ compact: false, customAttribution: cfg.attribution }), 'bottom-right');
     el.querySelector('.map-loading')?.remove();
 
-    [fires, provinces, districts] = await Promise.all([loadJson(cfg.fires), loadJson(cfg.provinces), loadJson(cfg.districts)]);
+    [fires, provinces, districts, outline] = await Promise.all([loadJson(cfg.fires), loadJson(cfg.provinces), loadJson(cfg.districts), loadJson(cfg.outline)]);
+    if (fires && cfg.compact) fires = fromCompact(fires);
     if (fires) fires.features.forEach((f) => { f.properties.age = Math.max(0, hoursAgo(f.properties.acq)); });
 
     // O estilo pode ter carregado antes ou depois dos dados: tenta até estar pronto
@@ -158,7 +180,7 @@ async function init() {
         const tt = T.popup || {};
         const row = (k, v) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`;
         new maplibregl.Popup({ maxWidth: '280px' }).setLngLat(e.lngLat).setHTML(
-            `<dl class="popup-dl">${row(tt.when, p.acq.replace('T', ' ').replace(':00Z', ''))}${row(tt.sat, p.sat)}${row(tt.conf, (T.conf || {})[p.conf] || p.conf)}${p.frp ? row(tt.frp, p.frp) : ''}${row(tt.where, [p.dist, p.prov].filter(Boolean).join(', '))}</dl>`,
+            `<dl class="popup-dl">${row(tt.when, p.acq.replace('T', ' ').replace(':00Z', ''))}${row(tt.sat, p.sat)}${row(tt.conf, (T.conf || {})[p.conf] || p.conf)}${p.frp ? row(tt.frp, p.frp) : ''}${row(tt.where, [p.dist, p.prov].filter(Boolean).join(', ') || cfg.countryName)}</dl>`,
         ).addTo(map);
     });
     map.on('mouseenter', 'fires', () => { if (!drawing) map.getCanvas().style.cursor = 'pointer'; });
@@ -182,6 +204,7 @@ function setupAoi(map) {
     const btnDraw = q('[data-draw]'), btnFinish = q('[data-draw-finish]'), btnCancel = q('[data-draw-cancel]'), btnClear = q('[data-aoi-clear]');
     const help = q('[data-draw-help]');
     aoiForm.addEventListener('submit', (e) => e.preventDefault());
+    const clearSelects = () => { if (provSel) provSel.value = ''; if (distSel) { distSel.value = ''; distSel.disabled = true; } };
 
     const setAoi = (feature) => {
         aoi = feature;
@@ -210,7 +233,13 @@ function setupAoi(map) {
         dl.hidden = n === 0;
     };
 
-    provSel.addEventListener('change', () => {
+    // País inteiro (fora de Moçambique, onde não há províncias/distritos)
+    q('[data-aoi-country]')?.addEventListener('click', () => {
+        const f = outline?.features?.[0];
+        if (f) setAoi({ type: 'Feature', properties: { nome: cfg.countryName }, geometry: f.geometry });
+    });
+
+    if (provSel && distSel) provSel.addEventListener('change', () => {
         const name = provSel.value;
         distSel.innerHTML = distSel.options[0].outerHTML;
         distSel.disabled = !name;
@@ -220,7 +249,7 @@ function setupAoi(map) {
             .forEach((f) => distSel.add(new Option(f.properties.nome, f.properties.nome)));
         setAoi((provinces?.features || []).find((f) => f.properties.nome === name) || null);
     });
-    distSel.addEventListener('change', () => {
+    distSel?.addEventListener('change', () => {
         const f = (districts?.features || []).find((d) => d.properties.nome === distSel.value && d.properties.provincia === provSel.value);
         setAoi(f || (provinces?.features || []).find((p) => p.properties.nome === provSel.value) || null);
     });
@@ -239,7 +268,7 @@ function setupAoi(map) {
         map.getCanvas().style.cursor = 'crosshair';
         btnDraw.hidden = true; btnFinish.hidden = false; btnCancel.hidden = false; help.hidden = false;
         btnFinish.disabled = true;
-        provSel.value = ''; distSel.value = ''; distSel.disabled = true;
+        clearSelects();
     };
     const stopDraw = () => {
         drawing = null;
@@ -258,7 +287,7 @@ function setupAoi(map) {
     btnDraw.addEventListener('click', startDraw);
     btnFinish.addEventListener('click', finishDraw);
     btnCancel.addEventListener('click', () => { stopDraw(); btnDraw.focus(); });
-    btnClear.addEventListener('click', () => { provSel.value = ''; distSel.value = ''; distSel.disabled = true; setAoi(null); });
+    btnClear.addEventListener('click', () => { clearSelects(); setAoi(null); });
     map.on('click', (e) => {
         if (!drawing) return;
         drawing.push([+e.lngLat.lng.toFixed(5), +e.lngLat.lat.toFixed(5)]);
@@ -279,16 +308,16 @@ function setupAoi(map) {
     };
     const stamp = () => new Date().toISOString().slice(0, 10);
     q('[data-aoi-csv]').addEventListener('click', () => {
-        const head = 'data_hora_utc,satelite,confianca,frp_mw,provincia,distrito,longitude,latitude';
+        const head = 'data_hora_utc,satelite,confianca,frp_mw,pais,provincia,distrito,longitude,latitude';
         const rows = aoiFires.map((f) => {
             const p = f.properties; const [x, y] = f.geometry.coordinates;
-            return [p.acq, p.sat, p.conf, p.frp ?? '', p.prov, p.dist, x, y].map((v) => /[",]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : v).join(',');
+            return [p.acq, p.sat, p.conf, p.frp ?? '', cfg.iso || '', p.prov || '', p.dist || '', x, y].map((v) => /[",]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : v).join(',');
         });
-        save(`focos_area_${stamp()}.csv`, 'text/csv;charset=utf-8', '﻿' + [head, ...rows].join('\n') + '\n');
+        save(`focos_${(cfg.iso || 'area').toLowerCase()}_${stamp()}.csv`, 'text/csv;charset=utf-8', '﻿' + [head, ...rows].join('\n') + '\n');
     });
     q('[data-aoi-geojson]').addEventListener('click', () => {
         const fc = { type: 'FeatureCollection', source: 'NASA FIRMS via GEOFLORESTA', updated_at: cfg.updatedAt, area: aoi, features: aoiFires.map(({ type, geometry, properties: { age, ...p } }) => ({ type, geometry, properties: p })) };
-        save(`focos_area_${stamp()}.geojson`, 'application/geo+json', JSON.stringify(fc));
+        save(`focos_${(cfg.iso || 'area').toLowerCase()}_${stamp()}.geojson`, 'application/geo+json', JSON.stringify(fc));
     });
 }
 

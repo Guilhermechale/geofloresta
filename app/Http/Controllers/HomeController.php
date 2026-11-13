@@ -15,8 +15,16 @@ class HomeController extends Controller
             ->orderByDesc('featured')->orderByRaw("CASE WHEN hosting = 'hosted' THEN 0 ELSE 1 END")->orderByDesc('updated_at')
             ->limit(3)->get();
 
+        $w = \App\Geo\World::fires();
+        $world = ! empty($w['countries']) ? [
+            'n24' => array_sum(array_column($w['countries'], 'n24')),
+            'countries' => count(array_filter($w['countries'], fn ($c) => $c['n24'] > 0)),
+            'updated_at' => $w['updated_at'] ?? null,
+        ] : null;
+
         return view('pages.home', [
             'fire' => FireSummary::read(),
+            'world' => $world,
             'datasets' => $datasets,
             'tutorials' => \App\Models\Tutorial::published()->orderByDesc('featured')->orderByDesc('published_at')->limit(4)->get(),
             'studies' => \App\Models\Study::published()->orderByDesc('published_at')->limit(3)->get(),

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 class SitemapController extends Controller
 {
-    public const MAIN = ['home', 'services', 'data', 'maps', 'learn', 'studies', 'about', 'contact', 'search'];
+    public const MAIN = ['home', 'services', 'data', 'countries', 'maps', 'learn', 'studies', 'about', 'contact', 'search'];
 
     public const LEGAL = ['privacy', 'cookies', 'terms', 'licences', 'accessibility', 'sitemap'];
 
@@ -55,6 +55,15 @@ class SitemapController extends Controller
                     $entries[] = ['urls' => $urls, 'lastmod' => $item->updated_at];
                 }
             }
+        }
+
+        // Uma página de dados abertos por país
+        foreach (\App\Geo\World::all() as $iso => $c) {
+            $urls = [];
+            foreach (Locales::all() as $l) {
+                $urls[$l] = lroute('countries.show', ['iso' => strtolower($iso)], $l);
+            }
+            $entries[] = ['urls' => $urls, 'lastmod' => null];
         }
 
         return response()->view('sitemap-xml', ['entries' => $entries])

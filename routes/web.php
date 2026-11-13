@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ConsentController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DatasetController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\FallbackController;
@@ -45,6 +46,8 @@ foreach (Locales::all() as $locale) {
             Route::get($slug('sitemap'), [SitemapController::class, 'html'])->name('sitemap');
 
             Route::get($slug('data'), [DatasetController::class, 'index'])->name('data');
+            Route::get($slug('data').'/'.$slug('countries'), [CountryController::class, 'index'])->name('countries');
+            Route::get($slug('data').'/'.$slug('countries').'/{iso}', [CountryController::class, 'show'])->name('countries.show')->where('iso', '[a-z]{3}');
             Route::get($slug('data').'/{slug}', [DatasetController::class, 'show'])->name('data.show')->where('slug', '[a-z0-9-]+');
 
             Route::get($slug('maps'), MapController::class)->name('maps');

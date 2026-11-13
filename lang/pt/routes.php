@@ -5,6 +5,7 @@ return [
     'services' => 'servicos',
     'studies' => 'pesquisas',
     'data' => 'dados',
+    'countries' => 'paises',
     'maps' => 'mapas',
     'learn' => 'tutoriais',
     'courses' => 'cursos',

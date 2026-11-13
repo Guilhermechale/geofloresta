@@ -4,6 +4,7 @@ return [
     'services' => 'services',
     'studies' => 'research',
     'data' => 'data',
+    'countries' => 'countries',
     'maps' => 'maps',
     'learn' => 'tutorials',
     'courses' => 'courses',

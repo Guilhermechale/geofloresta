@@ -4,8 +4,8 @@
 return [
     'title' => 'Data',
     'licence_names' => ['LicenseRef-Public-Domain' => 'Public domain', 'LicenseRef-NASA-Open-Data' => 'NASA open data'],
-    'description' => 'Catalogue of Mozambique geospatial data to download: administrative boundaries, fire detections, land cover and more, with licence and attribution.',
-    'lede' => 'Mozambique datasets prepared from open sources. Every record states the source, the licence, the exact attribution and the checksum of each file. No registration.',
+    'description' => 'Open geospatial data to download for any country in the world: active fires, administrative boundaries, rivers, river basins, forest, population and more, with licence and attribution.',
+    'lede' => 'Open data for any country in the world, under “Data by country”, plus datasets prepared by GEOFLORESTA from open sources. Every record states the source, the licence, the exact attribution and the checksum of each file. No registration.',
     'filters' => 'Filters',
     'search' => 'Search the catalogue',
     'theme' => 'Theme',

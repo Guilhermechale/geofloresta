@@ -3,7 +3,7 @@
     use App\Support\Breadcrumbs;
     $crumbs = Breadcrumbs::make([['label' => __('pages.sitemap.title'), 'url' => lroute('sitemap')]]);
     $labels = [
-        'home' => 'site.nav.home', 'services' => 'site.nav.services', 'data' => 'site.nav.data', 'maps' => 'site.nav.maps',
+        'home' => 'site.nav.home', 'services' => 'site.nav.services', 'data' => 'site.nav.data', 'countries' => 'countries.title', 'maps' => 'site.nav.maps',
         'learn' => 'site.nav.learn', 'studies' => 'site.nav.studies', 'about' => 'site.nav.about', 'contact' => 'site.nav.contact', 'search' => 'site.nav.search',
         'privacy' => 'site.footer.privacy', 'cookies' => 'site.footer.cookies', 'terms' => 'site.footer.terms',
         'licences' => 'site.footer.licences', 'accessibility' => 'site.footer.accessibility', 'sitemap' => 'site.footer.sitemap',

@@ -45,11 +45,17 @@
                 <h2 id="monitor-title">{{ __('site.home.monitor_title') }}</h2>
                 <p class="muted">{{ __('site.home.monitor_source') }}</p>
                 <a class="link-arrow" href="{{ lroute('maps') }}">{{ __('site.home.monitor_link') }}</a>
+                <p><a class="link-arrow" href="{{ lroute('countries') }}">{{ __('site.home.countries_link') }}</a></p>
             </div>
             <div class="span-6 start-7 monitor">
-                @if ($fire)
+                @if ($world)
+                    <p class="monitor__value">{{ format_number($world['n24']) }}</p>
+                    <p>{{ __('site.home.monitor_label') }} · {{ trans_choice('site.home.monitor_countries', $world['countries'], ['n' => $world['countries']]) }}</p>
+                    @if ($fire)<p>{{ __('site.home.monitor_moz', ['n' => format_number($fire['count_24h'])]) }}</p>@endif
+                    <p class="meta">{{ __('site.home.monitor_updated', ['date' => format_datetime($world['updated_at'])]) }}</p>
+                @elseif ($fire)
                     <p class="monitor__value">{{ format_number($fire['count_24h']) }}</p>
-                    <p>{{ __('site.home.monitor_label') }}</p>
+                    <p>{{ __('site.home.monitor_label_moz') }}</p>
                     <p class="meta">{{ __('site.home.monitor_updated', ['date' => format_datetime($fire['updated_at'])]) }}</p>
                 @else
                     <p class="monitor__value" aria-hidden="true">—</p>

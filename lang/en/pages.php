@@ -7,8 +7,8 @@ return [
 
     'services' => [
         'title' => 'Services',
-        'description' => 'GIS, remote sensing, applied artificial intelligence and environmental consultancy in Mozambique, based in Beira.',
-        'lede' => 'Technical work with geographic data, from survey to final map, for forest and environmental projects in Mozambique.',
+        'description' => 'GIS, remote sensing, applied artificial intelligence and environmental consultancy based in Beira, Mozambique, for projects in any country.',
+        'lede' => 'Technical work with geographic data, from survey to final map, for forest and environmental projects in Mozambique and anywhere in the world where data exist.',
         'includes' => 'Includes',
         'ask' => 'Request a proposal for this service',
         'studies_title' => 'Research',
@@ -27,6 +27,7 @@ return [
         'base' => 'Based in',
         'areas' => 'Service areas',
         'territory' => 'Area of work',
+        'territory_value' => 'Mozambique and any country in the world',
         'founder' => 'Founder',
         'founder_role' => 'Forest Engineer · Founder of GEOFLORESTA',
         'founder_alt' => 'Photo of Guilherme Francisco Fernando Chale, founder of GEOFLORESTA',

@@ -7,8 +7,8 @@ return [
 
     'services' => [
         'title' => 'Services',
-        'description' => 'SIG, télédétection, intelligence artificielle appliquée et conseil environnemental au Mozambique, depuis Beira.',
-        'lede' => 'Travail technique sur les données géographiques, du relevé à la carte finale, pour des projets forestiers et environnementaux au Mozambique.',
+        'description' => 'SIG, télédétection, intelligence artificielle appliquée et conseil environnemental depuis Beira, au Mozambique, pour des projets dans tous les pays.',
+        'lede' => 'Travail technique sur les données géographiques, du relevé à la carte finale, pour des projets forestiers et environnementaux au Mozambique et partout dans le monde où des données existent.',
         'includes' => 'Comprend',
         'ask' => 'Demander une proposition pour ce service',
         'studies_title' => 'Recherches',
@@ -27,6 +27,7 @@ return [
         'base' => 'Siège',
         'areas' => 'Domaines de service',
         'territory' => 'Zone d’intervention',
+        'territory_value' => 'Mozambique et tous les pays du monde',
         'founder' => 'Fondateur',
         'founder_role' => 'Ingénieur forestier · Fondateur de GEOFLORESTA',
         'founder_alt' => 'Photo de Guilherme Francisco Fernando Chale, fondateur de GEOFLORESTA',

@@ -52,3 +52,10 @@
 .popup-dl { display: grid; grid-template-columns: max-content 1fr; gap: .125rem .75rem; margin: 0; font-size: var(--fs-xs); }
 .popup-dl dt { font-family: var(--f-mono); text-transform: uppercase; letter-spacing: .04em; color: var(--c-muted); }
 .popup-dl dd { margin: 0; font-family: var(--f-mono); }
+
+/* Escolha do país */
+.map-country { margin-bottom: var(--s-2); }
+.map-country label { display: block; margin-bottom: .25rem; }
+.map-country__row { display: flex; gap: .5rem; }
+.map-country__row select { flex: 1 1 auto; min-width: 0; }
+.map-country p { margin: .375rem 0 0; }

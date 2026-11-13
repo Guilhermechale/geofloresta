@@ -6,8 +6,8 @@ return [
 
     'services' => [
         'title' => 'Serviços',
-        'description' => 'SIG, sensoriamento remoto, inteligência artificial aplicada e consultoria ambiental em Moçambique, a partir da Beira.',
-        'lede' => 'Trabalho técnico com dados geográficos, do levantamento ao mapa final, para projectos de floresta e ambiente em Moçambique.',
+        'description' => 'SIG, sensoriamento remoto, inteligência artificial aplicada e consultoria ambiental a partir da Beira, Moçambique, para projectos em qualquer país.',
+        'lede' => 'Trabalho técnico com dados geográficos, do levantamento ao mapa final, para projectos de floresta e ambiente em Moçambique e em qualquer parte do mundo onde existam dados.',
         'includes' => 'Inclui',
         'ask' => 'Pedir proposta para este serviço',
         'studies_title' => 'Pesquisas',
@@ -26,6 +26,7 @@ return [
         'base' => 'Sede',
         'areas' => 'Áreas de serviço',
         'territory' => 'Actuação',
+        'territory_value' => 'Moçambique e qualquer país do mundo',
         'founder' => 'Fundador',
         'founder_role' => 'Engenheiro Florestal · Fundador da GEOFLORESTA',
         'founder_alt' => 'Fotografia de Guilherme Francisco Fernando Chale, fundador da GEOFLORESTA',
