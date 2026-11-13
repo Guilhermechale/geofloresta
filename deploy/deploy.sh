@@ -15,11 +15,15 @@ case "$TARGET" in
   *) echo "alvo desconhecido: $TARGET"; exit 1 ;;
 esac
 
+# Hospedagem partilhada limita processos/threads: o Vite (Rolldown/Rust) tem de correr com 1 thread.
+export RAYON_NUM_THREADS=1 UV_THREADPOOL_SIZE=1 NODE_OPTIONS="--max-old-space-size=1024"
+
 cd "$APP"
+rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php
 php artisan down --render="errors::503" --retry=30 || true
 composer install --no-dev --optimize-autoloader --no-interaction --quiet
-npm ci --no-audit --no-fund --silent
-npm run build --silent
+if [ -f package-lock.json ]; then npm ci --no-audit --no-fund --loglevel=error; else npm install --no-audit --no-fund --loglevel=error; fi
+npm run build --loglevel=error
 php artisan migrate --force
 php artisan storage:link --quiet || true
 php artisan optimize:clear --quiet
