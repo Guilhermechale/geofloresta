@@ -39,6 +39,19 @@ document.querySelectorAll('.article pre').forEach((pre) => {
     pre.prepend(btn);
 });
 
+/* Pesquisas: copiar a citação */
+document.querySelectorAll('.cite').forEach((box) => {
+    const btn = box.querySelector('.cite__copy');
+    const wrap = box.closest('[data-copy-label]');
+    btn?.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(box.querySelector('.cite__text').innerText.trim());
+            btn.textContent = wrap?.dataset.copiedLabel || 'Copiado';
+            setTimeout(() => { btn.textContent = wrap?.dataset.copyLabel || 'Copiar'; }, 2000);
+        } catch { /* sem acesso à área de transferência */ }
+    });
+});
+
 /* Gráficos: tooltip ao passar o rato ou tocar (linha vertical nos gráficos de linhas). */
 document.querySelectorAll('.chart').forEach((chart) => {
     const tip = chart.querySelector('.chart__tip');

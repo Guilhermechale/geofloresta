@@ -26,7 +26,7 @@ class ArticleBody
         if (trim($html) === '') {
             return '';
         }
-        $key = 'article-body:v4:'.md5($html).':'.md5(json_encode(array_keys(Figures::CATALOGUE))).':'.(Figures::data()['imported_at'] ?? '-');
+        $key = 'article-body:v5:'.md5($html).':'.md5(json_encode(array_keys(Figures::CATALOGUE))).':'.(Figures::data()['imported_at'] ?? '-');
 
         try {
             return Cache::remember($key, now()->addWeek(), fn () => self::transform($html));
@@ -175,7 +175,19 @@ class ArticleBody
             }
         }
 
-        // 6. Ligações externas abrem em segurança
+        // 6. Âncoras nos títulos de secção (para o índice)
+        $used = [];
+        foreach (iterator_to_array($xp->query('//h2')) as $h) {
+            $id = $h->getAttribute('id') ?: (\Illuminate\Support\Str::slug($h->textContent) ?: 'seccao');
+            $base = $id;
+            for ($n = 2; isset($used[$id]); $n++) {
+                $id = $base.'-'.$n;
+            }
+            $used[$id] = true;
+            $h->setAttribute('id', $id);
+        }
+
+        // 7. Ligações externas abrem em segurança
         foreach (iterator_to_array($xp->query('//a[@target="_blank"]')) as $a) {
             $a->setAttribute('rel', 'noopener');
         }
@@ -190,6 +202,14 @@ class ArticleBody
         }
 
         return $out;
+    }
+
+    /** Índice a partir do HTML já preparado: [[id, texto], …] dos títulos H2. */
+    public static function toc(string $rendered): array
+    {
+        preg_match_all('#<h2[^>]*\sid="([^"]+)"[^>]*>(.*?)</h2>#su', $rendered, $m, PREG_SET_ORDER);
+
+        return array_map(fn ($x) => [$x[1], trim(html_entity_decode(strip_tags($x[2]), ENT_QUOTES, 'UTF-8'))], $m);
     }
 
     protected static function isCaption(DOMNode $n): bool

@@ -52,6 +52,42 @@ class ContentTest extends TestCase
         $this->get('/')->assertOk()->assertSee('Calcular NDVI no Earth Engine')->assertSee('Perda de cobertura arbórea em Moçambique');
     }
 
+    public function test_tutorial_template_has_all_parts(): void
+    {
+        $this->seedContent();
+        Tutorial::first()->update([
+            'objectives' => ['pt' => "Calcular o NDVI\nExportar o resultado"],
+            'prerequisites' => ['pt' => "Conta Google\nAcesso ao Earth Engine"],
+            'body' => ['pt' => '<h2>Passo 1: Abrir o editor</h2><p>Texto</p><h2>Passo 2: Calcular</h2><p>Mais</p><h2>Passo 3: Exportar</h2><p>Fim</p>'],
+            'exercise' => ['pt' => '<ol><li>Troque a área de interesse</li></ol>'],
+            'takeaways' => ['pt' => "O NDVI mede o vigor da vegetação"],
+            'sources' => "Documentação do Earth Engine | https://developers.google.com/earth-engine\nLivro sem ligação",
+            'duration_minutes' => 30,
+        ]);
+        $html = $this->get('/gee-ndvi')->assertOk()->getContent();
+        foreach (['O que vai aprender', 'Calcular o NDVI', 'Antes de começar', 'Acesso ao Earth Engine', 'Neste tutorial', 'id="passo-1-abrir-o-editor"',
+            'Exercício prático', 'Troque a área de interesse', 'Pontos-chave', 'Fontes e documentação', 'href="https://developers.google.com/earth-engine"', 'Livro sem ligação', '30 min'] as $s) {
+            $this->assertStringContainsString($s, $html, $s);
+        }
+    }
+
+    public function test_research_template_has_abstract_references_and_citations(): void
+    {
+        $this->seedContent();
+        Study::first()->update([
+            'authors' => 'Guilherme Francisco Fernando Chale', 'article_type' => 'review', 'year' => 2026, 'venue' => 'GEOFLORESTA, Beira',
+            'abstract' => ['pt' => 'Este estudo analisa a perda.'], 'keywords' => ['pt' => 'Moçambique; Miombo'],
+            'body' => ['pt' => '<h2>1. Introdução</h2><p>a</p><h2>2. Métodos</h2><p>b</p><h2>3. Resultados</h2><p>c</p>'],
+            'references' => "Hansen, M. C. (2013). High-resolution global maps. Science. https://doi.org/10.1126/science.1244693\nFAO. (2020). Global Forest Resources Assessment.",
+        ]);
+        $html = $this->get('/perda-arborea-mocambique')->assertOk()->getContent();
+        foreach (['Artigo de revisão', 'Guilherme Francisco Fernando Chale', 'Resumo', 'Este estudo analisa a perda.', 'Miombo', 'Neste artigo',
+            'Referências', 'href="https://doi.org/10.1126/science.1244693"', 'Como citar este artigo', 'CHALE, Guilherme Francisco Fernando.', 'Chale, G. F. F. (2026)', 'Chale GFF.'] as $s) {
+            $this->assertStringContainsString($s, $html, $s);
+        }
+        $this->get('/pesquisas')->assertOk()->assertSee('Artigo de revisão');
+    }
+
     public function test_cover_images_in_lists_and_articles(): void
     {
         \Illuminate\Support\Facades\Storage::fake('public');

@@ -54,10 +54,19 @@ class TutorialResource extends Resource
 
             Fields::translatable(fn (string $l, bool $req) => [
                 ...Fields::titleWithSlug($l, $req),
-                Textarea::make("summary.{$l}")->label('Resumo')->rows(2)->maxLength(400),
-                Textarea::make("prerequisites.{$l}")->label('Pré-requisitos')->rows(2),
-                Fields::richEditor("body.{$l}", 'Corpo do tutorial')->helperText(Fields::articleHelp()),
+                Textarea::make("summary.{$l}")->label('Introdução (1–2 frases, aparece por baixo do título e nas listas)')->required($req)->rows(2)->maxLength(400),
+                Textarea::make("objectives.{$l}")->label('1. O que vai aprender (um objectivo por linha)')->required($req)->rows(4),
+                Textarea::make("prerequisites.{$l}")->label('2. Antes de começar (um requisito por linha)')->required($req)->rows(3),
+                Fields::richEditor("body.{$l}", '3. Conteúdo (secções com título H2: "Passo 1: …" ou "1. …")')->helperText(Fields::articleHelp()),
+                Fields::richEditor("exercise.{$l}", '4. Exercício prático')->required($req)
+                    ->helperText('Tarefa concreta para o leitor aplicar o que aprendeu (passos numerados).'),
+                Textarea::make("takeaways.{$l}")->label('5. Pontos-chave (um por linha)')->required($req)->rows(4),
             ], ['title', 'body', 'slug']),
+
+            Section::make('6. Fontes e documentação')->schema([
+                Textarea::make('sources')->hiddenLabel()->rows(5)
+                    ->helperText('Uma fonte por linha, no formato: Título | https://endereço (o endereço é opcional).'),
+            ]),
 
             Section::make('Anexos (scripts e dados de exemplo)')->schema([
                 Repeater::make('attachments')->relationship()->hiddenLabel()->orderColumn('sort')
