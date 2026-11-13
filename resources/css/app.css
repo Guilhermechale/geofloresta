@@ -472,6 +472,20 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 
 .downloads td { vertical-align: middle; }
 .downloads .sha { display: inline-block; max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+.downloads code { overflow-wrap: anywhere; }
+.table-scroll { max-width: 100%; }
+@media (max-width: 639px) {
+    .downloads thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .downloads, .downloads tbody { display: block; width: 100%; }
+    .downloads tr { display: grid; grid-template-columns: 1fr auto; gap: .375rem .75rem; padding: var(--s-2) 0; border-bottom: 1px solid var(--c-rule); }
+    .downloads td { display: block; padding: 0; border: 0; }
+    .downloads td:nth-child(1) { font-weight: 600; }
+    .downloads td:nth-child(2) { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
+    .downloads td:nth-child(3) { grid-column: 2; grid-row: 1; }
+    .downloads td:nth-child(4) { grid-column: 1 / -1; grid-row: 3; }
+    .downloads td:nth-child(4) .btn { width: 100%; justify-content: center; text-align: center; }
+    .downloads .sha { max-width: 100%; }
+}
 .btn--small { padding: .5rem .875rem; min-height: 2.5rem; font-size: var(--fs-xs); }
 .attribution { font-family: var(--f-mono); font-size: var(--fs-xs); border-left: 2px solid var(--c-moss); margin: 0 0 var(--s-3); padding: var(--s-1) var(--s-2); background: var(--c-surface); }
 .attribution p { margin: 0; }

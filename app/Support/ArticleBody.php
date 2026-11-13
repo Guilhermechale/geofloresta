@@ -26,7 +26,7 @@ class ArticleBody
         if (trim($html) === '') {
             return '';
         }
-        $key = 'article-body:v3:'.md5($html).':'.md5(json_encode(array_keys(Figures::CATALOGUE))).':'.(Figures::data()['imported_at'] ?? '-');
+        $key = 'article-body:v4:'.md5($html).':'.md5(json_encode(array_keys(Figures::CATALOGUE))).':'.(Figures::data()['imported_at'] ?? '-');
 
         try {
             return Cache::remember($key, now()->addWeek(), fn () => self::transform($html));
@@ -131,10 +131,23 @@ class ArticleBody
                 $parent->replaceChild($w, $t);
                 $w->appendChild($t);
             }
-            $t->parentNode->setAttribute('tabindex', '0');
-            $t->parentNode->setAttribute('role', 'region');
+            $wrap = $t->parentNode;
+            $wrap->setAttribute('tabindex', '0');
+            $wrap->setAttribute('role', 'region');
             $cap = $t->getElementsByTagName('caption')->item(0);
-            $t->parentNode->setAttribute('aria-label', $cap ? trim($cap->textContent) : 'Tabela');
+            $wrap->setAttribute('aria-label', $cap ? trim($cap->textContent) : 'Tabela');
+            // Legenda visível fora da zona que desliza (a <caption> fica para leitores de ecrã)
+            if ($cap) {
+                $p = $doc->createElement('p');
+                $p->setAttribute('class', 'table-caption');
+                $p->setAttribute('aria-hidden', 'true');
+                foreach ($cap->childNodes as $c) {
+                    $p->appendChild($c->cloneNode(true));
+                }
+                $wrap->parentNode->insertBefore($p, $wrap);
+                $cap->setAttribute('class', 'visually-hidden');
+                $wrap->setAttribute('class', $wrap->getAttribute('class').' has-caption');
+            }
         }
 
         // 4. Resumo (div que começa por RESUMO / ABSTRACT)
