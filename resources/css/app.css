@@ -287,7 +287,7 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 .pillar p { color: var(--c-muted); margin-bottom: var(--s-1); }
 @media (min-width: 900px) {
     .pillar { grid-template-columns: 4rem 1fr 1.4fr auto; align-items: baseline; }
-    .pillar > * { grid-column: auto !important; grid-row: auto !important; }
+    .pillar:not(.service) > * { grid-column: auto; grid-row: auto; }
     .pillar p { margin: 0; }
 }
 
@@ -442,9 +442,13 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 /* Serviços */
 .service__title { font-size: var(--fs-lg); margin-bottom: var(--s-1); }
 .service__items .meta { margin-bottom: .25rem; }
+.service > .link-arrow { justify-self: start; margin-top: var(--s-1); }
 @media (min-width: 900px) {
-    .service { grid-template-columns: 4rem 1.3fr 1fr; align-items: start; }
-    .service > .link-arrow { grid-column: 2 / -1; justify-self: start; }
+    .service { grid-template-columns: 4rem minmax(0, 1.3fr) minmax(0, 1fr); column-gap: var(--s-4); align-items: start; }
+    .service > .pillar__idx { grid-column: 1; grid-row: 1 / span 2; }
+    .service > div:not(.service__items) { grid-column: 2; grid-row: 1; }
+    .service > .service__items { grid-column: 3; grid-row: 1; }
+    .service > .link-arrow { grid-column: 2 / -1; grid-row: 2; }
 }
 
 /* Pesquisa */
