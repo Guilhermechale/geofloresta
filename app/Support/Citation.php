@@ -24,11 +24,14 @@ class Citation
         $apa = self::joinApa(array_map([self::class, 'apaName'], $authors));
         $van = implode(', ', array_map([self::class, 'vancouverName'], $authors));
 
-        return [
+        // Título que termina em "?" ou "!" não leva ponto final a seguir
+        $fix = fn (string $h) => preg_replace('/([?!])((?:<\/i>)?)\./u', '$1$2', $h);
+
+        return array_map($fix, [
             'ABNT' => e($abnt).'. '.$title.'. <strong>'.$venue.'</strong>, '.$year.'. Disponível em: '.$link.'. Acesso em: '.$today->day.' '.$months[$today->month - 1].' '.$today->year.'.',
             'APA' => e($apa).' ('.$year.'). <i>'.$title.'</i>. '.$venue.'.'.($doi ?: ' '.$link),
             'Vancouver' => e($van).'. '.$title.'. '.$venue.' [Internet]. '.$year.' [citado '.$today->format('Y').' '.$months[$today->month - 1].' '.$today->day.']. Disponível em: '.$link,
-        ];
+        ]);
     }
 
     protected static function parts(string $name): array
