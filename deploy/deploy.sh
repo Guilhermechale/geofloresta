@@ -22,7 +22,8 @@ cd "$APP"
 rm -f bootstrap/cache/packages.php bootstrap/cache/services.php bootstrap/cache/config.php
 php artisan down --render="errors::503" --retry=30 || true
 composer install --no-dev --optimize-autoloader --no-interaction --quiet
-if [ -f package-lock.json ]; then npm ci --no-audit --no-fund --loglevel=error; else npm install --no-audit --no-fund --loglevel=error; fi
+# npm install (não ci): o package.json vem do computador local e o lock é mantido aqui
+npm install --no-audit --no-fund --loglevel=error
 npm run build --loglevel=error
 php artisan migrate --force
 php artisan db:seed --class=ContentSeeder --force   # só cria o que falta; nunca sobrepõe o painel

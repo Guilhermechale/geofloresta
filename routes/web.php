@@ -6,6 +6,7 @@ use App\Http\Controllers\DatasetController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\FallbackController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MapController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PlaceholderController;
 use App\Http\Controllers\SearchController;
@@ -45,8 +46,10 @@ foreach (Locales::all() as $locale) {
             Route::get($slug('data'), [DatasetController::class, 'index'])->name('data');
             Route::get($slug('data').'/{slug}', [DatasetController::class, 'show'])->name('data.show')->where('slug', '[a-z0-9-]+');
 
-            // Ainda em construção (M7–M8)
-            foreach (['studies', 'maps', 'learn', 'courses'] as $page) {
+            Route::get($slug('maps'), MapController::class)->name('maps');
+
+            // Ainda em construção (M8)
+            foreach (['studies', 'learn', 'courses'] as $page) {
                 Route::get($slug($page), PlaceholderController::class)->name($page)->defaults('page', $page);
             }
         });

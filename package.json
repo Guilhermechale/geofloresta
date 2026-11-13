@@ -9,7 +9,10 @@
     "dependencies": {
         "@fontsource/ibm-plex-mono": "^5.2.7",
         "@fontsource/ibm-plex-sans": "^5.2.8",
-        "@fontsource/newsreader": "^5.2.8"
+        "@fontsource/newsreader": "^5.2.8",
+        "@turf/area": "^7.2.0",
+        "@turf/boolean-point-in-polygon": "^7.2.0",
+        "maplibre-gl": "^5.6.0"
     },
     "devDependencies": {
         "laravel-vite-plugin": "^3.1",

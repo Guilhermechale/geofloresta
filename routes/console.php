@@ -10,4 +10,8 @@ use Illuminate\Support\Facades\Schedule;
 
 // Prazos de conservação (Política de Privacidade)
 Schedule::command('geofloresta:prune')->dailyAt('03:15')->timezone('Africa/Maputo')->withoutOverlapping();
+// Focos de incêndio (FIRMS, quase em tempo real) a cada 3 horas; camadas GIBS uma vez por dia
+Schedule::command('geofloresta:firms')->cron('7 */3 * * *')->withoutOverlapping(30);
+Schedule::command('geofloresta:gibs')->dailyAt('05:20')->timezone('Africa/Maputo')->withoutOverlapping(30);
+
 // (As sessões na base de dados são limpas pelo próprio Laravel, por sorteio a cada pedido.)

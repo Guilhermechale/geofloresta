@@ -1,0 +1,54 @@
+/* Página de mapas — só carregada aqui (MapLibre é pesado) */
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+.map-shell {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--c-rule-strong);
+    border-bottom: 1px solid var(--c-rule);
+}
+.map-canvas {
+    position: relative;
+    height: 62vh; min-height: 22rem;
+    background: var(--c-surface-2);
+}
+.map-loading { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: var(--c-muted); font-family: var(--f-mono); font-size: var(--fs-xs); }
+.map-panel { padding: var(--s-3) var(--gutter); background: var(--c-surface); border-top: 1px solid var(--c-rule); }
+.map-form fieldset { border: 0; margin: 0 0 var(--s-3); padding: 0; }
+.map-form legend { padding: 0; margin-bottom: var(--s-1); }
+.map-form .field { margin-bottom: var(--s-2); }
+.field--inline { display: flex; align-items: center; gap: var(--s-1); flex-wrap: wrap; }
+.field--inline input { width: auto; flex: 1 1 9rem; }
+.check { display: flex; align-items: center; gap: .5rem; padding: .375rem 0; font-size: var(--fs-sm); cursor: pointer; }
+.check input { width: 1.125rem; height: 1.125rem; accent-color: var(--c-moss); }
+.legend { list-style: none; margin: 0 0 var(--s-1) 1.625rem; padding: 0; font-size: var(--fs-xs); color: var(--c-muted); }
+.legend li { display: flex; align-items: center; gap: .5rem; }
+.sw { display: inline-block; width: .625rem; height: .625rem; border-radius: 50%; }
+.sw--24 { background: #F06A33; }
+.sw--48 { background: #E3A008; }
+.sw--168 { background: #9C8B6E; }
+.aoi-draw, .aoi-download { display: flex; gap: var(--s-1); flex-wrap: wrap; align-items: center; margin-bottom: var(--s-2); }
+.aoi-result { border-top: 1px dashed var(--c-rule); padding-top: var(--s-1); }
+.table--compact td, .table--compact th { padding: .25rem .375rem; font-size: var(--fs-xs); }
+.table--compact caption { text-align: left; margin-bottom: .25rem; }
+.map-status { margin-top: var(--s-2); }
+
+@media (min-width: 1080px) {
+    .map-shell { grid-template-columns: minmax(0, 1fr) 22rem; }
+    .map-canvas { height: 76vh; }
+    .map-panel { border-top: 0; border-left: 1px solid var(--c-rule); max-height: 76vh; overflow-y: auto; }
+}
+
+/* Controlos do MapLibre nos dois temas */
+.maplibregl-ctrl-group { background: var(--c-surface); border-radius: var(--radius); box-shadow: none; border: 1px solid var(--c-rule-strong); }
+.maplibregl-ctrl-group button + button { border-top-color: var(--c-rule); }
+[data-theme="dark"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1); }
+.maplibregl-ctrl-attrib { font-family: var(--f-sans); font-size: 11px; background: color-mix(in srgb, var(--c-surface) 88%, transparent) !important; color: var(--c-ink); }
+.maplibregl-ctrl-attrib a { color: var(--c-ink); }
+.maplibregl-ctrl-scale { background: color-mix(in srgb, var(--c-surface) 85%, transparent); border-color: var(--c-ink); color: var(--c-ink); font-family: var(--f-mono); }
+.maplibregl-popup-content { background: var(--c-surface); color: var(--c-ink); border: 1px solid var(--c-rule-strong); border-radius: var(--radius); box-shadow: none; padding: .75rem 1rem; }
+.maplibregl-popup-tip { border-top-color: var(--c-rule-strong) !important; border-bottom-color: var(--c-rule-strong) !important; }
+.maplibregl-popup-close-button { color: var(--c-ink); font-size: 1.25rem; width: 2rem; height: 2rem; }
+.popup-dl { display: grid; grid-template-columns: max-content 1fr; gap: .125rem .75rem; margin: 0; font-size: var(--fs-xs); }
+.popup-dl dt { font-family: var(--f-mono); text-transform: uppercase; letter-spacing: .04em; color: var(--c-muted); }
+.popup-dl dd { margin: 0; font-family: var(--f-mono); }

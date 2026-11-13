@@ -15,5 +15,8 @@ abstract class TestCase extends BaseTestCase
         if (config('database.default') !== 'sqlite' || config('database.connections.sqlite.database') !== ':memory:') {
             throw new RuntimeException('Testes recusados: a base de dados não é SQLite em memória (limpe a cache de configuração).');
         }
+
+        // Os testes não dependem do build do Vite (public/build)
+        $this->withoutVite();
     }
 }
