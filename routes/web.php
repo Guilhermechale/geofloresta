@@ -1,7 +1,15 @@
 <?php
 
+use App\Http\Controllers\ConsentController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FallbackController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PlaceholderController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\WellKnownController;
 use App\Support\Locales;
 use Illuminate\Support\Facades\Route;
 
@@ -18,11 +26,30 @@ foreach (Locales::all() as $locale) {
         ->middleware("locale:{$locale}")
         ->group(function () use ($slug) {
             Route::get('/', HomeController::class)->name('home');
+            Route::get($slug('services'), ServicesController::class)->name('services');
+            Route::get($slug('about'), PageController::class)->name('about')->defaults('key', 'about');
 
-            // Páginas ainda em construção (substituídas nos marcos M5–M8)
-            foreach (['services', 'studies', 'data', 'maps', 'learn', 'courses', 'about', 'contact', 'search',
-                'privacy', 'cookies', 'terms', 'licences', 'accessibility', 'sitemap'] as $page) {
+            foreach (['privacy', 'cookies', 'terms', 'licences', 'accessibility'] as $legal) {
+                Route::get($slug($legal), PageController::class)->name($legal)->defaults('key', $legal);
+            }
+
+            Route::get($slug('contact'), [ContactController::class, 'show'])->name('contact');
+            Route::post($slug('contact'), [ContactController::class, 'store'])->name('contact.store')->middleware('throttle:10,1');
+            Route::get($slug('thanks'), [ContactController::class, 'thanks'])->name('thanks');
+
+            Route::get($slug('search'), SearchController::class)->name('search')->middleware('throttle:60,1');
+            Route::get($slug('sitemap'), [SitemapController::class, 'html'])->name('sitemap');
+
+            // Ainda em construção (M6–M8)
+            foreach (['studies', 'data', 'maps', 'learn', 'courses'] as $page) {
                 Route::get($slug($page), PlaceholderController::class)->name($page)->defaults('page', $page);
             }
         });
 }
+
+Route::get('/sitemap.xml', [SitemapController::class, 'xml'])->name('sitemap.xml');
+Route::get('/robots.txt', [WellKnownController::class, 'robots']);
+Route::get('/.well-known/security.txt', [WellKnownController::class, 'security']);
+Route::post('/consent', ConsentController::class)->name('consent')->middleware('throttle:30,1');
+
+Route::fallback(FallbackController::class);

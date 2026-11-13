@@ -63,6 +63,9 @@
     <link rel="icon" href="{{ asset('favicon-32.png') }}" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    @if (request()->hasSession())<meta name="csrf-token" content="{{ csrf_token() }}">@endif
+    <meta name="gf-consent-version" content="{{ \App\Support\Consent::version() }}">
+    @if (\App\Support\Consent::analyticsAvailable())<meta name="gf-ga" content="{{ config('geofloresta.ga4_id') }}">@endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{ $head ?? '' }}
@@ -94,5 +97,6 @@
     </main>
 
     @include('partials.footer')
+    @include('partials.cookie-banner')
 </body>
 </html>

@@ -25,6 +25,8 @@ composer install --no-dev --optimize-autoloader --no-interaction --quiet
 if [ -f package-lock.json ]; then npm ci --no-audit --no-fund --loglevel=error; else npm install --no-audit --no-fund --loglevel=error; fi
 npm run build --loglevel=error
 php artisan migrate --force
+php artisan db:seed --class=ContentSeeder --force   # só cria o que falta; nunca sobrepõe o painel
+rm -f public/robots.txt                             # robots.txt é dinâmico (bloqueia tudo fora de produção)
 php artisan storage:link --quiet || true
 php artisan optimize:clear --quiet
 php artisan config:cache --quiet

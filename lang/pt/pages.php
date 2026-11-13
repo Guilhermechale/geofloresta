@@ -1,0 +1,122 @@
+<?php
+
+return [
+    'updated' => 'Última actualização: :date',
+    'breadcrumb' => 'Caminho',
+
+    'services' => [
+        'title' => 'Serviços',
+        'description' => 'SIG, sensoriamento remoto, inteligência artificial aplicada e consultoria ambiental em Moçambique, a partir da Beira.',
+        'lede' => 'Trabalho técnico com dados geográficos, do levantamento ao mapa final, para projectos de floresta e ambiente em Moçambique.',
+        'includes' => 'Inclui',
+        'ask' => 'Pedir proposta para este serviço',
+        'studies_title' => 'Estudos publicados',
+        'studies_lede' => 'Análises geoespaciais publicadas pela GEOFLORESTA. Mostram o tipo de trabalho e de método que aplicamos.',
+        'read' => 'Ler o estudo',
+        'no_studies' => 'Ainda não há estudos publicados.',
+        'data_cta' => 'Precisa de um recorte de dados para a sua área? Preparamos recortes por província, distrito ou polígono próprio.',
+        'data_cta_btn' => 'Pedir recorte de dados',
+    ],
+
+    'about' => [
+        'title' => 'Sobre',
+        'description' => 'A GEOFLORESTA é uma consultoria em geotecnologia, floresta e ambiente fundada em 2026 na Cidade da Beira por Guilherme Chale, Engenheiro Florestal.',
+        'facts' => 'Ficha',
+        'founded' => 'Fundação',
+        'base' => 'Sede',
+        'areas' => 'Áreas de serviço',
+        'territory' => 'Actuação',
+        'founder' => 'Fundador',
+        'linkedin' => 'Perfil no LinkedIn',
+    ],
+
+    'contact' => [
+        'title' => 'Contacto',
+        'description' => 'Contacte a GEOFLORESTA para propostas de SIG, sensoriamento remoto, recortes de dados e consultoria ambiental. Beira, Sofala, Moçambique.',
+        'lede' => 'Descreva o projecto ou o pedido de dados. Respondemos por e-mail.',
+        'form_title' => 'Enviar mensagem',
+        'name' => 'Nome',
+        'email' => 'E-mail',
+        'organisation' => 'Organização (opcional)',
+        'subject' => 'Assunto',
+        'subjects' => [
+            'proposal' => 'Pedido de proposta',
+            'data' => 'Pedido de recorte de dados',
+            'services' => 'Informações sobre serviços',
+            'partnership' => 'Proposta de parceria',
+            'other' => 'Outro assunto',
+        ],
+        'message' => 'Mensagem',
+        'required' => 'obrigatório',
+        'privacy' => 'Os dados deste formulário servem só para responder ao seu pedido. Ver a :link.',
+        'privacy_link' => 'Política de Privacidade',
+        'send' => 'Enviar mensagem',
+        'details' => 'Dados de contacto',
+        'email_label' => 'E-mail',
+        'location_label' => 'Localização',
+        'location' => 'Cidade da Beira, Sofala, Moçambique',
+        'hours_label' => 'Horário',
+        'hours' => 'Segunda a sexta, 08:00–17:00 (CAT, UTC+2)',
+        'too_fast' => 'O formulário foi enviado demasiado depressa. Aguarde uns segundos e tente de novo.',
+        'too_many' => 'Demasiadas mensagens enviadas a partir desta ligação. Tente mais tarde ou escreva directamente para :email.',
+        'error' => 'Não foi possível enviar. Verifique os campos assinalados.',
+    ],
+
+    'thanks' => [
+        'title' => 'Mensagem recebida',
+        'text' => 'Obrigado. A sua mensagem foi registada e vamos responder para o e-mail indicado.',
+        'confirm' => 'Enviámos também uma confirmação para o seu e-mail (verifique a pasta de spam se não a encontrar).',
+        'back' => 'Voltar ao início',
+        'data' => 'Ver o catálogo de dados',
+    ],
+
+    'search' => [
+        'title' => 'Pesquisa',
+        'description' => 'Pesquisar datasets, tutoriais e estudos da GEOFLORESTA.',
+        'label' => 'Pesquisar em dados, tutoriais e estudos',
+        'placeholder' => 'ex.: NDVI, Sofala, incêndios',
+        'submit' => 'Pesquisar',
+        'results' => '{0} Nenhum resultado para «:q».|{1} 1 resultado para «:q».|[2,*] :count resultados para «:q».',
+        'types' => ['dataset' => 'Dataset', 'tutorial' => 'Tutorial', 'study' => 'Estudo'],
+        'hint' => 'Escreva pelo menos 2 caracteres.',
+    ],
+
+    'sitemap' => [
+        'title' => 'Mapa do site',
+        'description' => 'Todas as páginas do site da GEOFLORESTA.',
+        'main' => 'Páginas principais',
+        'legal' => 'Informação legal',
+        'datasets' => 'Datasets',
+        'tutorials' => 'Tutoriais',
+        'studies' => 'Estudos publicados',
+        'courses' => 'Cursos',
+    ],
+
+    'legal' => [
+        'review' => 'Texto para revisão jurídica antes da publicação definitiva.',
+        'cookie_table' => 'Cookies e armazenamento usados neste site',
+        'sources_table' => 'Fontes de dados e componentes',
+    ],
+
+    'licences' => [
+        'name' => 'Fonte',
+        'use' => 'Uso no site',
+        'licence' => 'Licença',
+        'attribution' => 'Atribuição',
+        'status' => 'Situação',
+        'statuses' => [
+            'hosted' => 'Ficheiros derivados alojados',
+            'service' => 'Serviço usado nos mapas',
+            'link' => 'Só ligação externa',
+            'software' => 'Software / tipos de letra',
+        ],
+        'uses' => [
+            'basemap' => 'Mapa de base', 'imagery' => 'Imagem de satélite diária', 'fire' => 'Focos de incêndio',
+            'land-cover' => 'Uso e cobertura do solo', 'forest-loss' => 'Perda de cobertura arbórea', 'hydrology' => 'Hidrologia',
+            'boundaries' => 'Limites administrativos', 'biomass' => 'Biomassa e carbono', 'software' => 'Software',
+        ],
+        'unverified' => 'licença por reconfirmar',
+    ],
+
+    'unavailable' => 'Este conteúdo ainda não está disponível.',
+];

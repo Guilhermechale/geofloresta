@@ -1,0 +1,51 @@
+<?php
+
+return [
+    'banner_title' => 'Cookies neste site',
+    'banner_text' => 'Usamos cookies necessários para o site funcionar. Com a sua autorização, guardamos também as suas preferências:analytics. Pode mudar a escolha a qualquer momento em «Preferências de cookies», no rodapé.',
+    'banner_analytics' => ' e medimos as visitas com o Google Analytics',
+    'accept' => 'Aceitar tudo',
+    'reject' => 'Rejeitar não essenciais',
+    'customise' => 'Personalizar',
+    'save' => 'Guardar escolha',
+    'close' => 'Fechar',
+    'panel_title' => 'Preferências de cookies',
+    'panel_text' => 'Escolha que categorias autoriza. As necessárias estão sempre activas. Detalhes na :link.',
+    'policy_link' => 'Política de Cookies',
+    'always_on' => 'Sempre activos',
+    'saved' => 'Escolha guardada.',
+    'categories' => [
+        'necessary' => ['title' => 'Necessários', 'text' => 'Sessão, protecção contra pedidos forjados (CSRF) e o registo da sua escolha de cookies. Sem eles o site não funciona.'],
+        'preferences' => ['title' => 'Preferências', 'text' => 'Guardam o idioma e o tema (claro/escuro) entre visitas. Sem esta categoria, a escolha vale só para a visita actual.'],
+        'analytics' => ['title' => 'Analítica', 'text' => 'Google Analytics 4: contagem de visitas, páginas vistas, envios do formulário e downloads de datasets. Só é carregado se autorizar.'],
+    ],
+    'table' => [
+        'name' => 'Nome',
+        'type' => 'Tipo',
+        'category' => 'Categoria',
+        'purpose' => 'Finalidade',
+        'duration' => 'Duração',
+        'party' => 'Origem',
+    ],
+    'types' => ['cookie' => 'Cookie', 'localStorage' => 'Armazenamento local'],
+    'parties' => ['first' => 'GEOFLORESTA', 'google' => 'Google (Google Analytics)'],
+    'purposes' => [
+        'session' => 'Mantém a sessão entre páginas (formulários, mensagens de confirmação).',
+        'csrf' => 'Protege os formulários contra pedidos forjados.',
+        'consent' => 'Guarda a sua escolha de cookies, a versão do texto e um identificador aleatório.',
+        'lang' => 'Idioma escolhido no selector.',
+        'theme' => 'Tema escolhido (claro, escuro ou automático).',
+        'ga' => 'Distingue visitantes anónimos para estatísticas.',
+        'ga_session' => 'Mantém o estado da sessão de estatísticas.',
+    ],
+    'notes' => [
+        'lang_session' => 'Sem consentimento de preferências é um cookie de sessão (apagado ao fechar o navegador).',
+        'theme_session' => 'Sem consentimento de preferências usa o armazenamento da sessão (apagado ao fechar o separador).',
+    ],
+    'duration' => [
+        'minutes' => ':n minutos',
+        'months' => ':n meses',
+        'until_cleared' => 'até ser apagado',
+    ],
+    'no_analytics' => 'Neste momento o site não usa nenhuma ferramenta de analítica.',
+];
