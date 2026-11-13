@@ -51,12 +51,17 @@ ln -sfn "$APP/storage/app/public" "$WEB/storage"
 # .htaccess: o do Laravel, mais a protecção do ambiente de teste
 {
   if [ "$TARGET" = staging ]; then
+    ALLOW_IPS=""
+    [ -f "$SECRETS/ip-permitido.txt" ] && ALLOW_IPS=$(tr '\n' ' ' < "$SECRETS/ip-permitido.txt")
     cat <<EOF
 # --- Ambiente de teste: palavra-passe HTTP e noindex ---
 AuthType Basic
 AuthName "GEOFLORESTA - teste"
 AuthUserFile $SECRETS/.htpasswd
-Require valid-user
+<RequireAny>
+  Require valid-user
+$( [ -n "$ALLOW_IPS" ] && echo "  Require ip $ALLOW_IPS" )
+</RequireAny>
 <IfModule mod_headers.c>
   Header always set X-Robots-Tag "noindex, nofollow"
 </IfModule>

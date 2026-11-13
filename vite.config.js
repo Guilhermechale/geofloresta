@@ -1,21 +1,18 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
-import tailwindcss from '@tailwindcss/vite';
 
+// Sem CDN externos: tipos de letra (Fontsource, OFL) e bibliotecas são empacotados com o site.
 export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
-            fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
-                }),
-            ],
         }),
-        tailwindcss(),
     ],
+    build: {
+        cssCodeSplit: true,
+        assetsInlineLimit: 0,
+    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],
