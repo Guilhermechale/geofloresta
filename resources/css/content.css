@@ -5,7 +5,7 @@
 .article h3 { margin-top: var(--s-4); }
 .article h4 { margin: var(--s-3) 0 var(--s-1); font-size: var(--fs-base); }
 .article img { height: auto; border-radius: var(--radius); }
-.article iframe { max-width: 100%; }
+.article iframe { display: block; width: 100%; max-width: 100%; aspect-ratio: 16 / 10; min-height: 22rem; border: 1px solid var(--c-rule); border-radius: var(--radius); background: var(--c-surface); }
 
 /* ---------- Modelo de página: tutoriais e pesquisas ---------- */
 .facts { list-style: none; margin: var(--s-2) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .375rem .5rem; font-size: var(--fs-sm); }

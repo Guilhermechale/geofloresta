@@ -172,7 +172,7 @@ HTML,
         'exercise' => <<<'HTML'
 <p>Aprenda a classificar episódios de El Niño e La Niña com o índice oficial da NOAA.</p>
 <ol>
-<li>Abra a tabela do <a href="https://origin.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php" rel="noopener">Oceanic Niño Index (ONI) da NOAA</a>. Cada valor é a anomalia média de três meses consecutivos na região Niño 3.4.</li>
+<li>Abra a tabela do <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php" rel="noopener">Oceanic Niño Index (ONI) da NOAA</a>. Cada valor é a anomalia média de três meses consecutivos na região Niño 3.4.</li>
 <li>Um episódio de El Niño corresponde a pelo menos cinco valores seguidos iguais ou superiores a +0,5 °C; La Niña, a cinco valores seguidos iguais ou inferiores a −0,5 °C.</li>
 <li>Localize os anos de 2015–2016 e 2023–2024. Qual foi o valor máximo do ONI em cada um? Pela classificação habitual (fraco &lt; 1,0; moderado 1,0–1,4; forte 1,5–1,9; muito forte ≥ 2,0), como os classificaria?</li>
 <li>Procure na imprensa ou nos relatórios do INAM notícias de seca no sul de Moçambique nesses anos e compare com a secção 6.</li>
@@ -180,7 +180,7 @@ HTML,
 </ol>
 HTML,
         'takeaways' => "O El Niño é a fase quente do ciclo ENOS no Pacífico equatorial; a La Niña é a fase fria\nO índice Niño 3.4 (e o ONI, a sua média de três meses) é o principal indicador\nCada episódio dura normalmente 9 a 12 meses e classifica-se de fraco a muito forte\nEm anos de El Niño, o sul e o centro da África Austral tendem a ter menos chuva\nA intensidade do episódio não determina sozinha o impacto em cada região",
-        'sources' => "World Meteorological Organization — El Niño/La Niña Update (Agosto de 2026) | https://wmo.int/\nNOAA Climate Prediction Center — ENSO: Recent Evolution, Current Status and Predictions | https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/\nNOAA CPC — Oceanic Niño Index (ONI) | https://origin.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php\nWorld Meteorological Organization — El Niño/La Niña background (2003)",
+        'sources' => "World Meteorological Organization — El Niño/La Niña Update (Agosto de 2026) | https://wmo.int/\nNOAA Climate Prediction Center — ENSO: Recent Evolution, Current Status and Predictions | https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/\nNOAA CPC — Oceanic Niño Index (ONI) | https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php\nWorld Meteorological Organization — El Niño/La Niña background (2003)",
     ],
 
     6 => [
