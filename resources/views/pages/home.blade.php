@@ -73,7 +73,7 @@
                         <h3 class="specimen__title"><a href="{{ $d->url() }}" @if ($l !== app()->getLocale()) lang="{{ $l }}" @endif>{{ $d->getTranslation('title', $l) }}</a></h3>
                         <dl>
                             <dt>{{ __('site.specimen.source') }}</dt><dd>{{ $d->source_name }}</dd>
-                            <dt>{{ __('site.specimen.licence') }}</dt><dd>{{ $d->licence_spdx }}</dd>
+                            <dt>{{ __('site.specimen.licence') }}</dt><dd>{{ $d->licenceLabel() }}</dd>
                             @if ($d->period())<dt>{{ __('site.specimen.period') }}</dt><dd>{{ $d->period() }}</dd>@endif
                             @if ($d->resolution)<dt>{{ __('site.specimen.resolution') }}</dt><dd>{{ $d->resolution }}</dd>@endif
                             <dt>{{ __('site.specimen.format') }}</dt><dd>{{ $d->files->pluck('format')->unique()->map(fn ($f) => \App\Models\Dataset::FORMATS[$f] ?? $f)->implode(', ') ?: __('data.external') }}</dd>

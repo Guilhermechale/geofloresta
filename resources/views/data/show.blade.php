@@ -125,7 +125,7 @@
                     <h2 class="specimen__title">{{ __('data.record') }}</h2>
                     <dl>
                         <dt>{{ __('data.fields.source') }}</dt><dd><a href="{{ $dataset->source_url }}" rel="noopener">{{ $dataset->source_name }}</a></dd>
-                        <dt>{{ __('data.fields.licence') }}</dt><dd>@if ($licUrl)<a href="{{ $licUrl }}" rel="noopener license">{{ $dataset->licence_spdx }}</a>@else{{ $dataset->licence_spdx }}@endif</dd>
+                        <dt>{{ __('data.fields.licence') }}</dt><dd>@if ($licUrl)<a href="{{ $licUrl }}" rel="noopener license">{{ $dataset->licenceLabel() }}</a>@else{{ $dataset->licenceLabel() }}@endif</dd>
                         @if ($dataset->version)<dt>{{ __('data.fields.version') }}</dt><dd>{{ $dataset->version }}</dd>@endif
                         @if ($dataset->period())<dt>{{ __('data.fields.period') }}</dt><dd>{{ $dataset->period() }}</dd>@endif
                         @if ($dataset->resolution)<dt>{{ __('data.fields.resolution') }}</dt><dd>{{ $dataset->resolution }}</dd>@endif

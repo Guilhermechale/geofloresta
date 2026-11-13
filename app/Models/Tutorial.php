@@ -11,7 +11,7 @@ class Tutorial extends Model
 {
     use IsContent, RedirectsOldSlugs;
 
-    public const PLATFORMS = ['r' => 'R', 'colab' => 'Google Colab', 'gee' => 'Google Earth Engine', 'qgis' => 'QGIS', 'other' => 'Outros'];
+    public const PLATFORMS = ['r' => 'R', 'colab' => 'Google Colab', 'gee' => 'Google Earth Engine', 'qgis' => 'QGIS', 'other' => 'Geral'];
 
     public const LEVELS = ['beginner', 'intermediate', 'advanced'];
 

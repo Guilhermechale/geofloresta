@@ -54,7 +54,7 @@ return [
         'monitor_title' => 'Monitor de incêndios',
         'monitor_label' => 'focos activos detectados em Moçambique nas últimas 24 h',
         'monitor_updated' => 'Actualizado: :date',
-        'monitor_source' => 'Fonte: NASA FIRMS (VIIRS e MODIS). Detecções por satélite, quase em tempo real.',
+        'monitor_source' => 'Fonte: NASA FIRMS (VIIRS, satélites NOAA-20 e NOAA-21). Detecções por satélite, quase em tempo real.',
         'monitor_empty' => 'Ainda não há leitura em cache. A primeira actualização aparece aqui com a respectiva data.',
         'monitor_link' => 'Abrir o mapa',
         'featured_learn' => 'Tutoriais em destaque',

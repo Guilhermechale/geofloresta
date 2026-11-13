@@ -26,9 +26,9 @@ class ExternalDatasetsSeeder extends Seeder
     protected function entries(): array
     {
         $pending = [
-            'pt' => 'Recortes por província em preparação: são gerados com os scripts da pasta pipeline/ (GDAL) e publicados aqui quando estiverem verificados.',
-            'fr' => 'Extraits par province en préparation : ils sont produits avec les scripts du dossier pipeline/ (GDAL) et publiés ici après vérification.',
-            'en' => 'Per-province extracts in preparation: produced with the scripts in the pipeline/ folder (GDAL) and published here once checked.',
+            'pt' => 'Os recortes por província estão em preparação e serão publicados aqui depois de verificados.',
+            'fr' => 'Les extraits par province sont en préparation et seront publiés ici après vérification.',
+            'en' => 'Per-province extracts are in preparation and will be published here once checked.',
         ];
 
         return [
@@ -115,9 +115,9 @@ class ExternalDatasetsSeeder extends Seeder
                     'en' => 'Global above-ground biomass maps (Mg/ha) from ESA’s Climate Change Initiative, and the method to estimate carbon stock from them.',
                 ],
                 'description' => [
-                    'pt' => '<p>A licença dos dados CCI Biomass tem termos próprios do CEDA; por isso mostramos só a ligação à fonte até confirmarmos que permite alojar derivados.</p><h3>Método do stock de carbono</h3><p>Carbono (Mg C/ha) = Biomassa aérea (Mg/ha) × 0,47, a fracção de carbono por defeito do IPCC (Directrizes de 2006, volume 4, capítulo 4). Para CO₂ equivalente multiplica-se por 44/12. A incerteza combina o desvio-padrão por píxel publicado com o mapa de biomassa e a incerteza da fracção de carbono; o script está na pasta pipeline/.</p>',
-                    'fr' => '<p>La licence des données CCI Biomass comporte des conditions propres au CEDA ; nous affichons donc seulement le lien vers la source jusqu’à confirmation de l’autorisation d’héberger des produits dérivés.</p><h3>Méthode du stock de carbone</h3><p>Carbone (Mg C/ha) = Biomasse aérienne (Mg/ha) × 0,47, fraction de carbone par défaut du GIEC (Lignes directrices 2006, volume 4, chapitre 4). Pour l’équivalent CO₂, multiplier par 44/12. L’incertitude combine l’écart-type par pixel publié avec la carte de biomasse et l’incertitude de la fraction de carbone ; le script est dans le dossier pipeline/.</p>',
-                    'en' => '<p>CCI Biomass data have their own CEDA licence terms, so we only show the link to the source until we confirm that derived products may be hosted.</p><h3>Carbon stock method</h3><p>Carbon (Mg C/ha) = Above-ground biomass (Mg/ha) × 0.47, the IPCC default carbon fraction (2006 Guidelines, volume 4, chapter 4). For CO₂ equivalent multiply by 44/12. Uncertainty combines the per-pixel standard deviation published with the biomass map and the uncertainty of the carbon fraction; the script is in the pipeline/ folder.</p>',
+                    'pt' => '<p>A licença dos dados CCI Biomass tem termos próprios do CEDA; por isso mostramos só a ligação à fonte até confirmarmos que permite alojar derivados.</p><h3>Método do stock de carbono</h3><p>Carbono (Mg C/ha) = Biomassa aérea (Mg/ha) × 0,47, a fracção de carbono por defeito do IPCC (Directrizes de 2006, volume 4, capítulo 4). Para CO₂ equivalente multiplica-se por 44/12. A incerteza combina o desvio-padrão por píxel publicado com o mapa de biomassa e a incerteza da fracção de carbono.</p>',
+                    'fr' => '<p>La licence des données CCI Biomass comporte des conditions propres au CEDA ; nous affichons donc seulement le lien vers la source jusqu’à confirmation de l’autorisation d’héberger des produits dérivés.</p><h3>Méthode du stock de carbone</h3><p>Carbone (Mg C/ha) = Biomasse aérienne (Mg/ha) × 0,47, fraction de carbone par défaut du GIEC (Lignes directrices 2006, volume 4, chapitre 4). Pour l’équivalent CO₂, multiplier par 44/12. L’incertitude combine l’écart-type par pixel publié avec la carte de biomasse et l’incertitude de la fraction de carbone.</p>',
+                    'en' => '<p>CCI Biomass data have their own CEDA licence terms, so we only show the link to the source until we confirm that derived products may be hosted.</p><h3>Carbon stock method</h3><p>Carbon (Mg C/ha) = Above-ground biomass (Mg/ha) × 0.47, the IPCC default carbon fraction (2006 Guidelines, volume 4, chapter 4). For CO₂ equivalent multiply by 44/12. Uncertainty combines the per-pixel standard deviation published with the biomass map and the uncertainty of the carbon fraction.</p>',
                 ],
                 'theme' => 'biomass', 'resolution' => '100 m',
                 'source_name' => 'ESA Climate Change Initiative — Biomass (CEDA)', 'source_url' => 'https://climate.esa.int/en/projects/biomass/',

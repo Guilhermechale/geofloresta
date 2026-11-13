@@ -55,7 +55,7 @@ return [
         'monitor_title' => 'Fire monitor',
         'monitor_label' => 'active fire detections in Mozambique in the last 24 h',
         'monitor_updated' => 'Updated: :date',
-        'monitor_source' => 'Source: NASA FIRMS (VIIRS and MODIS). Satellite detections, near real time.',
+        'monitor_source' => 'Source: NASA FIRMS (VIIRS, NOAA-20 and NOAA-21 satellites). Satellite detections, near real time.',
         'monitor_empty' => 'No cached reading yet. The first update will appear here with its date.',
         'monitor_link' => 'Open the map',
         'featured_learn' => 'Featured tutorials',

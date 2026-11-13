@@ -3,6 +3,7 @@
 // Generated translation — TO REVIEW
 return [
     'title' => 'Data',
+    'licence_names' => ['LicenseRef-Public-Domain' => 'Public domain', 'LicenseRef-NASA-Open-Data' => 'NASA open data'],
     'description' => 'Catalogue of Mozambique geospatial data to download: administrative boundaries, fire detections, land cover and more, with licence and attribution.',
     'lede' => 'Mozambique datasets prepared from open sources. Every record states the source, the licence, the exact attribution and the checksum of each file. No registration.',
     'filters' => 'Filters',

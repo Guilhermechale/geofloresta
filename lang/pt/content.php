@@ -9,7 +9,7 @@ return [
         'level' => 'Nível',
         'all' => 'Todas',
         'levels' => ['beginner' => 'Iniciante', 'intermediate' => 'Intermédio', 'advanced' => 'Avançado'],
-        'platforms' => ['r' => 'R', 'colab' => 'Google Colab', 'gee' => 'Google Earth Engine', 'qgis' => 'QGIS', 'other' => 'Outros'],
+        'platforms' => ['r' => 'R', 'colab' => 'Google Colab', 'gee' => 'Google Earth Engine', 'qgis' => 'QGIS', 'other' => 'Geral'],
         'duration' => ':n min',
         'prerequisites' => 'Pré-requisitos',
         'attachments' => 'Anexos',

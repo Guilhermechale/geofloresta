@@ -71,7 +71,7 @@
                             <h2 class="catalogue__title"><a href="{{ $d->url() }}" @if ($l !== $loc) lang="{{ $l }}" @endif>{{ $d->getTranslation('title', $l) }}</a></h2>
                             <p class="muted" @if ($l !== $loc) lang="{{ $l }}" @endif>{{ $d->getTranslation('summary', $l, false) }}</p>
                             <p class="coord">
-                                {{ $d->licence_spdx }}
+                                {{ $d->licenceLabel() }}
                                 @if ($d->files->isNotEmpty()) · {{ $d->files->pluck('format')->unique()->map(fn ($f) => Dataset::FORMATS[$f] ?? $f)->implode(', ') }}@endif
                                 @if ($d->resolution) · {{ $d->resolution }}@endif
                             </p>

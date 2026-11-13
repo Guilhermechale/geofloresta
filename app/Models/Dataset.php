@@ -53,6 +53,14 @@ class Dataset extends Model
         return lroute('data.show', ['slug' => $slug], $locale);
     }
 
+    /** Nome legível da licença (os identificadores SPDX padrão ficam como estão). */
+    public function licenceLabel(): string
+    {
+        $key = 'data.licence_names.'.$this->licence_spdx;
+
+        return trans()->has($key) ? __($key) : (string) $this->licence_spdx;
+    }
+
     public function period(): ?string
     {
         if (! $this->year_start) {

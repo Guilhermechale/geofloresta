@@ -2,6 +2,7 @@
 
 return [
     'title' => 'Dados',
+    'licence_names' => ['LicenseRef-Public-Domain' => 'Domínio público', 'LicenseRef-NASA-Open-Data' => 'Dados abertos da NASA'],
     'description' => 'Catálogo de dados geoespaciais de Moçambique para descarregar: limites administrativos, focos de incêndio, cobertura do solo e mais, com licença e atribuição.',
     'lede' => 'Conjuntos de dados de Moçambique preparados a partir de fontes abertas. Cada ficha indica a fonte, a licença, a atribuição exacta e o checksum de cada ficheiro. Sem registo.',
     'filters' => 'Filtros',

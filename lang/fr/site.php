@@ -55,7 +55,7 @@ return [
         'monitor_title' => 'Suivi des incendies',
         'monitor_label' => 'foyers actifs détectés au Mozambique au cours des dernières 24 h',
         'monitor_updated' => 'Mis à jour : :date',
-        'monitor_source' => 'Source : NASA FIRMS (VIIRS et MODIS). Détections satellitaires, quasi en temps réel.',
+        'monitor_source' => 'Source : NASA FIRMS (VIIRS, satellites NOAA-20 et NOAA-21). Détections satellitaires, quasi en temps réel.',
         'monitor_empty' => 'Aucune lecture en cache pour l’instant. La première mise à jour apparaîtra ici avec sa date.',
         'monitor_link' => 'Ouvrir la carte',
         'featured_learn' => 'Tutoriels à la une',

@@ -3,6 +3,7 @@
 // Traduction générée — À RÉVISER
 return [
     'title' => 'Données',
+    'licence_names' => ['LicenseRef-Public-Domain' => 'Domaine public', 'LicenseRef-NASA-Open-Data' => 'Données ouvertes de la NASA'],
     'description' => 'Catalogue de données géospatiales du Mozambique à télécharger : limites administratives, foyers d’incendie, occupation du sol et plus, avec licence et attribution.',
     'lede' => 'Jeux de données du Mozambique préparés à partir de sources ouvertes. Chaque fiche indique la source, la licence, l’attribution exacte et la somme de contrôle de chaque fichier. Sans inscription.',
     'filters' => 'Filtres',
