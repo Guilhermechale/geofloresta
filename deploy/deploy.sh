@@ -29,7 +29,7 @@ php artisan migrate --force
 php artisan db:seed --class=ContentSeeder --force   # só cria o que falta; nunca sobrepõe o painel
 php artisan db:seed --class=ExternalDatasetsSeeder --force
 rm -f public/robots.txt                             # robots.txt é dinâmico (bloqueia tudo fora de produção)
-php artisan storage:link --quiet || true
+[ -L public/storage ] || php artisan storage:link --quiet || true   # exec() desactivado no alojamento: só cria se faltar
 php artisan optimize:clear --quiet
 php artisan config:cache --quiet
 php artisan route:cache --quiet
