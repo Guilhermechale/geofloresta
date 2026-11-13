@@ -149,9 +149,9 @@ async function init() {
     if (fires) fires.features.forEach((f) => { f.properties.age = Math.max(0, hoursAgo(f.properties.acq)); });
 
     // O estilo pode ter carregado antes ou depois dos dados: tenta até estar pronto
+    // (isStyleLoaded() fica falso enquanto houver mosaicos a carregar; tenta e, se o estilo ainda não estiver pronto, repete quando o mapa ficar inactivo)
     const ready = () => {
-        if (!map.isStyleLoaded()) { map.once('styledata', ready); return; }
-        addOverlays(map);
+        try { addOverlays(map); } catch { map.once('idle', ready); }
     };
     ready();
     map.on('style.load', ready);
