@@ -58,7 +58,7 @@ return [
     'country' => 'País',
     'country_go' => 'Ver país',
     'country_help' => 'Focos de qualquer país do mundo, actualizados a cada 3 horas.',
-    'map_label_country' => 'Mapa interactivo de :country com focos de incêndio',
+    'map_label_country' => 'Mapa interactivo com focos de incêndio: :country',
     'aoi_help_world' => 'Use o país inteiro ou desenhe um polígono no mapa para contar e descarregar os focos dessa área. Os cálculos são feitos no seu navegador.',
     'aoi_country' => 'Usar o país inteiro',
     'aoi_polygon' => 'polígono',
@@ -66,6 +66,6 @@ return [
     'world_caption' => 'Focos de incêndio detectados (VIIRS NOAA-20 e NOAA-21) por país.',
     'col_country' => 'País',
     'country_stats' => ':country: :n24 focos nas últimas 24 h · :n7 em 7 dias',
-    'kit_link' => 'Todos os dados abertos de :country (limites, rios, bacias, floresta…)',
-    'download_country' => 'Descarregar os focos de :country (CSV, 7 dias)',
+    'kit_link' => 'Todos os dados abertos deste país (limites, rios, bacias, floresta…)',
+    'download_country' => 'Descarregar os focos deste país (CSV, 7 dias)',
 ];

@@ -20,8 +20,8 @@ return [
     'see_map' => 'Ver no mapa',
     'all' => 'Todos os países',
     'kit_title' => 'Dados abertos: :country',
-    'show_description' => 'Descarregue dados geoespaciais abertos de :country: focos de incêndio, limites administrativos, rios, bacias hidrográficas, floresta, população, relevo, clima e imagens de satélite.',
-    'show_lede' => 'Tudo o que precisa para começar um projecto SIG em :country, com dados gratuitos e licenças que permitem uso, incluindo comercial, com a devida atribuição.',
+    'show_description' => ':country — dados geoespaciais abertos para descarregar: focos de incêndio, limites administrativos, rios, bacias hidrográficas, floresta, população, relevo, clima e imagens de satélite.',
+    'show_lede' => 'Tudo o que precisa para começar um projecto SIG neste país, com dados gratuitos e licenças que permitem uso, incluindo comercial, com a devida atribuição.',
     'sections_nav' => 'Secções desta página',
     'sections' => [
         'fires' => 'Focos de incêndio',
@@ -32,12 +32,12 @@ return [
         'more' => 'Uso do solo, relevo, clima e imagens',
     ],
     'intro' => [
-        'fires' => 'Focos de calor activos detectados por satélite em :country nos últimos 7 dias, preparados pela GEOFLORESTA a partir dos ficheiros globais da NASA.',
-        'boundaries' => 'Limites oficiais ou de referência de :country: país (ADM0), primeiro nível (províncias, estados, regiões) e segundo nível (distritos, municípios).',
+        'fires' => 'Focos de calor activos detectados por satélite neste país nos últimos 7 dias, preparados pela GEOFLORESTA a partir dos ficheiros globais da NASA.',
+        'boundaries' => 'Limites oficiais ou de referência: país (ADM0), primeiro nível (províncias, estados, regiões) e segundo nível (distritos, municípios).',
         'forest' => 'Cobertura arbórea, perda e ganho de floresta e emissões, por ano e por unidade administrativa.',
         'population' => 'Densidade e contagem de população em grelha de 100 m.',
-        'water' => 'Rede hidrográfica, bacias hidrográficas (12 níveis Pfafstetter) e lagos. Os ficheiros cobrem a região continental de :country; recorte com o limite do país no QGIS.',
-        'more' => 'Mapas de cobertura do solo, modelos digitais de elevação, precipitação, clima e imagens Sentinel centradas em :country.',
+        'water' => 'Rede hidrográfica, bacias hidrográficas (12 níveis Pfafstetter) e lagos. Os ficheiros cobrem toda a região continental; recorte com o limite do país no QGIS.',
+        'more' => 'Mapas de cobertura do solo, modelos digitais de elevação, precipitação, clima e imagens Sentinel centradas neste país.',
     ],
     'items' => [
         'fires_7d' => 'Focos dos últimos 7 dias',

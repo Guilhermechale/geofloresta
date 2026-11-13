@@ -20,8 +20,8 @@ return [
     'see_map' => 'Voir sur la carte',
     'all' => 'Tous les pays',
     'kit_title' => 'Données ouvertes : :country',
-    'show_description' => 'Téléchargez des données géospatiales ouvertes pour :country : feux actifs, limites administratives, rivières, bassins versants, forêt, population, relief, climat et images satellite.',
-    'show_lede' => 'Tout ce qu’il faut pour démarrer un projet SIG pour :country, avec des données gratuites sous des licences qui autorisent l’usage, y compris commercial, avec attribution.',
+    'show_description' => ':country — données géospatiales ouvertes à télécharger : feux actifs, limites administratives, rivières, bassins versants, forêt, population, relief, climat et images satellite.',
+    'show_lede' => 'Tout ce qu’il faut pour démarrer un projet SIG dans ce pays, avec des données gratuites sous des licences qui autorisent l’usage, y compris commercial, avec attribution.',
     'sections_nav' => 'Sections de cette page',
     'sections' => [
         'fires' => 'Feux actifs',
@@ -32,11 +32,11 @@ return [
         'more' => 'Occupation du sol, relief, climat et images',
     ],
     'intro' => [
-        'fires' => 'Foyers de chaleur actifs détectés par satellite pour :country au cours des 7 derniers jours, préparés par GEOFLORESTA à partir des fichiers mondiaux de la NASA.',
-        'boundaries' => 'Limites officielles ou de référence pour :country : pays (ADM0), premier niveau (provinces, États, régions) et deuxième niveau (districts, communes).',
+        'fires' => 'Foyers de chaleur actifs détectés par satellite dans ce pays au cours des 7 derniers jours, préparés par GEOFLORESTA à partir des fichiers mondiaux de la NASA.',
+        'boundaries' => 'Limites officielles ou de référence : pays (ADM0), premier niveau (provinces, États, régions) et deuxième niveau (districts, communes).',
         'forest' => 'Couvert arboré, pertes et gains de forêt et émissions, par année et par unité administrative.',
         'population' => 'Densité et effectifs de population sur une grille de 100 m.',
-        'water' => 'Réseau hydrographique, bassins versants (12 niveaux Pfafstetter) et lacs. Les fichiers couvrent la région continentale de :country ; découpez-les avec la limite du pays dans QGIS.',
+        'water' => 'Réseau hydrographique, bassins versants (12 niveaux Pfafstetter) et lacs. Les fichiers couvrent toute la région continentale ; découpez-les avec la limite du pays dans QGIS.',
         'more' => 'Cartes d’occupation du sol, modèles numériques de terrain, pluviométrie, climat et images Sentinel centrées sur :country.',
     ],
     'items' => [
