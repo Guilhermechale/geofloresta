@@ -18,6 +18,8 @@ class HomeController extends Controller
         return view('pages.home', [
             'fire' => FireSummary::read(),
             'datasets' => $datasets,
+            'tutorials' => \App\Models\Tutorial::published()->orderByDesc('featured')->orderByDesc('published_at')->limit(4)->get(),
+            'studies' => \App\Models\Study::published()->orderByDesc('published_at')->limit(3)->get(),
         ]);
     }
 }

@@ -8,7 +8,8 @@ use App\Http\Controllers\FallbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\PlaceholderController;
+use App\Http\Controllers\ResearchController;
+use App\Http\Controllers\TutorialController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SitemapController;
@@ -48,10 +49,11 @@ foreach (Locales::all() as $locale) {
 
             Route::get($slug('maps'), MapController::class)->name('maps');
 
-            // Ainda em construção (M8)
-            foreach (['studies', 'learn', 'courses'] as $page) {
-                Route::get($slug($page), PlaceholderController::class)->name($page)->defaults('page', $page);
-            }
+            // As duas categorias de conteúdo: Tutoriais e Pesquisas
+            Route::get($slug('learn'), [TutorialController::class, 'index'])->name('learn');
+            Route::get($slug('learn').'/{slug}', [TutorialController::class, 'show'])->name('learn.show')->where('slug', '[a-z0-9-]+');
+            Route::get($slug('studies'), [ResearchController::class, 'index'])->name('studies');
+            Route::get($slug('studies').'/{slug}', [ResearchController::class, 'show'])->name('studies.show')->where('slug', '[a-z0-9-]+');
         });
 }
 

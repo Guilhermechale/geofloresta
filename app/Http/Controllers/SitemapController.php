@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
 use App\Models\Dataset;
 use App\Models\Study;
 use App\Models\Tutorial;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 class SitemapController extends Controller
 {
-    public const MAIN = ['home', 'services', 'data', 'maps', 'learn', 'about', 'contact', 'search'];
+    public const MAIN = ['home', 'services', 'data', 'maps', 'learn', 'studies', 'about', 'contact', 'search'];
 
     public const LEGAL = ['privacy', 'cookies', 'terms', 'licences', 'accessibility', 'sitemap'];
 
@@ -24,7 +23,6 @@ class SitemapController extends Controller
             'datasets' => $this->safe(fn () => Dataset::published()->get()),
             'tutorials' => $this->safe(fn () => Tutorial::published()->get()),
             'studies' => $this->safe(fn () => Study::published()->get()),
-            'courses' => $this->safe(fn () => Course::published()->get()),
         ]);
     }
 
@@ -43,7 +41,7 @@ class SitemapController extends Controller
             $entries[] = ['urls' => $urls, 'lastmod' => null];
         }
 
-        foreach ([Dataset::class, Tutorial::class, Study::class, Course::class] as $model) {
+        foreach ([Dataset::class, Tutorial::class, Study::class] as $model) {
             foreach ($this->safe(fn () => $model::published()->get()) as $item) {
                 $urls = [];
                 foreach (Locales::all() as $l) {

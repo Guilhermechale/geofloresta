@@ -23,11 +23,11 @@ class StudyResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Conteúdo';
+    protected static string|UnitEnum|null $navigationGroup = 'Pesquisas';
 
-    protected static ?string $modelLabel = 'estudo publicado';
+    protected static ?string $modelLabel = 'pesquisa';
 
-    protected static ?string $pluralModelLabel = 'estudos publicados';
+    protected static ?string $pluralModelLabel = 'pesquisas';
 
     protected static ?int $navigationSort = 3;
 

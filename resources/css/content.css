@@ -1,0 +1,29 @@
+/* Tutoriais e Pesquisas: artigo, imagens, código (dois temas de sintaxe) */
+.article { max-width: 72ch; }
+.article img { height: auto; border: 1px solid var(--c-rule); }
+.article figure { margin: var(--s-4) 0; }
+.article figcaption { font-size: var(--fs-sm); color: var(--c-muted); margin-top: .375rem; }
+.article table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); display: block; overflow-x: auto; }
+.article th, .article td { border-bottom: 1px solid var(--c-rule); padding: .5rem; text-align: left; vertical-align: top; }
+.article iframe { max-width: 100%; }
+.article pre { position: relative; white-space: pre; }
+.article pre.has-copy { padding-top: 2.5rem; }
+.copy-btn {
+    position: absolute; top: .375rem; right: .375rem;
+    font: 500 var(--fs-xs)/1 var(--f-mono); padding: .375rem .625rem;
+    background: var(--c-surface); color: var(--c-ink); border: 1px solid var(--c-rule-strong); border-radius: var(--radius); cursor: pointer;
+}
+.copy-btn:hover { background: var(--c-ink); color: var(--c-bg); }
+
+/* Sintaxe — claro */
+:root { --hl-kw: #8A3A12; --hl-str: #2F6B3E; --hl-num: #6B4FA0; --hl-com: #6B776F; --hl-fn: #14506B; --hl-attr: #7A5A00; }
+[data-theme="dark"] { --hl-kw: #F0A07A; --hl-str: #9FD3A8; --hl-num: #C9B3F0; --hl-com: #8E9A90; --hl-fn: #8CC8E8; --hl-attr: #E3C26B; }
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-literal { color: var(--hl-kw); }
+.hljs-string, .hljs-regexp, .hljs-template-string { color: var(--hl-str); }
+.hljs-number, .hljs-symbol { color: var(--hl-num); }
+.hljs-comment, .hljs-quote { color: var(--hl-com); font-style: italic; }
+.hljs-title, .hljs-title.function_, .hljs-function { color: var(--hl-fn); }
+.hljs-attr, .hljs-attribute, .hljs-variable, .hljs-params, .hljs-property { color: var(--hl-attr); }
+
+/* Filtros por plataforma */
+.chips { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: var(--s-2); }

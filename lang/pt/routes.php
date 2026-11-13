@@ -3,7 +3,7 @@
 // Slugs em português: mantêm os URLs actuais do WordPress (servicos, sobre, contacto, políticas).
 return [
     'services' => 'servicos',
-    'studies' => 'estudos',
+    'studies' => 'pesquisas',
     'data' => 'dados',
     'maps' => 'mapas',
     'learn' => 'tutoriais',
@@ -11,7 +11,7 @@ return [
     'about' => 'sobre',
     'contact' => 'contacto',
     'thanks' => 'contacto/obrigado',
-    'search' => 'pesquisa',
+    'search' => 'procurar',
     'privacy' => 'politica-de-privacidade',
     'cookies' => 'politica-de-cookies',
     'terms' => 'termos-e-condicoes',

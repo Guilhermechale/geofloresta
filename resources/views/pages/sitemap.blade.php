@@ -4,12 +4,12 @@
     $crumbs = Breadcrumbs::make([['label' => __('pages.sitemap.title'), 'url' => lroute('sitemap')]]);
     $labels = [
         'home' => 'site.nav.home', 'services' => 'site.nav.services', 'data' => 'site.nav.data', 'maps' => 'site.nav.maps',
-        'learn' => 'site.nav.learn', 'about' => 'site.nav.about', 'contact' => 'site.nav.contact', 'search' => 'site.nav.search',
+        'learn' => 'site.nav.learn', 'studies' => 'site.nav.studies', 'about' => 'site.nav.about', 'contact' => 'site.nav.contact', 'search' => 'site.nav.search',
         'privacy' => 'site.footer.privacy', 'cookies' => 'site.footer.cookies', 'terms' => 'site.footer.terms',
         'licences' => 'site.footer.licences', 'accessibility' => 'site.footer.accessibility', 'sitemap' => 'site.footer.sitemap',
     ];
     $loc = app()->getLocale();
-    $groups = ['datasets' => $datasets, 'tutorials' => $tutorials, 'studies' => $studies, 'courses' => $courses];
+    $groups = ['datasets' => $datasets, 'tutorials' => $tutorials, 'studies' => $studies];
 @endphp
 <x-layout :title="__('pages.sitemap.title')" :description="__('pages.sitemap.description')" :jsonld="[Breadcrumbs::jsonld($crumbs)]">
     <x-page-head :title="__('pages.sitemap.title')" :crumbs="$crumbs" />

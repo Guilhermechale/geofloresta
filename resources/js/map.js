@@ -117,7 +117,6 @@ async function init() {
         cooperativeGestures: matchMedia('(pointer: coarse)').matches,
         locale: {},
     });
-    el.gfMap = map; // acesso para diagnóstico na consola
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), 'top-right');
     map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
     // O estilo OpenFreeMap já traz a sua atribuição; aqui só se acrescentam as fontes NASA

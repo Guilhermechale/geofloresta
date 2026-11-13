@@ -5,6 +5,7 @@
         'data' => 'site.nav.data',
         'maps' => 'site.nav.maps',
         'learn' => 'site.nav.learn',
+        'studies' => 'site.nav.studies',
         'about' => 'site.nav.about',
         'contact' => 'site.nav.contact',
     ];

@@ -229,6 +229,11 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
     .icon-btn { width: 2.25rem; }
     .lang a { padding-inline: .25rem; min-width: 1.75rem; }
 }
+@media (min-width: 1080px) and (max-width: 1279px) {
+    .nav ul { gap: var(--s-2); }
+    .nav a { font-size: var(--fs-xs); }
+    .brand__sub { display: none; }
+}
 @media (min-width: 1080px) {
     .nav { display: block; }
     .menu-btn { display: none; }
@@ -431,6 +436,11 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 .pv-grid text { fill: var(--c-muted); font-family: var(--f-mono); font-size: 9px; }
 .pv-area { fill: var(--c-moss-soft); stroke: var(--c-moss); stroke-width: .75; stroke-linejoin: round; }
 .pv-pt { fill: var(--c-accent); }
+
+/* Filtros em "pastilha" (lista de tutoriais) */
+.chips { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: var(--s-2); }
+.chips a { font-family: var(--f-mono); font-size: var(--fs-xs); text-decoration: none; border: 1px solid var(--c-rule-strong); padding: .375rem .625rem; border-radius: var(--radius); }
+.chips a[aria-current="true"] { background: var(--c-ink); color: var(--c-bg); }
 
 /* ---------- Cookies: banner e painel ---------- */
 .cookie-banner {

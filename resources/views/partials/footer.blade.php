@@ -13,6 +13,7 @@
                 <li><a href="{{ lroute('data') }}">{{ __('site.nav.data') }}</a></li>
                 <li><a href="{{ lroute('maps') }}">{{ __('site.nav.maps') }}</a></li>
                 <li><a href="{{ lroute('learn') }}">{{ __('site.nav.learn') }}</a></li>
+                <li><a href="{{ lroute('studies') }}">{{ __('site.nav.studies') }}</a></li>
                 <li><a href="{{ lroute('about') }}">{{ __('site.nav.about') }}</a></li>
                 <li><a href="{{ lroute('contact') }}">{{ __('site.nav.contact') }}</a></li>
                 <li><a href="{{ lroute('sitemap') }}">{{ __('site.footer.sitemap') }}</a></li>

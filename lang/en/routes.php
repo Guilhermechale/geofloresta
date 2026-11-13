@@ -2,7 +2,7 @@
 
 return [
     'services' => 'services',
-    'studies' => 'studies',
+    'studies' => 'research',
     'data' => 'data',
     'maps' => 'maps',
     'learn' => 'tutorials',

@@ -71,6 +71,16 @@ $( [ -n "$ALLOW_IPS" ] && echo "  Require ip $ALLOW_IPS" )
 </IfModule>
 EOF
   fi
+  if [ "$TARGET" = production ]; then
+    cat <<'EOF'
+# --- Produção: um só domínio canónico (sem www); HTTP->HTTPS já é feito pela Hostinger ---
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+</IfModule>
+EOF
+  fi
   cat "$APP/public/.htaccess"
 } > "$WEB/.htaccess"
 

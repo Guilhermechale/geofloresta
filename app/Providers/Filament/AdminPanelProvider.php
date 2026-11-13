@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             // Caminho não óbvio, definido no .env (ADMIN_PATH)
             ->path(config('geofloresta.admin_path'))
             ->login()
+            ->passwordReset()
             ->profile()
             ->brandName('GEOFLORESTA')
             ->darkMode(true)

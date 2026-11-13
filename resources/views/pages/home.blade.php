@@ -91,18 +91,36 @@
                 <a class="link-arrow" href="{{ lroute('learn') }}">{{ __('site.home.all_learn') }}</a>
             </div>
             <ul class="entries span-7 start-6">
-                {{-- Protótipo M3: tutoriais já publicados no site actual (migrados no M8) --}}
-                <li class="entry">
-                    <span class="meta">Google Earth Engine</span>
-                    <a href="{{ url('/google-earth-engine-como-baixar-imagens-do-sentinel-2-e-landsat-e-calcular-indices-passo-a-passo') }}" lang="pt">Google Earth Engine: como baixar imagens do Sentinel-2 e Landsat e calcular índices passo a passo</a>
-                </li>
-                <li class="entry">
-                    <span class="meta">Overpass Turbo · QGIS</span>
-                    <a href="{{ url('/como-extrair-dados-de-rios-de-sofala-no-overpass-turbo-e-converter-para-shapefile') }}" lang="pt">Como extrair dados de rios de Sofala no Overpass Turbo e converter para shapefile</a>
-                </li>
+                @foreach ($tutorials as $t)
+                    @php $l = $t->displayLocale(app()->getLocale()); @endphp
+                    <li class="entry">
+                        <span class="meta">{{ __('content.tutorials.platforms.'.$t->platform) }}</span>
+                        <a href="{{ $t->url() }}" @if ($l !== app()->getLocale()) lang="{{ $l }}" @endif>{{ $t->getTranslation('title', $l) }}</a>
+                    </li>
+                @endforeach
             </ul>
         </div>
     </section>
+
+    @if ($studies->isNotEmpty())
+        <section class="section" aria-labelledby="research-title">
+            <div class="wrap grid">
+                <div class="span-4">
+                    <h2 id="research-title">{{ __('content.research.recent') }}</h2>
+                    <a class="link-arrow" href="{{ lroute('studies') }}">{{ __('content.back_research') }}</a>
+                </div>
+                <ul class="entries span-7 start-6">
+                    @foreach ($studies as $s)
+                        @php $l = $s->displayLocale(app()->getLocale()); @endphp
+                        <li class="entry">
+                            <span class="meta">{{ $s->published_at ? format_date($s->published_at, 'medium') : '' }}</span>
+                            <a href="{{ $s->url() }}" @if ($l !== app()->getLocale()) lang="{{ $l }}" @endif>{{ $s->getTranslation('title', $l) }}</a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </section>
+    @endif
 
     <section class="cta" aria-labelledby="cta-title">
         <div class="wrap grid">

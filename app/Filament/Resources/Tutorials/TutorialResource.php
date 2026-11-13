@@ -28,7 +28,7 @@ class TutorialResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCodeBracketSquare;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Tutoriais e Cursos';
+    protected static string|UnitEnum|null $navigationGroup = 'Tutoriais';
 
     protected static ?string $modelLabel = 'tutorial';
 

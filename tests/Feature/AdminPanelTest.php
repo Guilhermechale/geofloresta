@@ -30,7 +30,7 @@ class AdminPanelTest extends TestCase
     {
         return array_map(fn ($p) => [$p], [
             '', 'pages', 'pages/create', 'services', 'services/create', 'studies', 'studies/create',
-            'datasets', 'datasets/create', 'tutorials', 'tutorials/create', 'courses', 'courses/create',
+            'datasets', 'datasets/create', 'tutorials', 'tutorials/create',
             'contact-messages', 'redirects', 'redirects/create', 'site-settings',
         ]);
     }

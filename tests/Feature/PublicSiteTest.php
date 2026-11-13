@@ -27,7 +27,7 @@ class PublicSiteTest extends TestCase
     public static function pages(): array
     {
         return array_map(fn ($p) => [$p], [
-            '/', '/servicos', '/sobre', '/contacto', '/pesquisa', '/pesquisa?q=ndvi', '/mapa-do-site',
+            '/', '/servicos', '/sobre', '/contacto', '/procurar', '/procurar?q=ndvi', '/mapa-do-site', '/tutoriais', '/pesquisas', '/fr/tutoriels', '/fr/recherches', '/en/tutorials', '/en/research',
             '/politica-de-privacidade', '/politica-de-cookies', '/termos-e-condicoes', '/dados-e-licencas', '/acessibilidade',
             '/fr', '/fr/services', '/fr/a-propos', '/fr/contact', '/fr/politique-de-confidentialite', '/fr/politique-de-cookies',
             '/fr/conditions-d-utilisation', '/fr/donnees-et-licences', '/fr/accessibilite', '/fr/plan-du-site', '/fr/recherche',
