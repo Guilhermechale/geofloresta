@@ -15,9 +15,14 @@ class SvgChart
         'compact' => ['w' => 360, 'h' => 300, 'font' => 12, 'ticks' => 4, 'xEvery' => 6],
     ];
 
+    /** Números no formato do idioma da página (PT 1.234,5 · FR 1 234,5 · EN 1,234.5). */
     public static function num(float $v, int $dec = 0): string
     {
-        return number_format($v, $dec, ',', '.');
+        return match (app()->getLocale()) {
+            'en' => number_format($v, $dec, '.', ','),
+            'fr' => number_format($v, $dec, ',', "\u{202F}"),
+            default => number_format($v, $dec, ',', '.'),
+        };
     }
 
     public static function short(float $v): string
@@ -26,7 +31,7 @@ class SvgChart
             return self::num($v / 1_000_000, $v % 1_000_000 ? 1 : 0).' M';
         }
         if ($v >= 1000) {
-            return self::num($v / 1000).' mil';
+            return self::num($v / 1000).(app()->getLocale() === 'pt' ? ' mil' : ' k');
         }
 
         return self::num($v);

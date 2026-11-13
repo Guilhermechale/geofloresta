@@ -37,7 +37,15 @@ class ArticleBodyTest extends TestCase
     public function test_chart_marker_becomes_figure_with_caption_and_data_table(): void
     {
         $this->fakeGfw();
+        app()->setLocale('en');
+        $en = ArticleBody::render('<p>[grafico:gfw-perda-anual-limiares]</p><p>Figure 1. Annual loss.</p>');
+        $this->assertStringContainsString('Threshold 50%', $en);
+        $this->assertStringContainsString('200,000 ha', $en);
+        $this->assertStringContainsString('View the data', $en);
+
+        app()->setLocale('pt');
         $html = ArticleBody::render('<p>Texto.</p><p>[grafico:gfw-perda-anual-limiares]</p><p>Figura 1. Perda anual. Fonte: Hansen et al. (2013).</p><p>Depois.</p>');
+        $this->assertStringContainsString('200.000 ha', $html);
 
         $this->assertStringContainsString('<figure class="figure figure--chart">', $html);
         $this->assertStringContainsString('chart__svg--wide', $html);

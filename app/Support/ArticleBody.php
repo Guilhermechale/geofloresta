@@ -26,7 +26,7 @@ class ArticleBody
         if (trim($html) === '') {
             return '';
         }
-        $key = 'article-body:v5:'.md5($html).':'.md5(json_encode(array_keys(Figures::CATALOGUE))).':'.(Figures::data()['imported_at'] ?? '-');
+        $key = 'article-body:v6:'.app()->getLocale().':'.md5($html).':'.md5(json_encode(array_keys(Figures::CATALOGUE))).':'.(Figures::data()['imported_at'] ?? '-');
 
         try {
             return Cache::remember($key, now()->addWeek(), fn () => self::transform($html));
