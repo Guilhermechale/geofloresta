@@ -44,6 +44,23 @@ return [
         'lede' => 'Conseil en SIG et télédétection depuis Beira, Sofala. Données ouvertes à télécharger, cartes de suivi et tutoriels gratuits.',
         'cta_data' => 'Explorer les données',
         'cta_contact' => 'Demander une proposition',
+        'sustain' => [
+            'title' => 'Des données au service du développement durable',
+            'lede' => 'Nous réunissons données ouvertes, cartes et savoir-faire technique pour appuyer des décisions qui équilibrent environnement, société et économie au Mozambique.',
+            'env' => ['title' => 'Environnement', 'text' => 'Suivre les incendies, la perte de forêt et le carbone pour protéger le Miombo, les bassins versants et la biodiversité.', 'link' => 'Ouvrir le suivi des incendies'],
+            'soc' => ['title' => 'Société', 'text' => 'Des tutoriels gratuits et des données sans inscription pour que étudiants, techniciens, communautés et journalistes apprennent et utilisent la géomatique.', 'link' => 'Voir les tutoriels'],
+            'eco' => ['title' => 'Économie', 'text' => 'Une information géographique fiable pour planifier l’usage des terres, l’agriculture et la gestion forestière avec moins de coûts et de risques.', 'link' => 'Découvrir les services'],
+            'goals_title' => 'Objectifs de développement durable auxquels notre travail répond',
+            'goals' => [
+                4 => ['name' => 'Éducation de qualité', 'how' => 'Tutoriels gratuits de SIG et de télédétection'],
+                6 => ['name' => 'Eau propre et assainissement', 'how' => 'Données sur les rivières et les bassins versants'],
+                11 => ['name' => 'Villes et communautés durables', 'how' => 'Recherches sur les inondations et les îlots de chaleur urbains'],
+                13 => ['name' => 'Lutte contre les changements climatiques', 'how' => 'Suivi des incendies et analyse de données climatiques'],
+                15 => ['name' => 'Vie terrestre', 'how' => 'Perte de forêt, moteurs de la déforestation et biomasse'],
+                17 => ['name' => 'Partenariats pour la réalisation des objectifs', 'how' => 'Des données ouvertes, avec licence et citation, pour tous'],
+            ],
+            'sdg' => 'ODD',
+        ],
         'pillars_title' => 'Ce que vous trouverez ici',
         'pillars' => [
             'data' => ['title' => 'Données', 'text' => 'Jeux de données du Mozambique préparés à partir de sources ouvertes, avec licence, attribution et somme de contrôle sur chaque fiche.', 'link' => 'Voir le catalogue'],

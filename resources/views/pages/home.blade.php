@@ -128,6 +128,38 @@
         </section>
     @endif
 
+    <section class="section sustain" aria-labelledby="sustain-title">
+        <div class="wrap">
+            <div class="sustain__head">
+                <h2 id="sustain-title">{{ __('site.home.sustain.title') }}</h2>
+                <p class="lede">{{ __('site.home.sustain.lede') }}</p>
+            </div>
+            <ul class="sustain__pillars">
+                @foreach (['env' => 'maps', 'soc' => 'learn', 'eco' => 'services'] as $key => $route)
+                    <li class="sustain__pillar sustain__pillar--{{ $key }}">
+                        <h3>{{ __("site.home.sustain.$key.title") }}</h3>
+                        <p>{{ __("site.home.sustain.$key.text") }}</p>
+                        <a class="link-arrow" href="{{ lroute($route) }}">{{ __("site.home.sustain.$key.link") }}</a>
+                    </li>
+                @endforeach
+            </ul>
+            <h3 class="sustain__goals-title">{{ __('site.home.sustain.goals_title') }}</h3>
+            <ul class="sdg-list">
+                @foreach ([4 => 'learn', 6 => 'data', 11 => 'studies', 13 => 'maps', 15 => 'studies', 17 => 'data'] as $n => $route)
+                    <li>
+                        <a class="sdg" href="{{ lroute($route) }}">
+                            <span class="sdg__num" aria-hidden="true">{{ $n }}</span>
+                            <span class="sdg__text">
+                                <strong>{{ __('site.home.sustain.sdg') }} {{ $n }} · {{ __("site.home.sustain.goals.$n.name") }}</strong>
+                                <span>{{ __("site.home.sustain.goals.$n.how") }}</span>
+                            </span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </section>
+
     <section class="cta" aria-labelledby="cta-title">
         <div class="wrap grid">
             <div class="span-7">

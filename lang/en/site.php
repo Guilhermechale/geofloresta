@@ -44,6 +44,23 @@ return [
         'lede' => 'GIS and remote sensing consultancy based in Beira, Sofala. Open data to download, monitoring maps and free tutorials.',
         'cta_data' => 'Explore the data',
         'cta_contact' => 'Request a proposal',
+        'sustain' => [
+            'title' => 'Data for sustainable development',
+            'lede' => 'We bring together open data, maps and technical know-how to support decisions that balance environment, society and economy in Mozambique.',
+            'env' => ['title' => 'Environment', 'text' => 'Tracking fires, forest loss and carbon to protect the Miombo, river basins and biodiversity.', 'link' => 'Open the fire monitor'],
+            'soc' => ['title' => 'Society', 'text' => 'Free tutorials and data without sign-up so that students, technicians, communities and journalists can learn and use geospatial technology.', 'link' => 'See the tutorials'],
+            'eco' => ['title' => 'Economy', 'text' => 'Reliable geographic information to plan land use, agriculture and forest management with lower costs and fewer risks.', 'link' => 'Explore the services'],
+            'goals_title' => 'Sustainable Development Goals our work contributes to',
+            'goals' => [
+                4 => ['name' => 'Quality education', 'how' => 'Free GIS and remote sensing tutorials'],
+                6 => ['name' => 'Clean water and sanitation', 'how' => 'Data on rivers and river basins'],
+                11 => ['name' => 'Sustainable cities and communities', 'how' => 'Research on floods and urban heat islands'],
+                13 => ['name' => 'Climate action', 'how' => 'Fire monitor and climate data analysis'],
+                15 => ['name' => 'Life on land', 'how' => 'Forest loss, deforestation drivers and biomass'],
+                17 => ['name' => 'Partnerships for the goals', 'how' => 'Open data, with licence and citation, for everyone'],
+            ],
+            'sdg' => 'SDG',
+        ],
         'pillars_title' => 'What you will find here',
         'pillars' => [
             'data' => ['title' => 'Data', 'text' => 'Mozambique datasets prepared from open sources, with licence, attribution and checksum on every record.', 'link' => 'Browse the catalogue'],

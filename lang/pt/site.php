@@ -43,6 +43,23 @@ return [
         'lede' => 'Consultoria em SIG e sensoriamento remoto a partir da Beira, Sofala. Dados abertos para descarregar, mapas de monitorização e tutoriais gratuitos.',
         'cta_data' => 'Explorar os dados',
         'cta_contact' => 'Pedir uma proposta',
+        'sustain' => [
+            'title' => 'Dados ao serviço do desenvolvimento sustentável',
+            'lede' => 'Juntamos dados abertos, mapas e conhecimento técnico para apoiar decisões que equilibram ambiente, sociedade e economia em Moçambique.',
+            'env' => ['title' => 'Ambiente', 'text' => 'Acompanhar incêndios, perda de floresta e carbono para proteger o Miombo, as bacias hidrográficas e a biodiversidade.', 'link' => 'Abrir o monitor de incêndios'],
+            'soc' => ['title' => 'Sociedade', 'text' => 'Tutoriais gratuitos e dados sem registo para estudantes, técnicos, comunidades e jornalistas aprenderem e usarem a geotecnologia.', 'link' => 'Ver os tutoriais'],
+            'eco' => ['title' => 'Economia', 'text' => 'Informação geográfica fiável para planear o uso da terra, a agricultura e a gestão florestal com menos custos e menos riscos.', 'link' => 'Conhecer os serviços'],
+            'goals_title' => 'Objectivos de Desenvolvimento Sustentável a que o nosso trabalho responde',
+            'goals' => [
+                4 => ['name' => 'Educação de qualidade', 'how' => 'Tutoriais gratuitos de SIG e sensoriamento remoto'],
+                6 => ['name' => 'Água potável e saneamento', 'how' => 'Dados de rios e bacias hidrográficas'],
+                11 => ['name' => 'Cidades e comunidades sustentáveis', 'how' => 'Pesquisas sobre inundações e ilhas de calor urbanas'],
+                13 => ['name' => 'Acção climática', 'how' => 'Monitor de incêndios e análise de dados climáticos'],
+                15 => ['name' => 'Proteger a vida terrestre', 'how' => 'Perda de floresta, vetores de desflorestamento e biomassa'],
+                17 => ['name' => 'Parcerias para a implementação', 'how' => 'Dados abertos, com licença e citação, para todos'],
+            ],
+            'sdg' => 'ODS',
+        ],
         'pillars_title' => 'O que encontra aqui',
         'pillars' => [
             'data' => ['title' => 'Dados', 'text' => 'Conjuntos de dados de Moçambique preparados a partir de fontes abertas, com licença, atribuição e checksum em cada ficha.', 'link' => 'Ver catálogo'],
