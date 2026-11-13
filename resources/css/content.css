@@ -55,10 +55,15 @@
 .ch-grid { stroke: var(--c-rule); stroke-width: 1; }
 .ch-base { stroke: var(--c-muted); }
 .ch-tick { fill: var(--c-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-.chart__svg--wide .ch-tick { font-size: 13px; }
-.ch-label { fill: var(--c-ink); font-size: 13px; }
-.ch-value { fill: var(--c-ink); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ch-label { fill: var(--c-ink); font-size: 12.5px; }
+.ch-value { fill: var(--c-ink); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.chart__svg--wide .ch-tick { font-size: 14px; }
+.chart__svg--wide .ch-label, .chart__svg--wide .ch-value { font-size: 15px; }
 .ch-strong { font-weight: 600; }
+.chart__svg--split.chart__svg--wide .ch-label { font-size: 16px; }
+.chart__svg--split.chart__svg--wide .ch-tick { font-size: 14px; }
+.chart__svg--split.chart__svg--compact .ch-label { font-size: 14px; }
+.chart__svg--split.chart__svg--compact .ch-tick { font-size: 13px; }
 .ch-line { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
 .ch-line.c-s1 { stroke: var(--chart-s1); } .ch-line.c-s2 { stroke: var(--chart-s2); } .ch-line.c-s3 { stroke: var(--chart-s3); }
 .ch-line.c-c1 { stroke: var(--chart-c1); } .ch-line.c-c2 { stroke: var(--chart-c2); }

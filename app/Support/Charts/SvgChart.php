@@ -11,7 +11,7 @@ namespace App\Support\Charts;
 class SvgChart
 {
     public const SIZES = [
-        'wide' => ['w' => 760, 'h' => 400, 'font' => 13, 'ticks' => 5, 'xEvery' => 3],
+        'wide' => ['w' => 760, 'h' => 400, 'font' => 15, 'ticks' => 5, 'xEvery' => 3],
         'compact' => ['w' => 360, 'h' => 300, 'font' => 12, 'ticks' => 4, 'xEvery' => 6],
     ];
 
@@ -61,7 +61,7 @@ class SvgChart
         $S = self::SIZES[$size];
         $f = $S['font'];
         $padL = $f * 4.6;
-        $padR = $size === 'wide' ? 150 : 12;
+        $padR = $size === 'wide' ? (int) ceil(36 + max(array_map(fn ($s) => mb_strlen($s['label']), $series)) * $f * .56) : 12;
         $padT = $size === 'wide' ? 16 : 16 + count($series) * ($f + 8);
         $padB = $f * 2.6;
         $W = $S['w'];
@@ -138,10 +138,10 @@ class SvgChart
         $S = self::SIZES[$size];
         $f = $S['font'];
         $wide = $size === 'wide';
-        $barH = $wide ? 22 : 16;
-        $gap = $wide ? 12 : 30; // no telemóvel o nome fica por cima da barra
-        $labelW = $wide ? 250 : 0;
-        $valW = $wide ? 140 : 110;
+        $barH = $wide ? 26 : 16;
+        $gap = $wide ? 14 : 30; // no telemóvel o nome fica por cima da barra
+        $labelW = $wide ? 270 : 0;
+        $valW = $wide ? 150 : 110;
         $W = $S['w'];
         $padT = $wide ? 8 : $f + 10;
         $H = $padT + count($items) * ($barH + $gap);
@@ -174,7 +174,7 @@ class SvgChart
     public static function split(array $parts, string $unit, string $size): string
     {
         $S = self::SIZES[$size];
-        $f = $S['font'];
+        $f = $size === 'wide' ? 16 : 14;
         $W = $S['w'];
         $barH = $size === 'wide' ? 56 : 44;
         $total = array_sum(array_column($parts, 'value')) ?: 1;
@@ -198,11 +198,11 @@ class SvgChart
             $o .= '<text class="ch-tick" x="'.($f + 8).'" y="'.($y + $f + 4).'">'.self::e(self::num($p['value']).' '.$unit).'</text>';
         }
 
-        return self::wrap($W, $H, $o, $size);
+        return self::wrap($W, $H, $o, $size, 'chart__svg--split');
     }
 
-    protected static function wrap(int|float $w, int|float $h, string $inner, string $size): string
+    protected static function wrap(int|float $w, int|float $h, string $inner, string $size, string $extra = ''): string
     {
-        return '<svg class="chart__svg chart__svg--'.$size.'" viewBox="0 0 '.round($w).' '.round($h).'" width="'.round($w).'" height="'.round($h).'" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg">'.$inner.'</svg>';
+        return '<svg class="chart__svg chart__svg--'.$size.($extra ? ' '.$extra : '').'" viewBox="0 0 '.round($w).' '.round($h).'" width="'.round($w).'" height="'.round($h).'" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg">'.$inner.'</svg>';
     }
 }
