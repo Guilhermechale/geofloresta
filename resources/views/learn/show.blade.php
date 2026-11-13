@@ -33,7 +33,7 @@
     <div class="section section--tight">
         <div class="wrap">
             <article class="prose article" @if ($fallback) lang="{{ $locale }}" @endif data-copy-label="{{ __('content.tutorials.copy') }}" data-copied-label="{{ __('content.tutorials.copied') }}">
-                @if ($tutorial->cover_image)
+                @if ($tutorial->cover_image && ! str_contains((string) $tutorial->getTranslation('body', $locale), basename($tutorial->cover_image)))
                     <figure class="cover-figure"><x-cover :path="$tutorial->cover_image" :width="1200" :alt="$tutorial->cover_alt ?? ''" :eager="true" /></figure>
                 @endif
                 @if ($fallback)

@@ -26,7 +26,7 @@
     <div class="section section--tight">
         <div class="wrap">
             <article class="prose article" @if ($fallback) lang="{{ $locale }}" @endif>
-                @if ($study->cover_image)
+                @if ($study->cover_image && ! str_contains((string) $study->getTranslation('body', $locale), basename($study->cover_image)))
                     <figure class="cover-figure"><x-cover :path="$study->cover_image" :width="1200" :alt="$study->cover_alt ?? ''" :eager="true" /></figure>
                 @endif
                 @if ($fallback)
