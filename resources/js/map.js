@@ -60,6 +60,31 @@ function addOverlays(map) {
         }, before);
     }
 
+    // Relevo (Terrain Tiles, formato Terrarium): altitude em cores e sombreamento. Só descarrega mosaicos com a camada ligada.
+    if (cfg.dem && !map.getSource('dem')) {
+        map.addSource('dem', { type: 'raster-dem', encoding: 'terrarium', tileSize: 256, maxzoom: 14, tiles: [cfg.dem.tiles] });
+        map.addLayer({
+            id: 'relief', type: 'color-relief', source: 'dem',
+            layout: { visibility: s.relief ? 'visible' : 'none' },
+            paint: {
+                'color-relief-opacity': 0.55,
+                'color-relief-color': ['interpolate', ['linear'], ['elevation'],
+                    -200, '#9cc3d5', 0, '#2f6b3a', 200, '#7fa65a', 500, '#d8c97a', 1000, '#c08a4a', 2000, '#8c5a3c', 4000, '#f4f1e8'],
+            },
+        }, before);
+        const dark = theme() === 'dark';
+        map.addLayer({
+            id: 'hillshade', type: 'hillshade', source: 'dem',
+            layout: { visibility: s.hillshade ? 'visible' : 'none' },
+            paint: {
+                'hillshade-exaggeration': 0.45,
+                'hillshade-shadow-color': dark ? '#000000' : '#3b4a3f',
+                'hillshade-highlight-color': dark ? '#5d6b60' : '#ffffff',
+                'hillshade-accent-color': dark ? '#000000' : '#2a332c',
+            },
+        }, before);
+    }
+
     // Limites
     const line = css('--c-moss') || '#3E6B4A';
     if (provinces && !map.getSource('provinces')) {
@@ -204,10 +229,12 @@ function setupAoi(map) {
     const btnDraw = q('[data-draw]'), btnFinish = q('[data-draw-finish]'), btnCancel = q('[data-draw-cancel]'), btnClear = q('[data-aoi-clear]');
     const help = q('[data-draw-help]');
     aoiForm.addEventListener('submit', (e) => e.preventDefault());
+    const dem = setupDem(q, () => aoi);
     const clearSelects = () => { if (provSel) provSel.value = ''; if (distSel) { distSel.value = ''; distSel.disabled = true; } };
 
     const setAoi = (feature) => {
         aoi = feature;
+        dem.reset();
         map.getSource('aoi')?.setData(aoi ? { type: 'FeatureCollection', features: [aoi] } : empty());
         btnClear.hidden = !aoi;
         if (aoi) {
@@ -319,6 +346,92 @@ function setupAoi(map) {
         const fc = { type: 'FeatureCollection', source: 'NASA FIRMS via GEOFLORESTA', updated_at: cfg.updatedAt, area: aoi, features: aoiFires.map(({ type, geometry, properties: { age, ...p } }) => ({ type, geometry, properties: p })) };
         save(`focos_${(cfg.iso || 'area').toLowerCase()}_${stamp()}.geojson`, 'application/geo+json', JSON.stringify(fc));
     });
+}
+
+/* ---------------- Relevo (DEM) da área de interesse ---------------- */
+function setupDem(q, getAoi) {
+    const box = q('[data-dem]');
+    if (!box) return { reset() {} };
+    const btnBuild = q('[data-dem-build]'), status = q('[data-dem-status]'), ready = q('[data-dem-ready]');
+    const interval = q('select[name="interval"]'), btnTiff = q('[data-dem-tiff]'), btnContours = q('[data-dem-contours]');
+    let worker = null, seq = 0, meta = null;
+    const pending = new Map();
+    const fmt = (n) => Math.round(n).toLocaleString(cfg.locale);
+    const say = (text) => { status.textContent = text; };
+
+    const call = (msg, transfer) => new Promise((resolve) => {
+        if (!worker) {
+            worker = new Worker(new URL('./dem-worker.js', import.meta.url), { type: 'module' });
+            worker.onmessage = ({ data }) => {
+                if (data.progress) { say(T.dem_progress.replace(':done', data.progress).replace(':total', data.total)); return; }
+                pending.get(data.id)?.(data);
+                pending.delete(data.id);
+            };
+            worker.onerror = () => { for (const r of pending.values()) r({ error: 'failed' }); pending.clear(); worker = null; };
+        }
+        const id = ++seq;
+        pending.set(id, resolve);
+        worker.postMessage({ ...msg, id }, transfer || []);
+    });
+
+    const busy = (on) => { [btnBuild, btnTiff, btnContours].forEach((b) => { b.disabled = on; }); box.setAttribute('aria-busy', on ? 'true' : 'false'); };
+    const name = (kind, ext) => `${kind}_${(cfg.iso || 'area').toLowerCase()}_${new Date().toISOString().slice(0, 10)}.${ext}`;
+    const download = (filename, blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.append(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    };
+
+    btnBuild.addEventListener('click', async () => {
+        const area = getAoi();
+        if (!area) return;
+        busy(true); ready.hidden = true; meta = null;
+        say(T.dem_working);
+        const r = await call({ cmd: 'build', bbox: bboxOf(area), geometry: area.geometry });
+        busy(false);
+        if (getAoi() !== area) return; // a área mudou entretanto
+        if (r.error) { say(T[`dem_${r.error === 'too_big' ? 'too_big' : r.error === 'empty' ? 'empty' : 'failed'}`]); return; }
+        meta = r.meta;
+        say(T.dem_result.replace(':res', fmt(meta.resolution_m)).replace(':min', fmt(meta.min)).replace(':max', fmt(meta.max)).replace(':mean', fmt(meta.mean)));
+        // Intervalo sugerido: o menor que dê até ~40 curvas
+        const range = meta.max - meta.min;
+        interval.value = String([10, 20, 50, 100, 200, 500].find((i) => range / i <= 40) || 500);
+        ready.hidden = false;
+    });
+
+    btnTiff.addEventListener('click', async () => {
+        busy(true);
+        const r = await call({ cmd: 'tiff', description: `Elevation (m), WGS 84 (EPSG:4326), ~${meta?.resolution_m} m. Source: Terrain Tiles (Mapzen/Tilezen, AWS Open Data): SRTM, GMTED2010, ETOPO1 and others. Generated at geofloresta.com` });
+        busy(false);
+        if (r.error) { say(T.dem_failed); return; }
+        download(name('relevo', 'tif'), new Blob([r.buffer], { type: 'image/tiff' }));
+    });
+
+    btnContours.addEventListener('click', async () => {
+        busy(true); say(T.dem_working);
+        const step = Number(interval.value);
+        const r = await call({ cmd: 'contours', interval: step, props: {
+            name: `Curvas de nível / contour lines (${step} m)`, crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } },
+            source: 'Terrain Tiles (Mapzen/Tilezen, AWS Open Data) via GEOFLORESTA (geofloresta.com)',
+            attribution: cfg.dem?.attribution || '', resolution_m: meta?.resolution_m, interval_m: step, generated_at: new Date().toISOString(),
+        } });
+        busy(false);
+        if (r.error) { say(T.dem_failed); return; }
+        say(T.dem_contours_done.replace(':count', r.count.toLocaleString(cfg.locale)));
+        download(name(`curvas_${step}m`, 'geojson'), new Blob([r.text], { type: 'application/geo+json' }));
+    });
+
+    return {
+        reset() {
+            box.hidden = !getAoi();
+            ready.hidden = true;
+            meta = null;
+            say('');
+        },
+    };
 }
 
 function bboxOf(feature) {

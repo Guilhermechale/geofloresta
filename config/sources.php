@@ -24,6 +24,13 @@ return [
         'verified' => null,
     ],
     [
+        'key' => 'terrain-tiles', 'name' => 'Terrain Tiles (Mapzen / Tilezen, AWS Open Data)', 'use' => 'elevation', 'status' => 'service',
+        'url' => 'https://registry.opendata.aws/terrain-tiles/',
+        'licence' => 'Fontes abertas com atribuição (SRTM, GMTED2010, ETOPO1, 3DEP: domínio público EUA; EU-DEM: Copernicus; outras conforme a fonte)',
+        'attribution' => 'Terrain Tiles: ArcticDEM (DigitalGlobe, NSF awards 1043681, 1559691, 1542736); Australia © Commonwealth of Australia (Geoscience Australia) 2017; Austria © offene Daten Österreichs – DGM Österreich; Canada: Open Government Licence – Canada; Europe: Copernicus EU-DEM, funded by the European Union; ETOPO1: U.S. NOAA; Mexico: INEGI, Continental relief, 2016; New Zealand © Crown copyright, LINZ; Norway © Kartverket; United Kingdom © Environment Agency copyright and/or database right 2015; United States 3DEP (formerly NED) and global GMTED2010 and SRTM: courtesy of the U.S. Geological Survey.',
+        'verified' => null,
+    ],
+    [
         'key' => 'firms', 'name' => 'NASA Fire Information for Resource Management System (FIRMS)', 'use' => 'fire', 'status' => 'hosted',
         'url' => 'https://firms.modaps.eosdis.nasa.gov/', 'licence' => 'NASA Earth Science Data — open data policy (no restrictions on reuse)',
         'attribution' => 'We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS).',

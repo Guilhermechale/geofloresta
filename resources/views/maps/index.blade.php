@@ -12,6 +12,7 @@
         @vite(['resources/css/map.css', 'resources/js/map.js'])
         <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
         <link rel="preconnect" href="https://gibs.earthdata.nasa.gov" crossorigin>
+        <link rel="preconnect" href="https://elevation-tiles-prod.s3.amazonaws.com" crossorigin>
     </x-slot:head>
 
     <x-page-head :title="__('map.title')" :lede="__('map.lede')" :crumbs="$crumbs">
@@ -71,6 +72,9 @@
                     @if (! empty($config['gibs']['ndvi']))
                         <label class="check"><input type="checkbox" name="ndvi"> <span>{{ __('map.ndvi') }}</span></label>
                     @endif
+                    <label class="check"><input type="checkbox" name="hillshade"> <span>{{ __('map.relief') }}</span></label>
+                    <label class="check"><input type="checkbox" name="relief"> <span>{{ __('map.relief_color') }}</span></label>
+                    <p class="relief-legend small" aria-hidden="true"><span>{{ __('map.relief_low') }}</span><span class="relief-legend__bar"></span><span>{{ __('map.relief_high') }}</span></p>
                     <div class="field field--inline">
                         <label for="map-date">{{ __('map.date') }}</label>
                         <input type="date" id="map-date" name="date" value="{{ $config['imageDate'] }}" max="{{ now('UTC')->toDateString() }}" min="2012-01-19">
@@ -122,6 +126,25 @@
                         <button type="button" class="btn btn--small" data-aoi-csv>{{ __('map.aoi_csv') }}</button>
                         <button type="button" class="btn btn--small" data-aoi-geojson>{{ __('map.aoi_geojson') }}</button>
                     </div>
+                </fieldset>
+                <fieldset class="aoi-dem" data-dem hidden>
+                    <legend class="meta">{{ __('map.dem_title') }}</legend>
+                    <p class="small muted">{{ __('map.dem_help') }}</p>
+                    <button type="button" class="btn btn--small" data-dem-build>{{ __('map.dem_build') }}</button>
+                    <div class="small" data-dem-status role="status" aria-live="polite"></div>
+                    <div data-dem-ready hidden>
+                        <div class="field">
+                            <label for="dem-interval">{{ __('map.dem_interval') }}</label>
+                            <select id="dem-interval" name="interval">
+                                @foreach ([10, 20, 50, 100, 200, 500] as $m)<option value="{{ $m }}">{{ $m }} m</option>@endforeach
+                            </select>
+                        </div>
+                        <div class="aoi-download">
+                            <button type="button" class="btn btn--small" data-dem-tiff>{{ __('map.dem_tiff') }}</button>
+                            <button type="button" class="btn btn--small" data-dem-contours>{{ __('map.dem_contours') }}</button>
+                        </div>
+                    </div>
+                    <p class="small muted">{{ __('map.dem_note') }} <a href="{{ lroute('contact') }}?assunto=data">{{ __('map.dem_more') }}</a></p>
                 </fieldset>
             </form>
         </aside>
@@ -178,13 +201,14 @@
                 <h2 id="about-data" class="h3">{{ __('map.about_title') }}</h2>
                 <p>{{ __('map.about_fires') }}</p>
                 <p>{{ __('map.about_imagery') }}</p>
+                <p>{{ __('map.about_relief') }}</p>
                 @if ($isMoz)
                     <p><a class="link-arrow" href="{{ lroute('countries.show', ['iso' => 'moz']) }}">{{ __('map.kit_link', ['country' => $countryName]) }}</a></p>
                 @endif
                 @if ($fireDataset)
                     <p><a class="link-arrow" href="{{ $fireDataset->url() }}">{{ __('map.history') }}</a></p>
                 @endif
-                <p class="small muted" lang="en">We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS). We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS). Basemap: OpenFreeMap © OpenMapTiles Data from OpenStreetMap.</p>
+                <p class="small muted" lang="en">We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS). We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS). Basemap: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Relief: {{ $config['dem']['attribution'] }}</p>
             </section>
         </div>
     </div>

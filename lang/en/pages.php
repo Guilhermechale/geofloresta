@@ -117,7 +117,7 @@ return [
         'uses' => [
             'basemap' => 'Basemap', 'imagery' => 'Daily satellite imagery', 'fire' => 'Fire detections',
             'land-cover' => 'Land cover', 'forest-loss' => 'Tree cover loss', 'hydrology' => 'Hydrology',
-            'boundaries' => 'Administrative boundaries', 'biomass' => 'Biomass and carbon', 'software' => 'Software',
+            'elevation' => 'Relief (elevation)', 'boundaries' => 'Administrative boundaries', 'biomass' => 'Biomass and carbon', 'software' => 'Software',
         ],
         'unverified' => 'licence to be reconfirmed',
     ],

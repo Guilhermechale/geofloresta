@@ -116,4 +116,26 @@ class MapsTest extends TestCase
         // Página inicial mostra o resumo
         $this->get('/')->assertOk()->assertSee('focos activos detectados');
     }
+
+    public function test_maps_page_has_relief_layers_and_dem_download(): void
+    {
+        Storage::fake('public');
+        Storage::fake('local');
+        $r = $this->get('/mapas')->assertOk();
+        $html = $r->getContent();
+        // Camadas de relevo e bloco de download por área
+        $this->assertStringContainsString('name="hillshade"', $html);
+        $this->assertStringContainsString('name="relief"', $html);
+        $this->assertStringContainsString('data-dem-build', $html);
+        $this->assertStringContainsString('Curvas de nível (GeoJSON)', $html);
+        $this->assertStringContainsString('elevation-tiles-prod.s3.amazonaws.com/terrarium/{z}/{x}/{y}.png', $html);
+        $this->assertStringContainsString('United States 3DEP (formerly NED) and global GMTED2010 and SRTM', $html);
+        // A política de segurança permite os mosaicos de elevação (imagens e pedidos do trabalhador)
+        $csp = $r->headers->get('Content-Security-Policy');
+        $this->assertMatchesRegularExpression('/img-src[^;]*elevation-tiles-prod\.s3\.amazonaws\.com/', $csp);
+        $this->assertMatchesRegularExpression('/connect-src[^;]*elevation-tiles-prod\.s3\.amazonaws\.com/', $csp);
+        $this->assertMatchesRegularExpression("/worker-src 'self'/", $csp);
+        $this->get('/en/maps')->assertOk()->assertSee('Relief (hillshade)')->assertSee('Contour lines (GeoJSON)');
+        $this->get('/fr/cartes')->assertOk()->assertSee('Relief (ombrage)')->assertSee('Courbes de niveau (GeoJSON)');
+    }
 }

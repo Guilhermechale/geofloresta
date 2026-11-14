@@ -38,7 +38,7 @@ class SecurityHeaders
     {
         $ga = config('geofloresta.ga4_id') ? ' https://www.googletagmanager.com' : '';
         $gaConnect = config('geofloresta.ga4_id') ? ' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com' : '';
-        $tiles = 'https://tiles.openfreemap.org https://gibs.earthdata.nasa.gov';
+        $tiles = 'https://tiles.openfreemap.org https://gibs.earthdata.nasa.gov https://elevation-tiles-prod.s3.amazonaws.com';
 
         return implode('; ', [
             "default-src 'self'",

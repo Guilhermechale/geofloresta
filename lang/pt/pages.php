@@ -116,7 +116,7 @@ return [
         'uses' => [
             'basemap' => 'Mapa de base', 'imagery' => 'Imagem de satélite diária', 'fire' => 'Focos de incêndio',
             'land-cover' => 'Uso e cobertura do solo', 'forest-loss' => 'Perda de cobertura arbórea', 'hydrology' => 'Hidrologia',
-            'boundaries' => 'Limites administrativos', 'biomass' => 'Biomassa e carbono', 'software' => 'Software',
+            'elevation' => 'Relevo (elevação)', 'boundaries' => 'Limites administrativos', 'biomass' => 'Biomassa e carbono', 'software' => 'Software',
         ],
         'unverified' => 'licença por reconfirmar',
     ],
