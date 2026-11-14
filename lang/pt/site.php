@@ -36,11 +36,11 @@ return [
     ],
 
     'home' => [
-        'title' => 'GEOFLORESTA — Geotecnologia, floresta e ambiente, de Moçambique para o mundo',
-        'description' => 'Consultoria em SIG, sensoriamento remoto e ambiente, baseada na Beira, Moçambique. Dados geoespaciais abertos de qualquer país (incêndios, rios, bacias hidrográficas, floresta, população), monitor de incêndios e tutoriais gratuitos.',
+        'title' => 'GEOFLORESTA — Geotecnologia, floresta e ambiente, em qualquer parte do mundo',
+        'description' => 'Consultoria em SIG, sensoriamento remoto e ambiente, presencial ou à distância, para projectos em qualquer país. Dados geoespaciais abertos de qualquer país (incêndios, rios, bacias hidrográficas, floresta, população), monitor de incêndios e tutoriais gratuitos.',
         'kicker' => 'GEOFLORESTA · Beira, Sofala · Moçambique',
         'h1' => 'Dados geoespaciais e mapas para florestas e ambiente, em qualquer parte do mundo',
-        'lede' => 'Consultoria em SIG e sensoriamento remoto a partir da Beira, Sofala. Dados abertos de qualquer país para descarregar (incêndios, rios, bacias hidrográficas, floresta, população), mapas de monitorização e tutoriais gratuitos.',
+        'lede' => 'Consultoria em SIG e sensoriamento remoto, presencial ou à distância, para clientes em qualquer país. Dados abertos de qualquer país para descarregar (incêndios, rios, bacias hidrográficas, floresta, população), mapas de monitorização e tutoriais gratuitos.',
         'cta_data' => 'Explorar os dados',
         'cta_contact' => 'Pedir uma proposta',
         'sustain' => [
@@ -109,7 +109,7 @@ return [
     ],
 
     'footer' => [
-        'about' => 'Consultoria em geotecnologia, floresta e meio ambiente. Cidade da Beira, Sofala, Moçambique.',
+        'about' => 'Consultoria em geotecnologia, floresta e meio ambiente, presencial ou à distância.',
         'site' => 'Site',
         'legal' => 'Informação legal',
         'privacy' => 'Política de Privacidade',

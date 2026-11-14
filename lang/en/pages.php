@@ -7,7 +7,7 @@ return [
 
     'services' => [
         'title' => 'Services',
-        'description' => 'GIS, remote sensing, applied artificial intelligence and environmental consultancy based in Beira, Mozambique, for projects in any country.',
+        'description' => 'GIS, remote sensing, applied artificial intelligence and environmental consultancy, on site or remote, for projects in any country.',
         'lede' => 'Technical work with geographic data, from survey to final map, for forest and environmental projects in Mozambique and anywhere in the world where data exist.',
         'includes' => 'Includes',
         'ask' => 'Request a proposal for this service',
@@ -36,7 +36,7 @@ return [
 
     'contact' => [
         'title' => 'Contact',
-        'description' => 'Contact GEOFLORESTA for GIS, remote sensing, data extracts and environmental consultancy proposals. Beira, Sofala, Mozambique.',
+        'description' => 'Contact GEOFLORESTA for GIS, remote sensing, data extracts and environmental consultancy proposals.',
         'lede' => 'Describe your project or data request. We reply by email.',
         'form_title' => 'Send a message',
         'name' => 'Name',
@@ -78,7 +78,7 @@ return [
         'title' => 'Search',
         'description' => 'Search GEOFLORESTA datasets, tutorials and studies.',
         'label' => 'Search data, tutorials and studies',
-        'placeholder' => 'e.g. NDVI, Sofala, fires',
+        'placeholder' => 'e.g. NDVI, forest, fires',
         'submit' => 'Search',
         'results' => '{0} No results for “:q”.|{1} 1 result for “:q”.|[2,*] :count results for “:q”.',
         'types' => ['dataset' => 'Dataset', 'tutorial' => 'Tutorial', 'study' => 'Research'],

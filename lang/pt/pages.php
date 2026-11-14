@@ -6,7 +6,7 @@ return [
 
     'services' => [
         'title' => 'Serviços',
-        'description' => 'SIG, sensoriamento remoto, inteligência artificial aplicada e consultoria ambiental a partir da Beira, Moçambique, para projectos em qualquer país.',
+        'description' => 'SIG, sensoriamento remoto, inteligência artificial aplicada e consultoria ambiental, presencial ou à distância, para projectos em qualquer país.',
         'lede' => 'Trabalho técnico com dados geográficos, do levantamento ao mapa final, para projectos de floresta e ambiente em Moçambique e em qualquer parte do mundo onde existam dados.',
         'includes' => 'Inclui',
         'ask' => 'Pedir proposta para este serviço',
@@ -35,7 +35,7 @@ return [
 
     'contact' => [
         'title' => 'Contacto',
-        'description' => 'Contacte a GEOFLORESTA para propostas de SIG, sensoriamento remoto, recortes de dados e consultoria ambiental. Beira, Sofala, Moçambique.',
+        'description' => 'Contacte a GEOFLORESTA para propostas de SIG, sensoriamento remoto, recortes de dados e consultoria ambiental.',
         'lede' => 'Descreva o projecto ou o pedido de dados. Respondemos por e-mail.',
         'form_title' => 'Enviar mensagem',
         'name' => 'Nome',
@@ -77,7 +77,7 @@ return [
         'title' => 'Procurar',
         'description' => 'Procurar dados, tutoriais e pesquisas da GEOFLORESTA.',
         'label' => 'Procurar em dados, tutoriais e pesquisas',
-        'placeholder' => 'ex.: NDVI, Sofala, incêndios',
+        'placeholder' => 'ex.: NDVI, floresta, incêndios',
         'submit' => 'Procurar',
         'results' => '{0} Nenhum resultado para «:q».|{1} 1 resultado para «:q».|[2,*] :count resultados para «:q».',
         'types' => ['dataset' => 'Dataset', 'tutorial' => 'Tutorial', 'study' => 'Pesquisa'],
@@ -89,7 +89,7 @@ return [
         'description' => 'Todas as páginas do site da GEOFLORESTA.',
         'main' => 'Páginas principais',
         'legal' => 'Informação legal',
-        'datasets' => 'Datasets',
+        'datasets' => 'Dados',
         'tutorials' => 'Tutoriais',
         'studies' => 'Pesquisas',
         'courses' => 'Cursos',

@@ -2,20 +2,11 @@
     <section class="hero">
         <x-carto-art />
         <div class="wrap hero__inner">
-            <p class="meta">{{ __('site.home.kicker') }}</p>
             <h1>{{ __('site.home.h1') }}</h1>
             <p class="lede">{{ __('site.home.lede') }}</p>
             <div class="hero__actions">
                 <a class="btn btn--primary" href="{{ lroute('data') }}">{{ __('site.home.cta_data') }}</a>
                 <a class="btn" href="{{ lroute('contact') }}">{{ __('site.home.cta_contact') }}</a>
-            </div>
-            <div class="hero__coords">
-                <span class="coord">19°50′S · 34°51′E</span>
-                <span class="coord">WGS 84 · EPSG:4326</span>
-                <div class="scalebar" aria-hidden="true">
-                    <div class="scalebar__bar"><span></span><span></span><span></span><span></span></div>
-                    <div class="scalebar__labels"><span>0</span><span>50</span><span>100 km</span></div>
-                </div>
             </div>
         </div>
     </section>

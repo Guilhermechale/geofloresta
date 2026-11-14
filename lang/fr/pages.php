@@ -7,7 +7,7 @@ return [
 
     'services' => [
         'title' => 'Services',
-        'description' => 'SIG, télédétection, intelligence artificielle appliquée et conseil environnemental depuis Beira, au Mozambique, pour des projets dans tous les pays.',
+        'description' => 'SIG, télédétection, intelligence artificielle appliquée et conseil environnemental, sur place ou à distance, pour des projets dans tous les pays.',
         'lede' => 'Travail technique sur les données géographiques, du relevé à la carte finale, pour des projets forestiers et environnementaux au Mozambique et partout dans le monde où des données existent.',
         'includes' => 'Comprend',
         'ask' => 'Demander une proposition pour ce service',
@@ -36,7 +36,7 @@ return [
 
     'contact' => [
         'title' => 'Contact',
-        'description' => 'Contactez GEOFLORESTA pour des propositions en SIG, télédétection, extraits de données et conseil environnemental. Beira, Sofala, Mozambique.',
+        'description' => 'Contactez GEOFLORESTA pour des propositions en SIG, télédétection, extraits de données et conseil environnemental.',
         'lede' => 'Décrivez votre projet ou votre demande de données. Nous répondons par e-mail.',
         'form_title' => 'Envoyer un message',
         'name' => 'Nom',
@@ -78,7 +78,7 @@ return [
         'title' => 'Recherche',
         'description' => 'Rechercher des jeux de données, tutoriels et études de GEOFLORESTA.',
         'label' => 'Rechercher dans les données, tutoriels et études',
-        'placeholder' => 'ex. : NDVI, Sofala, incendies',
+        'placeholder' => 'ex. : NDVI, forêt, incendies',
         'submit' => 'Rechercher',
         'results' => '{0} Aucun résultat pour « :q ».|{1} 1 résultat pour « :q ».|[2,*] :count résultats pour « :q ».',
         'types' => ['dataset' => 'Jeu de données', 'tutorial' => 'Tutoriel', 'study' => 'Recherche'],
