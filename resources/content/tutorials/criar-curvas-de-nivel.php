@@ -1,6 +1,6 @@
-// Uso no servidor: php criar-curvas-de-nivel.php <pasta da app> <curvas-de-nivel.php> <pasta com as imagens (assets-originais/tutoriais/curvas-de-nivel)>
 <?php
-// Cria (ou actualiza) o tutorial «Curvas de nível em 2 minutos». Uso: php create.php <app> <content.php> <pasta-imagens>
+// Cria (ou actualiza) o tutorial «Curvas de nível em 2 minutos».
+// Uso no servidor: php criar-curvas-de-nivel.php <pasta da app> <curvas-de-nivel.php> <pasta com as imagens (assets-originais/tutoriais/curvas-de-nivel)>
 [$_, $app, $contentFile, $imgDir] = $argv;
 require $app.'/vendor/autoload.php';
 $laravel = require $app.'/bootstrap/app.php';
