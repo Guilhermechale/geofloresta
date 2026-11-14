@@ -209,7 +209,8 @@ class ArticleBody
     {
         preg_match_all('#<h2[^>]*\sid="([^"]+)"[^>]*>(.*?)</h2>#su', $rendered, $m, PREG_SET_ORDER);
 
-        return array_map(fn ($x) => [$x[1], trim(html_entity_decode(strip_tags($x[2]), ENT_QUOTES, 'UTF-8'))], $m);
+        // O índice é uma lista numerada: tira o número que o título já traga ("1. ", "2) ")
+        return array_map(fn ($x) => [$x[1], preg_replace('/^\d+[.)]\s+/u', '', trim(html_entity_decode(strip_tags($x[2]), ENT_QUOTES, 'UTF-8')))], $m);
     }
 
     protected static function isCaption(DOMNode $n): bool

@@ -91,6 +91,8 @@
 
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
+/* O atributo hidden esconde sempre, mesmo em elementos com display próprio (.btn, .aoi-download, …) */
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 5rem; }
 body {
     margin: 0;

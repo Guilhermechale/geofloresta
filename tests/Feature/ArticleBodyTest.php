@@ -92,4 +92,10 @@ class ArticleBodyTest extends TestCase
         $this->assertStringContainsString('<div class="references">', $html);
         $this->assertStringContainsString('<div class="cite-box">', $html);
     }
+
+    public function test_toc_drops_numbers_already_in_headings(): void
+    {
+        $toc = \App\Support\ArticleBody::toc('<h2 id="a">1. O que são curvas de nível</h2><h2 id="b">Exercício prático</h2><h2 id="c">10) Conclusão</h2>');
+        $this->assertSame([['a', 'O que são curvas de nível'], ['b', 'Exercício prático'], ['c', 'Conclusão']], $toc);
+    }
 }
