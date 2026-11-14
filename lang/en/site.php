@@ -38,7 +38,7 @@ return [
 
     'home' => [
         'title' => 'GEOFLORESTA — Geotechnology, forests and environment, from Mozambique to the world',
-        'description' => 'GIS, remote sensing and environmental consultancy based in Beira. Open geospatial data, fire monitoring maps and tutorials for R, QGIS and Google Earth Engine.',
+        'description' => 'GIS, remote sensing and environmental consultancy based in Beira, Mozambique. Open geospatial data for any country (fires, rivers, river basins, forest, population), a fire monitor and free tutorials.',
         'kicker' => 'GEOFLORESTA · Beira, Sofala · Mozambique',
         'h1' => 'Geospatial data and maps for forests and the environment, anywhere in the world',
         'lede' => 'GIS and remote sensing consultancy based in Beira, Sofala. Open data for any country to download (fires, rivers, river basins, forest, population), monitoring maps and free tutorials.',

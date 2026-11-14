@@ -38,7 +38,7 @@ return [
 
     'home' => [
         'title' => 'GEOFLORESTA — Géotechnologie, forêt et environnement, du Mozambique au monde',
-        'description' => 'Conseil en SIG, télédétection et environnement, basé à Beira. Données géospatiales ouvertes, cartes de suivi des feux et tutoriels R, QGIS et Google Earth Engine.',
+        'description' => 'Conseil en SIG, télédétection et environnement basé à Beira, au Mozambique. Données géospatiales ouvertes pour tous les pays (feux, rivières, bassins versants, forêt, population), suivi des feux et tutoriels gratuits.',
         'kicker' => 'GEOFLORESTA · Beira, Sofala · Mozambique',
         'h1' => 'Données géospatiales et cartes pour les forêts et l’environnement, partout dans le monde',
         'lede' => 'Conseil en SIG et télédétection depuis Beira, Sofala. Données ouvertes de tous les pays à télécharger (feux, rivières, bassins versants, forêt, population), cartes de suivi et tutoriels gratuits.',
