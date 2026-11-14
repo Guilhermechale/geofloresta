@@ -21,7 +21,7 @@ return [
 
     'about' => [
         'title' => 'À propos',
-        'description' => 'GEOFLORESTA est un cabinet de conseil en géotechnologie, forêt et environnement fondé en 2026 à Beira par Guilherme Chale, ingénieur forestier.',
+        'description' => 'GEOFLORESTA est un cabinet de conseil en géotechnologie, forêt et environnement fondé en 2026 à Beira par Guilherme Chale, ingénieur forestier. Il travaille avec des clients de tous les pays, sur place ou à distance.',
         'facts' => 'Fiche',
         'founded' => 'Fondation',
         'base' => 'Siège',

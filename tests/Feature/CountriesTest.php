@@ -46,6 +46,21 @@ class CountriesTest extends TestCase
         $this->get('/fr/donnees/pays')->assertOk()->assertSee('Données par pays')->assertSee('Brésil');
     }
 
+    public function test_country_page_has_its_own_overview(): void
+    {
+        $this->world();
+        $this->get('/dados/paises/bra')->assertOk()
+            ->assertSee('Resumo')
+            ->assertSee('Este país fica na América do Sul e estende-se aproximadamente entre as latitudes 34,0° S e 5,3° N')
+            ->assertSee('detectaram 900 focos de calor activos neste país (120 nas últimas 24 horas): é o 1.º valor mais alto entre os 2 países', false)
+            ->assertSee('27 unidades de primeiro nível')
+            ->assertSee('HydroSHEDS da região América do Sul');
+        $this->get('/dados/paises/moz')->assertOk()->assertSee('é o 2.º valor mais alto');
+        $this->get('/dados/paises/prt')->assertOk()->assertSee('não detectaram focos de calor activos');
+        $this->get('/en/data/countries/bra')->assertOk()->assertSee('Brazil lies in South America')->assertSee('ranking 1 of the 2 countries');
+        $this->get('/fr/donnees/pays/bra')->assertOk()->assertSee('Ce pays se situe en Amérique du Sud');
+    }
+
     public function test_country_page_lists_open_sources_and_downloads(): void
     {
         $this->world();

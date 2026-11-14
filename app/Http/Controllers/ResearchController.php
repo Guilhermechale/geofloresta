@@ -21,10 +21,15 @@ class ResearchController extends Controller
 
     public function show(Request $request, string $slug): View|RedirectResponse
     {
-        $s = Study::query()->when(! Preview::active($request), fn ($b) => $b->published())->where('slug', $slug)->firstOrFail();
-        // Em português o URL canónico é o do WordPress (/slug)
-        if (app()->getLocale() === 'pt' && ! Preview::active($request)) {
-            return redirect()->to($s->url('pt'), 301);
+        $locale = app()->getLocale();
+        $base = fn () => Study::query()->when(! Preview::active($request), fn ($b) => $b->published());
+        // FR/EN: procura pelo endereço traduzido; se não existir, aceita o slug português (endereço antigo)
+        $s = in_array($locale, Study::LOCALISED, true) ? $base()->where("slugs->{$locale}", $slug)->first() : null;
+        $s ??= $base()->where('slug', $slug)->firstOrFail();
+
+        // PT: o URL canónico é o do WordPress (/slug). FR/EN: endereço antigo -> novo, com 301.
+        if (! Preview::active($request) && ($locale === 'pt' || $s->localSlug($locale) !== $slug)) {
+            return redirect()->to($s->url($locale), 301);
         }
 
         return self::render($s);

@@ -7,6 +7,28 @@
         ['label' => $name, 'url' => lroute('countries.show', ['iso' => $iso])],
     ]);
     $stats = collect($sections)->firstWhere('key', 'fires')['stats'] ?? null;
+
+    // Resumo próprio do país: localização, focos (com posição entre países), unidades administrativas e bacias
+    $deg = function (float $v, string $pos, string $neg) { return str_replace('.', app()->getLocale() === 'en' ? '.' : ',', number_format(abs($v), 1)).'° '.__('countryguide.dir.'.($v >= 0 ? $pos : $neg)); };
+    $ranking = array_keys(\App\Geo\World::fires()['countries'] ?? []);
+    $rankPos = array_search($c['iso'], $ranking, true);
+    $units = collect(collect($sections)->firstWhere('key', 'boundaries')['items'] ?? [])->filter(fn ($i) => ! empty($i['units']))->mapWithKeys(fn ($i) => [$i['level'] => (int) $i['units']]);
+    $hydro = collect(\App\Geo\World::hydroRegions($c))->map(fn ($r) => __('countries.hydro.'.$r))->implode(' '.__('countryguide.and').' ');
+    $overview = [__('countryguide.location', [
+        'country' => $name, 'in_continent' => __('countryguide.in_continent.'.$c['continent']),
+        'lat0' => $deg($c['bbox'][1], 'N', 'S'), 'lat1' => $deg($c['bbox'][3], 'N', 'S'), 'lon0' => $deg($c['bbox'][0], 'E', 'W'), 'lon1' => $deg($c['bbox'][2], 'E', 'W'),
+    ])];
+    $overview[] = ($stats['n7'] ?? 0) > 0 && $rankPos !== false
+        ? __('countryguide.fires_some', ['country' => $name, 'n7' => format_number($stats['n7']), 'n24' => format_number($stats['n24'] ?? 0), 'rank' => $rankPos + 1, 'total' => count($ranking)])
+        : __('countryguide.fires_none', ['country' => $name]);
+    if (($units['ADM1'] ?? 0) > 1) {
+        $overview[] = ($units['ADM2'] ?? 0) > 1
+            ? __('countryguide.units_both', ['adm1' => format_number($units['ADM1']), 'adm2' => format_number($units['ADM2'])])
+            : __('countryguide.units_one', ['adm1' => format_number($units['ADM1'])]);
+    }
+    if ($hydro !== '') {
+        $overview[] = __('countryguide.water', ['regions' => $hydro]);
+    }
     [$x0, $y0, $x1, $y1] = $c['bbox'];
     $ld = [
         '@context' => 'https://schema.org', '@type' => 'DataCatalog',
@@ -25,6 +47,12 @@
     <div class="section section--tight">
         <div class="wrap grid">
             <article class="span-8">
+                <section class="kit kit--overview" aria-labelledby="h-overview">
+                    <h2 class="h3" id="h-overview">{{ __('countryguide.title') }}</h2>
+                    <p>{{ implode(' ', $overview) }}</p>
+                    <p>{{ __('countryguide.service', ['country' => $name]) }} <a class="link-arrow" href="{{ lroute('contact') }}?assunto=data">{{ __('countryguide.service_link') }}</a></p>
+                </section>
+
                 <nav class="toc-inline" aria-label="{{ __('countries.sections_nav') }}">
                     @foreach ($sections as $s)
                         <a href="#{{ $s['key'] }}">{{ __('countries.sections.'.$s['key']) }}</a>

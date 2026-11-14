@@ -107,7 +107,10 @@ trait IsContent
             return $d;
         }
         if (in_array('summary', $this->translatable, true)) {
-            return \Illuminate\Support\Str::limit(strip_tags((string) $this->getTranslation('summary', $this->displayLocale(app()->getLocale()), false)), 160);
+            $s = trim(\Illuminate\Support\Str::limit(strip_tags((string) $this->getTranslation('summary', $this->displayLocale(app()->getLocale()), false)), 160));
+
+            // Resumo vazio: devolve null para a página usar a sua descrição por omissão
+            return $s !== '' ? $s : null;
         }
 
         return null;

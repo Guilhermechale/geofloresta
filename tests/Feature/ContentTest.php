@@ -121,6 +121,41 @@ class ContentTest extends TestCase
         $this->assertFileExists(public_path('img/fundador-guilherme-chale.webp'));
     }
 
+    public function test_about_page_has_meta_description(): void
+    {
+        $this->seed(\Database\Seeders\ContentSeeder::class);
+        foreach (['/sobre' => 'pt', '/fr/a-propos' => 'fr', '/en/about' => 'en'] as $url => $l) {
+            $html = $this->get($url)->assertOk()->getContent();
+            preg_match('/<meta name="description" content="([^"]*)"/', $html, $m);
+            $this->assertNotEmpty($m[1] ?? '', "descrição vazia em {$url}");
+            $this->assertStringContainsString(e(__('pages.about.description', [], $l)), $html);
+        }
+    }
+
+    public function test_research_has_translated_urls_and_old_urls_redirect(): void
+    {
+        $s = Study::create([
+            'slug' => 'perfil-dos-vetores-de-desflorestamento',
+            'title' => ['pt' => 'O perfil dos vetores de desflorestamento', 'fr' => 'Le profil des moteurs de la déforestation', 'en' => 'The profile of deforestation drivers'],
+            'summary' => ['pt' => 'Resumo', 'fr' => 'Résumé', 'en' => 'Summary'], 'body' => ['pt' => '<p>Texto</p>', 'fr' => '<p>Texte</p>', 'en' => '<p>Text</p>'],
+            'status' => 'published', 'published_at' => '2026-11-02 10:00:00',
+        ]);
+        $this->assertSame(['fr' => 'le-profil-des-moteurs-de-la-deforestation', 'en' => 'the-profile-of-deforestation-drivers'], $s->fresh()->slugs);
+
+        $this->get('/en/research/the-profile-of-deforestation-drivers')->assertOk()->assertSee('The profile of deforestation drivers');
+        $this->get('/fr/recherches/le-profil-des-moteurs-de-la-deforestation')->assertOk();
+        // Endereço antigo (slug português) -> novo, com 301
+        $this->get('/en/research/perfil-dos-vetores-de-desflorestamento')->assertStatus(301)->assertRedirect('https://teste.local/en/research/the-profile-of-deforestation-drivers');
+        $this->get('/fr/recherches/perfil-dos-vetores-de-desflorestamento')->assertStatus(301)->assertRedirect('https://teste.local/fr/recherches/le-profil-des-moteurs-de-la-deforestation');
+        // PT mantém o URL do WordPress; listagem e sitemap usam os novos endereços
+        $this->get('/perfil-dos-vetores-de-desflorestamento')->assertOk();
+        $this->get('/en/research')->assertSee('/en/research/the-profile-of-deforestation-drivers', false);
+        $this->get('/sitemap.xml')->assertSee('/fr/recherches/le-profil-des-moteurs-de-la-deforestation', false);
+        // Mudar o título depois não muda o endereço
+        $s->fresh()->update(['title' => ['pt' => 'O perfil dos vetores de desflorestamento', 'fr' => 'Autre titre', 'en' => 'Another title']]);
+        $this->assertSame('the-profile-of-deforestation-drivers', $s->fresh()->slugs['en']);
+    }
+
     public function test_navigation_has_only_the_two_content_categories(): void
     {
         $html = $this->get('/')->getContent();

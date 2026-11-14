@@ -20,7 +20,7 @@ return [
 
     'about' => [
         'title' => 'Sobre',
-        'description' => 'A GEOFLORESTA é uma consultoria em geotecnologia, floresta e ambiente fundada em 2026 na Cidade da Beira por Guilherme Chale, Engenheiro Florestal.',
+        'description' => 'A GEOFLORESTA é uma consultoria em geotecnologia, floresta e ambiente fundada em 2026 na Cidade da Beira por Guilherme Chale, Engenheiro Florestal. Trabalha com clientes de qualquer país, presencialmente ou à distância.',
         'facts' => 'Ficha',
         'founded' => 'Fundação',
         'base' => 'Sede',

@@ -115,6 +115,19 @@ class DatasetsTest extends TestCase
         ], $over));
     }
 
+    public function test_dataset_page_has_uses_howto_and_faq(): void
+    {
+        $d = $this->dataset(['resolution' => '10 m']);
+        $html = $this->get($d->url('pt'))->assertOk()->getContent();
+        $this->assertStringContainsString('Para que servem estes dados', $html);
+        $this->assertStringContainsString(e(__('dataguide.uses.boundaries', [], 'pt')), $html);
+        $this->assertStringContainsString('Como usar no QGIS', $html);
+        $this->assertStringContainsString('Os dados «Limites de teste» são gratuitos?', $html);
+        $this->assertStringContainsString('A resolução espacial é 10 m.', $html);
+        $this->assertStringContainsString('"FAQPage"', $html);
+        $this->get($d->url('en'))->assertOk()->assertSee('What these data are for')->assertSee('Frequently asked questions');
+    }
+
     public function test_packager_builds_zip_with_readme_licence_citation(): void
     {
         Storage::fake('datasets');

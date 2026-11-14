@@ -36,6 +36,16 @@
     } else {
         $ld['spatialCoverage'] = ['@type' => 'Place', 'name' => 'Mozambique'];
     }
+    // Perguntas frequentes (texto próprio de cada conjunto: nome, fonte, licença, sistema de coordenadas, resolução)
+    $faqVars = ['title' => $title, 'source' => $dataset->source_name, 'licence' => $dataset->licenceLabel(), 'crs' => $dataset->crs ?: 'EPSG:4326 (WGS 84)', 'resolution' => (string) $dataset->resolution];
+    $faq = [
+        [__('dataguide.faq.free_q', $faqVars), __('dataguide.faq.free_a', $faqVars)],
+        [__('dataguide.faq.commercial_q', $faqVars), __('dataguide.faq.commercial_a', $faqVars)],
+        [__('dataguide.faq.crs_q', $faqVars), __('dataguide.faq.crs_a', $faqVars).($dataset->resolution ? ' '.__('dataguide.faq.resolution_a', $faqVars) : '')],
+        [__('dataguide.faq.custom_q', $faqVars), __('dataguide.faq.custom_a', $faqVars)],
+    ];
+    $faqLd = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'inLanguage' => $cur, 'mainEntity' => array_map(fn ($q) => ['@type' => 'Question', 'name' => $q[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $q[1]]], $faq)];
+    $usesKey = 'dataguide.uses.'.$dataset->theme;
     if (! $dataset->isExternal() && $dataset->files->isNotEmpty()) {
         $ld['distribution'] = $dataset->files->map(fn ($f) => [
             '@type' => 'DataDownload', 'encodingFormat' => ['cog' => 'image/tiff', 'geojson' => 'application/geo+json', 'gpkg' => 'application/geopackage+sqlite3', 'shp' => 'application/zip', 'csv' => 'text/csv'][$f->format] ?? 'application/zip',
@@ -43,7 +53,7 @@
         ])->values()->all();
     }
 @endphp
-<x-layout :title="$dataset->seoTitle()" :description="$dataset->seoDescription()" type="article" :jsonld="[Breadcrumbs::jsonld($crumbs), $ld]">
+<x-layout :title="$dataset->seoTitle()" :description="$dataset->seoDescription()" type="article" :jsonld="[Breadcrumbs::jsonld($crumbs), $ld, $faqLd]">
     <x-page-head :title="$title" :crumbs="$crumbs" :meta="__('data.themes.'.$dataset->theme).' · '.__('data.regions.'.$dataset->region)">
         @if ($summary)<p class="lede" @if ($fallback) lang="{{ $locale }}" @endif>{{ $summary }}</p>@endif
         @if ($dataset->isExternal())<p><span class="badge">{{ __('data.external') }}</span></p>@endif
@@ -113,6 +123,35 @@
                     <h2 class="h3">{{ __('data.limitations') }}</h2>
                     <p>{{ $lim }}</p>
                 @endif
+
+                @if (trans()->has($usesKey))
+                    <h2 class="h3">{{ __('dataguide.uses_title') }}</h2>
+                    <p>{{ __($usesKey) }}</p>
+                @endif
+
+                <h2 class="h3">{{ __('dataguide.howto_title') }}</h2>
+                <ol class="howto">
+                    <li>{{ $dataset->isExternal() ? __('dataguide.howto.source', $faqVars) : __('dataguide.howto.download') }}</li>
+                    <li>{{ __('dataguide.howto.open') }}</li>
+                    <li>{{ __('dataguide.howto.clip') }} <a href="{{ lroute('countries') }}">{{ __('dataguide.more_countries') }}</a>.</li>
+                    <li>{{ __('dataguide.howto.project') }}</li>
+                    <li>{{ __('dataguide.howto.cite') }}</li>
+                </ol>
+
+                <h2 class="h3">{{ __('dataguide.faq_title') }}</h2>
+                <div class="faq">
+                    @foreach ($faq as [$q, $a])
+                        <details>
+                            <summary>{{ $q }}</summary>
+                            <p>{{ $a }}</p>
+                        </details>
+                    @endforeach
+                </div>
+
+                <p class="small">{{ __('dataguide.more_title') }}:
+                    <a href="{{ lroute('countries') }}">{{ __('dataguide.more_countries') }}</a> ·
+                    <a href="{{ lroute('learn') }}">{{ __('dataguide.more_learn') }}</a>
+                </p>
 
                 <div class="notice">
                     <p>{{ __('data.custom') }}</p>

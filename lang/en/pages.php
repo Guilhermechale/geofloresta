@@ -21,7 +21,7 @@ return [
 
     'about' => [
         'title' => 'About',
-        'description' => 'GEOFLORESTA is a geotechnology, forestry and environmental consultancy founded in 2026 in Beira by Guilherme Chale, Forest Engineer.',
+        'description' => 'GEOFLORESTA is a geotechnology, forestry and environmental consultancy founded in 2026 in Beira by Guilherme Chale, Forest Engineer. It works with clients in any country, on site or remotely.',
         'facts' => 'Fact sheet',
         'founded' => 'Founded',
         'base' => 'Based in',

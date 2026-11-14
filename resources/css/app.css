@@ -520,6 +520,18 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 .cookie-banner__actions, .cookie-dialog__actions { display: flex; flex-wrap: wrap; gap: var(--s-1); }
 /* Os três botões têm o mesmo destaque (nenhum é "primário") */
 .cookie-banner__actions .btn { flex: 1 1 12rem; justify-content: center; }
+/* Telemóvel: aviso compacto (cerca de 1/4 do ecrã). Aceitar e Rejeitar lado a lado, com o mesmo destaque. */
+@media (max-width: 599px) {
+    .cookie-banner__inner { gap: .625rem; padding-block: .75rem; }
+    .cookie-banner__text h2 { font-size: 1rem; margin-bottom: .125rem; }
+    .cookie-banner__text p { font-size: .8125rem; line-height: 1.45; }
+    .cookie-banner__actions { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+    .cookie-banner__actions .btn { min-height: 2.75rem; padding-block: .5rem; font-size: .875rem; }
+    .cookie-banner__actions [data-cookie-prefs] {
+        grid-column: 1 / -1; min-height: 2.75rem; padding-block: .25rem;
+        border-color: transparent; background: none; text-decoration: underline; text-underline-offset: .2em;
+    }
+}
 @media (min-width: 900px) {
     .cookie-banner__inner { grid-template-columns: 1fr auto; align-items: center; }
     .cookie-banner__actions .btn { flex: 0 0 auto; }
@@ -598,3 +610,11 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
     .country-search__row { flex-direction: column; }
 }
 .country-top .table tbody th[scope="row"] { font-family: var(--f-sans); text-transform: none; letter-spacing: 0; font-size: var(--fs-sm); font-weight: 500; border-bottom: 1px solid var(--c-rule); }
+
+/* ---------- Páginas de dados: passos e perguntas frequentes ---------- */
+.howto { padding-left: 1.25rem; }
+.howto li { margin-bottom: .5rem; }
+.faq { border-top: 1px solid var(--c-rule); margin-bottom: var(--s-3); }
+.faq details { border-bottom: 1px solid var(--c-rule); padding-block: .75rem; }
+.faq summary { cursor: pointer; font-weight: 600; min-height: 1.5rem; }
+.faq details p { margin: .5rem 0 0; }

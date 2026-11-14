@@ -12,7 +12,7 @@
     $alternates = Locales::alternates();
     $canonical = $alternates[$locale] ?? url()->current();
     $fullTitle = $title ? $title.' · GEOFLORESTA' : __('site.home.title');
-    $desc = $description ?? __('site.home.description');
+    $desc = filled($description) ? $description : __('site.home.description');
     $ogImage = $image ?? asset('brand/icon-512.png');
     $ogLocales = ['pt' => 'pt_MZ', 'fr' => 'fr_FR', 'en' => 'en_GB'];
     $nonce = \Illuminate\Support\Facades\Vite::cspNonce();
