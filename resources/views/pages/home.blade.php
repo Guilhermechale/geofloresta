@@ -11,6 +11,8 @@
         </div>
     </section>
 
+    <x-intro-video />
+
     <section class="section" aria-labelledby="pillars-title">
         <div class="wrap">
             <div class="section-head">

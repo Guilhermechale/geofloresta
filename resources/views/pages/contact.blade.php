@@ -78,6 +78,11 @@
                     </dl>
                     <p class="coord specimen__foot">19°50′S 34°51′E · Beira</p>
                 </div>
+                <div class="specimen follow">
+                    <h2 class="specimen__title">{{ __('social.title') }}</h2>
+                    <p class="small muted">{{ __('social.lead') }}</p>
+                    <x-social-links variant="list" />
+                </div>
             </aside>
         </div>
     </div>

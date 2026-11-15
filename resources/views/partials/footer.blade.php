@@ -4,6 +4,8 @@
             <p><strong>GEOFLORESTA</strong></p>
             <p class="muted">{{ __('site.footer.about') }}</p>
             <p><a href="mailto:{{ config('geofloresta.contact_email') }}">{{ config('geofloresta.contact_email') }}</a></p>
+            <p class="social-title">{{ __('social.title') }}</p>
+            <x-social-links variant="icons" />
         </div>
         <nav class="span-3 start-6" aria-labelledby="ft-site">
             <h2 id="ft-site">{{ __('site.footer.site') }}</h2>

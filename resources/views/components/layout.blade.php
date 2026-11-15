@@ -24,7 +24,16 @@
         'logo' => asset('brand/icon-512.png'),
         'email' => config('geofloresta.contact_email'),
         'address' => ['@type' => 'PostalAddress', 'addressLocality' => 'Beira', 'addressRegion' => 'Sofala', 'addressCountry' => 'MZ'],
+        'sameAs' => array_values(\App\Support\Social::links()),
     ];
+    $video = config('geofloresta.intro_video');
+    $videoLd = (request()->routeIs('*.home') && ! empty($video['id'])) ? [
+        '@context' => 'https://schema.org', '@type' => 'VideoObject',
+        'name' => __('social.video_title'), 'description' => __('social.video_description'),
+        'thumbnailUrl' => [asset('img/video-como-usar.webp')], 'uploadDate' => $video['uploaded'], 'duration' => $video['duration'],
+        'embedUrl' => 'https://www.youtube-nocookie.com/embed/'.$video['id'], 'contentUrl' => 'https://www.youtube.com/watch?v='.$video['id'],
+        'inLanguage' => 'pt', 'publisher' => ['@type' => 'Organization', 'name' => 'GEOFLORESTA', 'url' => url('/')],
+    ] : null;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $locale }}" data-theme="light">
@@ -71,6 +80,7 @@
     {{ $head ?? '' }}
 
     <script type="application/ld+json" nonce="{{ $nonce }}">{!! json_encode($org, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
+    @if ($videoLd)<script type="application/ld+json" nonce="{{ $nonce }}">{!! json_encode($videoLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>@endif
     @foreach ($jsonld as $block)
         <script type="application/ld+json" nonce="{{ $nonce }}">{!! json_encode($block, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
     @endforeach

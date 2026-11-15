@@ -49,7 +49,7 @@ class SecurityHeaders
             "connect-src 'self' {$tiles}{$gaConnect}",
             "worker-src 'self' blob:",
             "child-src blob:",
-            "frame-src https://*.projects.earthengine.app https://*.earthengine.app", // mapas interactivos dos tutoriais
+            "frame-src https://*.projects.earthengine.app https://*.earthengine.app https://www.youtube-nocookie.com", // mapas interactivos dos tutoriais
             "frame-ancestors 'self'",
             "object-src 'none'",
             "base-uri 'self'",

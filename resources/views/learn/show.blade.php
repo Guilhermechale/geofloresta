@@ -118,6 +118,18 @@
                     <p>{{ __('content.tutorials.help_text') }}</p>
                     <a class="btn btn--small" href="{{ lroute('contact') }}">{{ __('content.tutorials.help_btn') }}</a>
                 </aside>
+
+                @php $wa = config('geofloresta.social.whatsapp'); $yt = config('geofloresta.social.youtube'); @endphp
+                @if ($wa || $yt)
+                    <aside class="follow-box" aria-labelledby="follow-title">
+                        <p class="follow-box__title" id="follow-title">{{ __('social.wa_title') }}</p>
+                        <p>{{ __('social.wa_text') }}</p>
+                        <p class="follow-box__actions">
+                            @if ($wa)<a class="btn btn--small follow-box__wa" href="{{ $wa }}" rel="noopener" target="_blank">{!! \App\Support\Social::svg('whatsapp') !!}<span>{{ __('social.wa_btn') }}</span></a>@endif
+                            @if ($yt)<a class="btn btn--small" href="{{ $yt }}" rel="noopener" target="_blank">{!! \App\Support\Social::svg('youtube') !!}<span>{{ __('social.yt_btn') }}</span></a>@endif
+                        </p>
+                    </aside>
+                @endif
             </article>
 
             @if (count($toc) > 2)
