@@ -23,6 +23,7 @@ class SocialAndVideoTest extends TestCase
         // Dados estruturados: vídeo e perfis nas redes
         $this->assertStringContainsString('"@type":"VideoObject"', $html);
         $this->assertStringContainsString('"duration":"PT1M36S"', $html);
+        $this->assertStringContainsString('"uploadDate":"2026-11-15T12:00:00+02:00"', $html);
         $this->assertStringContainsString('"sameAs":["https://www.youtube.com/@geofloresta.oficial","https://www.linkedin.com/company/geofloresta/"', $html);
         $this->assertMatchesRegularExpression('/frame-src[^;]*https:\/\/www\.youtube-nocookie\.com/', $r->headers->get('Content-Security-Policy'));
         $this->get('/en')->assertOk()->assertSee('How to use GEOFLORESTA')->assertSee('data-video-lang="en"', false);

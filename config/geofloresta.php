@@ -26,7 +26,7 @@ return [
     'intro_video' => [
         'id' => env('INTRO_VIDEO_ID', '1annxj00NGI'),
         'duration' => 'PT1M36S',
-        'uploaded' => '2026-11-15',
+        'uploaded' => '2026-11-15T12:00:00+02:00', // ISO 8601 com fuso horário (o Google exige hora e fuso)
     ],
 
     // Versão do texto de consentimento de cookies: ao mudar, o banner volta a aparecer.
