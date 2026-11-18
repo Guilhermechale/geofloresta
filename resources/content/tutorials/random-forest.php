@@ -296,11 +296,11 @@ return [
 <li><strong>Precisão global:</strong> a percentagem de amostras bem classificadas. Acima de 85 % é, em geral, um bom resultado para mapas de uso do solo.</li>
 <li><strong>Índice Kappa:</strong> mede o acordo descontando o acerto que se teria por acaso. Acima de 0,8 é considerado um acordo forte.</li>
 <li><strong>Acerto do produtor:</strong> de toda a floresta que existe, quanto o mapa apanhou (erros de omissão).</li>
-<li><strong>Acerto do utilizador:</strong> do que o mapa diz que é floresta, quanto é mesmo floresta (erros de comissão). É o que interessa a quem usa o mapa.</li>
+<li><strong>Acerto do utilizador:</strong> do que o mapa diz que é floresta, quanto é mesmo floresta (erros de comissão). É o que interessa a quem usa o mapa. Na consola aparece como «List (1 element)»: abra a seta para ver os seis valores.</li>
 </ul>
 {$fig('pt/fig4-precisao-importancia.webp', 1600, 693, 'Matriz de confusão do Random Forest em Chitwan e gráfico da importância das variáveis', '<strong>Figura 4.</strong> À esquerda, a matriz de confusão das 450 amostras de validação: precisão global de 84,9 % e Kappa de 0,82. À direita, a importância relativa de cada variável no modelo.')}
 <p>No nosso teste, a <strong>floresta</strong> foi a classe mais fiável (99 % de acerto do utilizador). As maiores confusões foram entre <strong>areia e água</strong>, nos leitos dos rios, que mudam de ano para ano, e entre <strong>agricultura e pradaria</strong>, que no fim da época das chuvas podem ter um aspecto muito parecido. São os sítios onde vale a pena acrescentar amostras ou variáveis, por exemplo imagens de outra estação.</p>
-<p>Os números da figura foram obtidos pela GEOFLORESTA com os mesmos dados Sentinel-2, as mesmas variáveis, as amostras da opção B e um Random Forest de 100 árvores. No Earth Engine, os seus valores vão ser parecidos mas não iguais, porque o sorteio das amostras e das árvores é diferente.</p>
+<p>Os números da figura foram obtidos pela GEOFLORESTA com os mesmos dados Sentinel-2, as mesmas variáveis, as amostras da opção B e um Random Forest de 100 árvores. Ao correr o script no Earth Engine, obtivemos os mesmos 84,9 % e Kappa de 0,82. Se mudar as amostras, a área ou o <code>seed</code>, os valores mudam um pouco.</p>
 <h2>6. Importância das variáveis e área de cada classe</h2>
 {$pt['results']}
 <p>O gráfico mostra quanto cada variável contribuiu para separar as classes. Em Chitwan, o <strong>NDVI</strong> e o <strong>NDWI</strong> foram as variáveis mais úteis, seguidos da banda azul (B2) e da <strong>altitude</strong>, que ajuda a separar a floresta das encostas dos campos do vale. Se uma variável tiver uma importância muito baixa, pode experimentar retirá-la.</p>
@@ -403,11 +403,11 @@ HTML,
 <li><strong>Précision globale :</strong> le pourcentage d’échantillons bien classés. Au-delà de 85 %, c’est en général un bon résultat pour une carte d’occupation du sol.</li>
 <li><strong>Indice Kappa :</strong> mesure l’accord en retirant la part due au hasard. Au-delà de 0,8, l’accord est considéré comme fort.</li>
 <li><strong>Précision du producteur :</strong> de toute la forêt qui existe, quelle part la carte a trouvée (erreurs d’omission).</li>
-<li><strong>Précision de l’utilisateur :</strong> de ce que la carte appelle forêt, quelle part est vraiment de la forêt (erreurs de commission). C’est ce qui compte pour l’utilisateur de la carte.</li>
+<li><strong>Précision de l’utilisateur :</strong> de ce que la carte appelle forêt, quelle part est vraiment de la forêt (erreurs de commission). C’est ce qui compte pour l’utilisateur de la carte. Dans la console, elle s’affiche comme « List (1 element) » : ouvrez la flèche pour voir les six valeurs.</li>
 </ul>
 {$fig('fr/fig4-precisao-importancia.webp', 1600, 693, 'Matrice de confusion du Random Forest à Chitwan et graphique de l’importance des variables', '<strong>Figure 4.</strong> À gauche, la matrice de confusion des 450 échantillons de validation : précision globale de 84,9 % et Kappa de 0,82. À droite, l’importance relative de chaque variable.')}
 <p>Dans notre test, la <strong>forêt</strong> a été la classe la plus fiable (99 % de précision de l’utilisateur). Les principales confusions concernent le <strong>sable et l’eau</strong>, dans le lit des rivières qui change d’une année à l’autre, et l’<strong>agriculture et la prairie</strong>, qui peuvent se ressembler beaucoup en fin de saison des pluies. C’est là qu’il vaut la peine d’ajouter des échantillons ou des variables, par exemple des images d’une autre saison.</p>
-<p>Les chiffres de la figure ont été obtenus par GEOFLORESTA avec les mêmes données Sentinel-2, les mêmes variables, les échantillons de l’option B et un Random Forest de 100 arbres. Dans Earth Engine, vos valeurs seront proches mais pas identiques, car le tirage des échantillons et des arbres est différent.</p>
+<p>Les chiffres de la figure ont été obtenus par GEOFLORESTA avec les mêmes données Sentinel-2, les mêmes variables, les échantillons de l’option B et un Random Forest de 100 arbres. En lançant le script dans Earth Engine, nous avons obtenu les mêmes 84,9 % et un Kappa de 0,82. Si vous changez les échantillons, la zone ou le <code>seed</code>, les valeurs changent un peu.</p>
 <h2>6. Importance des variables et surface de chaque classe</h2>
 {$fr['results']}
 <p>Le graphique montre la contribution de chaque variable à la séparation des classes. À Chitwan, le <strong>NDVI</strong> et le <strong>NDWI</strong> ont été les variables les plus utiles, suivis de la bande bleue (B2) et de l’<strong>altitude</strong>, qui aide à séparer la forêt des versants des champs de la vallée. Si une variable a une importance très faible, vous pouvez essayer de la retirer.</p>
@@ -510,11 +510,11 @@ HTML,
 <li><strong>Overall accuracy:</strong> the percentage of correctly classified samples. Above 85% is generally a good result for land cover maps.</li>
 <li><strong>Kappa index:</strong> measures agreement after removing what would be expected by chance. Above 0.8 is considered strong agreement.</li>
 <li><strong>Producer’s accuracy:</strong> of all the forest that exists, how much the map captured (omission errors).</li>
-<li><strong>User’s accuracy:</strong> of what the map calls forest, how much really is forest (commission errors). This is what matters to the map user.</li>
+<li><strong>User’s accuracy:</strong> of what the map calls forest, how much really is forest (commission errors). This is what matters to the map user. The console shows it as “List (1 element)”: expand the arrow to see the six values.</li>
 </ul>
 {$fig('en/fig4-precisao-importancia.webp', 1600, 693, 'Random Forest confusion matrix for Chitwan and variable importance chart', '<strong>Figure 4.</strong> Left, the confusion matrix of the 450 validation samples: overall accuracy of 84.9% and Kappa of 0.82. Right, the relative importance of each variable in the model.')}
 <p>In our test, <strong>forest</strong> was the most reliable class (99% user’s accuracy). The main confusions were between <strong>sand and water</strong>, in riverbeds that shift from year to year, and between <strong>cropland and grassland</strong>, which can look very similar at the end of the rainy season. That is where it pays to add samples or variables, such as imagery from another season.</p>
-<p>The figures were produced by GEOFLORESTA with the same Sentinel-2 data, the same variables, the option B samples and a 100-tree Random Forest. In Earth Engine, your numbers will be similar but not identical, because the random draw of samples and trees is different.</p>
+<p>The figures were produced by GEOFLORESTA with the same Sentinel-2 data, the same variables, the option B samples and a 100-tree Random Forest. Running the script in Earth Engine gave the same 84.9% and a Kappa of 0.82. If you change the samples, the area or the <code>seed</code>, the numbers will shift slightly.</p>
 <h2>6. Variable importance and area of each class</h2>
 {$en['results']}
 <p>The chart shows how much each variable contributed to separating the classes. In Chitwan, <strong>NDVI</strong> and <strong>NDWI</strong> were the most useful variables, followed by the blue band (B2) and <strong>elevation</strong>, which helps separate hillside forest from valley fields. If a variable has very low importance, you can try removing it.</p>
