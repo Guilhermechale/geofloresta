@@ -155,7 +155,7 @@ HTML,
 
     5 => [
         'title' => 'El Niño e La Niña: como funcionam, como se monitorizam e o que esperar em 2026–2027',
-        'summary' => 'Perceba o ciclo El Niño–Oscilação Sul, os índices usados para o monitorizar e os efeitos habituais no mundo e em Moçambique, com a situação de Setembro de 2026.',
+        'summary' => 'Perceba o ciclo El Niño–Oscilação Sul, os índices usados para o monitorizar e os efeitos habituais no mundo e em Moçambique, com a situação de Novembro de 2026.',
         'platform' => 'web', 'level' => 'beginner', 'duration' => 25,
         'objectives' => "Explicar o que é o El Niño e como surge no Pacífico equatorial\nDistinguir as fases El Niño, La Niña e neutra do ciclo ENOS\nConhecer os índices de monitorização (Niño 3.4, ONI, IOS)\nInterpretar os boletins da OMM e da NOAA\nRelacionar o El Niño com secas e chuvas na África Austral",
         'prerequisites' => "Não precisa de conhecimentos prévios\nAcesso à internet para consultar os boletins da NOAA e da OMM",
