@@ -52,6 +52,23 @@ class ContentTest extends TestCase
         $this->get('/')->assertOk()->assertSee('Calcular NDVI no Earth Engine')->assertSee('Perda de cobertura arbórea em Moçambique');
     }
 
+    public function test_old_wordpress_language_tag_and_author_urls_redirect(): void
+    {
+        $this->seedContent();
+
+        // Versões inglesa/francesa do WordPress: /en/{slug-pt} -> conteúdo nessa língua
+        $this->get('/en/gee-ndvi')->assertRedirect('https://teste.local/en/tutorials/gee-ndvi')->assertStatus(301);
+        $this->get('/fr/perda-arborea-mocambique/')->assertRedirect('https://teste.local/fr/recherches/perda-arborea-mocambique');
+        $this->get('/en/sobre')->assertRedirect('https://teste.local/en/about');
+        $this->get('/en/category/centro-de-conhecimento')->assertRedirect('https://teste.local/en/tutorials');
+        $this->get('/tag/incendios-florestais')->assertRedirect('https://teste.local/procurar?q=incendios%20florestais');
+        $this->get('/author/guilhermechale')->assertRedirect('https://teste.local/sobre');
+
+        // O que não existe continua a dar 404, e o 410 da migração mantém-se
+        $this->get('/en/nao-existe')->assertNotFound();
+        $this->get('/noticia-antiga')->assertStatus(410);
+    }
+
     public function test_tutorial_template_has_all_parts(): void
     {
         $this->seedContent();
