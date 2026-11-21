@@ -67,6 +67,7 @@ Route::get('/descarregar/{file}/{filename}', DownloadController::class)->name('d
 
 Route::get('/sitemap.xml', [SitemapController::class, 'xml'])->name('sitemap.xml');
 Route::get('/robots.txt', [WellKnownController::class, 'robots']);
+Route::get('/llms.txt', [WellKnownController::class, 'llms']);
 Route::get('/.well-known/security.txt', [WellKnownController::class, 'security']);
 Route::post('/consent', ConsentController::class)->name('consent')->middleware('throttle:30,1');
 

@@ -9,7 +9,7 @@
     $pageTitle = $isMoz && ! request()->has('pais') ? $toolTitle : $toolTitle.' · '.$countryName;
     $on = fn (string $layer) => \App\Support\MapTools::on($tool, $layer);
 @endphp
-<x-layout :title="$pageTitle" :description="__('map.tools.'.$tool.'.text')" :noindex="request()->has('pais') && $isMoz" :jsonld="[Breadcrumbs::jsonld($crumbs)]">
+<x-layout :title="$pageTitle" :description="__('map.tools.'.$tool.'.text')" :noindex="request()->has('pais') && $isMoz" :jsonld="array_merge([Breadcrumbs::jsonld($crumbs)], \App\Support\Schema::mapTool($tool))">
     <x-slot:head>
         @vite(['resources/css/map.css', 'resources/js/map.js'])
         <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>

@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout :jsonld="\App\Support\Schema::home()">
     @php
         $cards = [];
         foreach (['lulc', 'fires', 'ndvi', 'relief'] as $k) {

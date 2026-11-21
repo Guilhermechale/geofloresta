@@ -3,7 +3,7 @@
     $crumbs = Breadcrumbs::make([['label' => __('pages.services.title'), 'url' => lroute('services')]]);
     $loc = app()->getLocale();
 @endphp
-<x-layout :title="__('pages.services.title')" :description="__('pages.services.description')" :jsonld="[Breadcrumbs::jsonld($crumbs)]">
+<x-layout :title="__('pages.services.title')" :description="__('pages.services.description')" :jsonld="array_merge([Breadcrumbs::jsonld($crumbs)], \App\Support\Schema::services($services))">
     <x-page-head :title="__('pages.services.title')" :lede="__('pages.services.lede')" :crumbs="$crumbs" />
 
     <section class="section section--tight" aria-label="{{ __('pages.services.title') }}">

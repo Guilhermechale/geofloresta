@@ -23,9 +23,9 @@
         <nav class="span-3 start-9" aria-labelledby="ft-legal">
             <h2 id="ft-legal">{{ __('site.footer.legal') }}</h2>
             <ul>
-                <li><a href="{{ lroute('privacy') }}">{{ __('site.footer.privacy') }}</a></li>
+                <li><a href="{{ lroute('privacy') }}" rel="privacy-policy">{{ __('site.footer.privacy') }}</a></li>
                 <li><a href="{{ lroute('cookies') }}">{{ __('site.footer.cookies') }}</a></li>
-                <li><a href="{{ lroute('terms') }}">{{ __('site.footer.terms') }}</a></li>
+                <li><a href="{{ lroute('terms') }}" rel="terms-of-service">{{ __('site.footer.terms') }}</a></li>
                 <li><a href="{{ lroute('licences') }}">{{ __('site.footer.licences') }}</a></li>
                 <li><a href="{{ lroute('accessibility') }}">{{ __('site.footer.accessibility') }}</a></li>
                 <li><button type="button" class="link-btn" data-cookie-prefs>{{ __('site.footer.cookie_prefs') }}</button></li>

@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['locale' => SetLocale::class]);
-        $middleware->web(append: [SecurityHeaders::class]);
+        $middleware->web(append: [SecurityHeaders::class, \App\Http\Middleware\AgentReady::class]);
         // Cookies escritos pelo JavaScript do site (idioma, consentimento) não são cifrados.
         $middleware->encryptCookies(except: ['gf_lang', 'gf_consent']);
         // A Hostinger serve o site atrás da CDN/proxy: confiar no esquema HTTPS reenviado.

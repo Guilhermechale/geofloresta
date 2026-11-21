@@ -3,7 +3,7 @@
     use App\Support\MapTools;
     $crumbs = Breadcrumbs::make([['label' => __('map.nav'), 'url' => lroute('maps')]]);
 @endphp
-<x-layout :title="__('map.hub_title')" :description="__('map.hub_lede')" :jsonld="[Breadcrumbs::jsonld($crumbs)]">
+<x-layout :title="__('map.hub_title')" :description="__('map.hub_lede')" :jsonld="array_merge([Breadcrumbs::jsonld($crumbs)], \App\Support\Schema::mapsHub())">
     <x-page-head :title="__('map.hub_title')" :lede="__('map.hub_lede')" :crumbs="$crumbs" />
     <div class="section section--tight">
         <div class="wrap">

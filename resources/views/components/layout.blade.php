@@ -72,6 +72,9 @@
     <link rel="icon" href="{{ asset('favicon-32.png') }}" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    <link rel="terms-of-service" href="{{ lroute('terms') }}">
+    <link rel="privacy-policy" href="{{ lroute('privacy') }}">
+    <link rel="alternate" type="text/markdown" href="{{ url()->current() }}" title="Markdown">
     @if (request()->hasSession())<meta name="csrf-token" content="{{ csrf_token() }}">@endif
     <meta name="gf-consent-version" content="{{ \App\Support\Consent::version() }}">
     @if (\App\Support\Consent::analyticsAvailable())<meta name="gf-ga" content="{{ config('geofloresta.ga4_id') }}">@endif
