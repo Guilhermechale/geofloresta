@@ -146,6 +146,44 @@
                     </div>
                     <p class="small muted">{{ __('map.dem_note') }} <a href="{{ lroute('contact') }}?assunto=data">{{ __('map.dem_more') }}</a></p>
                 </fieldset>
+                <fieldset class="aoi-lulc" data-lulc hidden>
+                    <legend class="meta">{{ __('map.lulc_title') }}</legend>
+                    <p class="small muted">{{ __('map.lulc_help') }}</p>
+                    <div class="lulc-warning" role="note">
+                        <strong>{{ __('map.lulc_warning') }}</strong>
+                        <span>{{ __('map.lulc_warning_text') }}</span>
+                    </div>
+                    <div class="lulc-fields">
+                        <div class="field">
+                            <label for="lulc-start">{{ __('map.lulc_start') }}</label>
+                            <input type="date" id="lulc-start" name="lulc_start" value="2025-01-01" min="2017-04-01">
+                        </div>
+                        <div class="field">
+                            <label for="lulc-end">{{ __('map.lulc_end') }}</label>
+                            <input type="date" id="lulc-end" name="lulc_end" value="2025-12-31" min="2017-04-01">
+                        </div>
+                        <div class="field">
+                            <label for="lulc-trees">{{ __('map.lulc_trees') }}</label>
+                            <select id="lulc-trees" name="lulc_trees">
+                                @foreach ([50, 100, 200] as $n)<option value="{{ $n }}" @selected($n === 100)>{{ $n }}</option>@endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn--small" data-lulc-run>{{ __('map.lulc_run') }}</button>
+                    <div class="small" data-lulc-status role="status" aria-live="polite"></div>
+                    <progress data-lulc-progress max="1" value="0" hidden></progress>
+                    <div data-lulc-result hidden></div>
+                    <div class="aoi-download" data-lulc-download hidden>
+                        <label class="small"><input type="checkbox" data-lulc-show checked> {{ __('map.lulc_show') }}</label>
+                        <button type="button" class="btn btn--small" data-lulc-tiff>{{ __('map.lulc_tiff') }}</button>
+                        <button type="button" class="btn btn--small" data-lulc-csv>{{ __('map.lulc_csv') }}</button>
+                    </div>
+                    <p class="small muted">{{ __('map.lulc_note') }}</p>
+                    <p class="small">
+                        @if ($rfTutorialUrl)<a href="{{ $rfTutorialUrl }}">{{ __('map.lulc_learn') }}</a> · @endif
+                        <a href="{{ lroute('contact') }}?assunto=proposal">{{ __('map.lulc_more') }}</a>
+                    </p>
+                </fieldset>
             </form>
         </aside>
     </section>

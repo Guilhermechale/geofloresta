@@ -7,7 +7,7 @@
 import { fromUrl, fromArrayBuffer } from 'geotiff';
 import {
     planGrid, toUtm, medianStack, indices, slope, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas,
-    geotiffClasses, FEATURES, CLASS_BY_CODE, rng,
+    geotiffClasses, polygonMask, FEATURES, rng,
 } from './lulc-core.js';
 import { TILE_URL, planTiles, decodeTerrarium, buildGrid } from './dem-core.js';
 
@@ -169,11 +169,12 @@ async function reference(grid, year) {
 }
 
 // ---------- classificação ----------
-async function run({ bbox, start, end, trees = 100, seed = 42 }) {
+async function run({ bbox, geometry, start, end, trees = 100, seed = 42 }) {
     const t0 = performance.now();
     const grid = planGrid(bbox);
     if (!grid) return { error: 'too_big' };
     const N = grid.width * grid.height;
+    const inside = polygonMask(grid, geometry);
     const year = Math.min(2025, Math.max(2017, Number(end.slice(0, 4))));
 
     progress('search');
@@ -217,7 +218,7 @@ async function run({ bbox, start, end, trees = 100, seed = 42 }) {
     for (let p = 0; p < N; p++) {
         let ok = 1;
         for (const f of FEATURES) { const v = feats[f][p]; if (!(v === v) || !Number.isFinite(v)) { ok = 0; break; } }
-        valid[p] = ok;
+        valid[p] = ok && inside[p];
     }
     const nValid = valid.reduce((a, b) => a + b, 0);
     if (nValid < 1000) return { error: 'no_valid' };
@@ -257,7 +258,7 @@ async function run({ bbox, start, end, trees = 100, seed = 42 }) {
     }
     if (m) flush();
 
-    state = { grid, classMap, classes: s.classes, acc, year, feats, ref, valid };
+    state = { grid, classMap };
     const seconds = (performance.now() - t0) / 1000;
     return {
         grid, classes: s.classes, skipped: s.skipped, accuracy: acc, importance: Object.fromEntries(FEATURES.map((f, k) => [f, model.importance[k]])),
@@ -272,16 +273,6 @@ onmessage = async ({ data: msg }) => {
             const res = await run(msg);
             const transfer = res.classMap ? [res.classMap.buffer] : [];
             postMessage({ id: msg.id, ...res }, transfer);
-        } else if (msg.cmd === 'debug') {
-            // diagnóstico: valores das variáveis e da referência em píxeis aleatórios
-            const { grid, feats, ref, valid } = state, r = rng(5), rows = [];
-            while (rows.length < 3000) {
-                const p = Math.floor(r() * grid.width * grid.height);
-                if (!valid[p]) continue;
-                const i = p % grid.width, j = Math.floor(p / grid.width);
-                rows.push([grid.west + (i + 0.5) * grid.dx, grid.north - (j + 0.5) * grid.dy, ref[p], ...FEATURES.map((f) => feats[f][p])]);
-            }
-            postMessage({ id: msg.id, rows });
         } else if (msg.cmd === 'tiff') {
             const buf = geotiffClasses(state.grid, state.classMap, msg.description);
             postMessage({ id: msg.id, buffer: buf }, [buf]);

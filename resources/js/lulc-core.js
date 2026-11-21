@@ -322,3 +322,28 @@ export function geotiffClasses(grid, data, description = '') {
     u8.set(data, off);
     return buf;
 }
+
+// ---------- recorte pela área de interesse (regra par-ímpar, com buracos e multipolígonos) ----------
+export function polygonMask(grid, geometry) {
+    const { width: W, height: H, dx, dy, west, north } = grid;
+    const inside = new Uint8Array(W * H);
+    const rings = geometry?.type === 'Polygon' ? geometry.coordinates : geometry?.type === 'MultiPolygon' ? geometry.coordinates.flat() : null;
+    if (!rings) return inside.fill(1);
+    const xs = [];
+    for (let j = 0; j < H; j++) {
+        const lat = north - (j + 0.5) * dy;
+        xs.length = 0;
+        for (const ring of rings) {
+            for (let k = 0, m = ring.length - 1; k < ring.length; m = k++) {
+                const [x1, y1] = ring[k], [x2, y2] = ring[m];
+                if ((y1 > lat) !== (y2 > lat)) xs.push(x1 + (lat - y1) / (y2 - y1) * (x2 - x1));
+            }
+        }
+        xs.sort((a, b) => a - b);
+        for (let k = 0; k + 1 < xs.length; k += 2) {
+            const i0 = Math.max(0, Math.ceil((xs[k] - west) / dx - 0.5)), i1 = Math.min(W - 1, Math.floor((xs[k + 1] - west) / dx - 0.5));
+            for (let i = i0; i <= i1; i++) inside[j * W + i] = 1;
+        }
+    }
+    return inside;
+}

@@ -138,4 +138,26 @@ class MapsTest extends TestCase
         $this->get('/en/maps')->assertOk()->assertSee('Relief (hillshade)')->assertSee('Contour lines (GeoJSON)');
         $this->get('/fr/cartes')->assertOk()->assertSee('Relief (ombrage)')->assertSee('Courbes de niveau (GeoJSON)');
     }
+
+    public function test_maps_page_has_land_cover_classifier_with_field_validation_warning(): void
+    {
+        Storage::fake('public');
+        Storage::fake('local');
+        $r = $this->get('/mapas')->assertOk();
+        $html = $r->getContent();
+        $this->assertStringContainsString('data-lulc-run', $html);
+        $this->assertStringContainsString('Uso e cobertura do solo (inteligência artificial)', $html);
+        $this->assertStringContainsString('Mapa não validado com dados de campo.', $html);
+        $this->assertStringContainsString('Impact Observatory, Microsoft e Esri', $html);
+        $this->assertStringContainsString('name="lulc_trees"', $html);
+        // Os textos do painel chegam ao JavaScript (classes incluídas)
+        $this->assertStringContainsString('"lulc_classes":["Água","Árvores"', $html);
+        // A política de segurança permite apenas os três serviços de dados abertos usados pelo trabalhador
+        $csp = $r->headers->get('Content-Security-Policy');
+        foreach (['earth-search\.aws\.element84\.com', 'sentinel-cogs\.s3\.us-west-2\.amazonaws\.com', 'ic\.imagery1\.arcgis\.com'] as $host) {
+            $this->assertMatchesRegularExpression("/connect-src[^;]*{$host}/", $csp);
+        }
+        $this->get('/en/maps')->assertOk()->assertSee('Map not validated with field data.')->assertSee('Classify');
+        $this->get('/fr/cartes')->assertOk()->assertSee('Carte non validée par des données de terrain.')->assertSee('Classer');
+    }
 }

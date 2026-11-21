@@ -78,6 +78,7 @@ class MapController extends Controller
                 'dem_empty' => __('map.dem_empty'),
                 'dem_failed' => __('map.dem_failed'),
                 'dem_contours_done' => __('map.dem_contours_done'),
+                'lulc' => collect(trans('map'))->filter(fn ($v, $k) => str_starts_with($k, 'lulc_'))->all(),
                 'drawHelp' => __('map.aoi_draw_help'),
                 'polygon' => __('map.aoi_polygon'),
             ],
@@ -85,7 +86,11 @@ class MapController extends Controller
 
         $fireDataset = $isMoz ? Dataset::published()->where('theme', 'fire')->where('hosting', 'hosted')->orderByDesc('year_end')->first() : null;
 
+        // Tutorial que explica o método (ligação no painel de uso do solo)
+        $rfTutorial = \App\Models\Tutorial::query()->published()->where('slug->pt', 'classificacao-supervisionada-random-forest-google-earth-engine')->first();
+
         return view('maps.index', [
+            'rfTutorialUrl' => $rfTutorial?->url(app()->getLocale()),
             'config' => $config,
             'summary' => $summary,
             'fireDataset' => $fireDataset,

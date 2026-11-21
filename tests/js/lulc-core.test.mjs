@@ -84,3 +84,13 @@ test('áreas em hectares e GeoTIFF com paleta', () => {
     assert.equal(dv.getUint16(2, true), 42);
     assert.deepEqual(Array.from(new Uint8Array(buf, buf.byteLength - 4)), [2, 2, 5, 0]);
 });
+
+test('recorte por polígono (com buraco)', async () => {
+    const { polygonMask } = await import('../../resources/js/lulc-core.js');
+    const grid = { width: 10, height: 10, dx: 1, dy: 1, west: 0, north: 10 };
+    const geom = { type: 'Polygon', coordinates: [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]], [[3, 3], [7, 3], [7, 7], [3, 7], [3, 3]]] };
+    const m = polygonMask(grid, geom);
+    assert.equal(m.reduce((a, b) => a + b, 0), 100 - 16);
+    assert.equal(m[5 * 10 + 5], 0);
+    assert.equal(polygonMask(grid, null).reduce((a, b) => a + b, 0), 100);
+});

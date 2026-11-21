@@ -230,11 +230,13 @@ function setupAoi(map) {
     const help = q('[data-draw-help]');
     aoiForm.addEventListener('submit', (e) => e.preventDefault());
     const dem = setupDem(q, () => aoi);
+    const lulc = setupLulc(q, () => aoi, map);
     const clearSelects = () => { if (provSel) provSel.value = ''; if (distSel) { distSel.value = ''; distSel.disabled = true; } };
 
     const setAoi = (feature) => {
         aoi = feature;
         dem.reset();
+        lulc.reset();
         map.getSource('aoi')?.setData(aoi ? { type: 'FeatureCollection', features: [aoi] } : empty());
         btnClear.hidden = !aoi;
         if (aoi) {
@@ -430,6 +432,165 @@ function setupDem(q, getAoi) {
             ready.hidden = true;
             meta = null;
             say('');
+        },
+    };
+}
+
+/* ---------------- Uso e cobertura do solo (Random Forest no navegador) ---------------- */
+const LULC_CODES = [1, 2, 4, 5, 7, 8, 9, 11];
+const LULC_COLORS = { 1: '#419bdf', 2: '#397d49', 4: '#7a87c6', 5: '#e49635', 7: '#c4281b', 8: '#a59b8f', 9: '#a8ebff', 11: '#e3e2c3' };
+
+function setupLulc(q, getAoi, map) {
+    const box = q('[data-lulc]');
+    if (!box) return { reset() {} };
+    const L = T.lulc || {};
+    const names = Object.fromEntries(LULC_CODES.map((c, k) => [c, (L.lulc_classes || [])[k] || String(c)]));
+    const btnRun = q('[data-lulc-run]'), status = q('[data-lulc-status]'), bar = q('[data-lulc-progress]');
+    const result = q('[data-lulc-result]'), dl = q('[data-lulc-download]'), show = q('[data-lulc-show]');
+    const btnTiff = q('[data-lulc-tiff]'), btnCsv = q('[data-lulc-csv]');
+    const start = q('input[name="lulc_start"]'), end = q('input[name="lulc_end"]'), trees = q('select[name="lulc_trees"]');
+    end.max = start.max = new Date().toISOString().slice(0, 10);
+    let worker = null, seq = 0, last = null, run = 0;
+    const pending = new Map();
+    const pct = (v) => (v == null ? '–' : `${(v * 100).toLocaleString(cfg.locale, { maximumFractionDigits: 1 })} %`);
+    const num = (v, d = 0) => v.toLocaleString(cfg.locale, { maximumFractionDigits: d, minimumFractionDigits: d });
+    const say = (t) => { status.textContent = t; };
+
+    const call = (msg) => new Promise((resolve) => {
+        if (!worker) {
+            worker = new Worker(new URL('./lulc-worker.js', import.meta.url), { type: 'module' });
+            worker.onmessage = ({ data }) => {
+                if (data.progress) {
+                    say((L[`lulc_step_${data.progress}`] || L.lulc_running || '').replace(':scenes', data.scenes ?? '').replace(':trees', data.trees ?? ''));
+                    bar.hidden = false;
+                    const order = ['search', 'clouds', 'bands', 'terrain', 'reference', 'features', 'samples', 'train', 'classify'];
+                    const w = { search: 0.02, clouds: 0.08, bands: 0.5, terrain: 0.03, reference: 0.04, features: 0.03, samples: 0.02, train: 0.08, classify: 0.2 };
+                    let done = 0;
+                    for (const k of order) { if (k === data.progress) { done += w[k] * (data.frac || 0); break; } done += w[k]; }
+                    bar.value = Math.min(1, done);
+                    return;
+                }
+                pending.get(data.id)?.(data);
+                pending.delete(data.id);
+            };
+            worker.onerror = () => { for (const r of pending.values()) r({ error: 'failed' }); pending.clear(); worker = null; };
+        }
+        const id = ++seq;
+        pending.set(id, resolve);
+        worker.postMessage({ ...msg, id });
+    });
+
+    const removeLayer = () => {
+        if (map.getLayer('lulc')) map.removeLayer('lulc');
+        if (map.getSource('lulc')) map.removeSource('lulc');
+    };
+
+    const draw = (r) => {
+        const { width: W, height: H, west, north, east, south } = r.grid;
+        const cv = document.createElement('canvas');
+        cv.width = W; cv.height = H;
+        const ctx = cv.getContext('2d'), img = ctx.createImageData(W, H);
+        const rgb = Object.fromEntries(Object.entries(LULC_COLORS).map(([k, c]) => [k, [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16))]));
+        for (let p = 0; p < W * H; p++) {
+            const c = rgb[r.classMap[p]];
+            if (!c) continue;
+            img.data[p * 4] = c[0]; img.data[p * 4 + 1] = c[1]; img.data[p * 4 + 2] = c[2]; img.data[p * 4 + 3] = 255;
+        }
+        ctx.putImageData(img, 0, 0);
+        removeLayer();
+        // fonte «canvas»: desenha directamente a partir do canvas, sem pedidos de rede (respeita a CSP)
+        map.addSource('lulc', { type: 'canvas', canvas: cv, animate: false, coordinates: [[west, north], [east, north], [east, south], [west, south]] });
+        map.addLayer({ id: 'lulc', type: 'raster', source: 'lulc', paint: { 'raster-opacity': 0.85, 'raster-resampling': 'nearest' } }, map.getLayer('aoi-line') ? 'aoi-line' : undefined);
+    };
+
+    const report = (r) => {
+        const a = r.accuracy, cls = r.classes;
+        const th = (c) => `<th scope="col"><span class="lulc-swatch" style="background:${LULC_COLORS[c]}"></span>${esc(names[c])}</th>`;
+        let h = `<div class="lulc-kpis"><div><span class="lulc-kpi">${pct(a.overall)}</span><span class="small">${esc(L.lulc_accuracy)}</span></div>`
+            + `<div><span class="lulc-kpi">${num(a.kappa, 2)}</span><span class="small">${esc(L.lulc_kappa)}</span></div></div>`;
+        h += `<p class="small muted">${esc(L.lulc_done.replace(':s', num(r.seconds)).replace(':res', r.grid.res).replace(':trees', r.trees))} ${esc(L.lulc_samples.replace(':train', r.samples.train).replace(':val', r.samples.validation))}</p>`;
+        h += `<p class="small"><strong>${esc(L.lulc_matrix)}</strong></p><div class="table-scroll"><table class="lulc-matrix"><thead><tr><th scope="col" class="small">${esc(L.lulc_ref_map)}</th>${cls.map(th).join('')}<th scope="col">${esc(L.lulc_producer)}</th></tr></thead><tbody>`;
+        a.matrix.forEach((row, i) => {
+            h += `<tr><th scope="row"><span class="lulc-swatch" style="background:${LULC_COLORS[cls[i]]}"></span>${esc(names[cls[i]])}</th>`
+                + row.map((v, j) => `<td${i === j ? ' class="lulc-diag"' : ''}>${v}</td>`).join('') + `<td>${pct(a.producers[i])}</td></tr>`;
+        });
+        h += `<tr><th scope="row">${esc(L.lulc_user)}</th>${a.users.map((u) => `<td>${pct(u)}</td>`).join('')}<td></td></tr></tbody></table></div>`;
+        const total = r.areas.reduce((s, x) => s + x.ha, 0) || 1;
+        h += `<p class="small"><strong>${esc(L.lulc_area)}</strong></p><table class="lulc-areas"><tbody>`
+            + r.areas.map((x) => `<tr><th scope="row"><span class="lulc-swatch" style="background:${LULC_COLORS[x.code]}"></span>${esc(names[x.code])}</th><td>${num(x.ha)} ha</td><td>${pct(x.ha / total)}</td></tr>`).join('')
+            + '</tbody></table>';
+        h += `<p class="small muted">${esc(L.lulc_ref_year.replace(':year', r.year))} ${esc(L.lulc_scenes.replace(':list', r.scenes.map((s) => s.date).join(', ')))}</p>`;
+        result.innerHTML = h;
+        result.hidden = false;
+    };
+
+    const fileName = (ext) => `uso_solo_rf_${(cfg.iso || 'area').toLowerCase()}_${new Date().toISOString().slice(0, 10)}.${ext}`;
+    const download = (filename, blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.append(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    };
+    const csv = (r) => {
+        const cls = r.classes, a = r.accuracy, rows = [];
+        const q2 = (v) => `"${String(v).replace(/"/g, '""')}"`;
+        rows.push(['GEOFLORESTA - Random Forest (geofloresta.com)'], [L.lulc_warning + ' ' + L.lulc_warning_text]);
+        rows.push([L.lulc_accuracy, a.overall.toFixed(4)], [L.lulc_kappa, a.kappa.toFixed(4)], ['trees', r.trees], ['pixel_m', r.grid.res],
+            ['images', r.scenes.map((s) => s.id).join(' ')], ['reference', `Sentinel-2 10 m Land Use/Land Cover ${r.year} (Impact Observatory, Microsoft, Esri; CC BY 4.0)`], []);
+        rows.push([L.lulc_matrix], [L.lulc_ref_map, ...cls.map((c) => names[c]), L.lulc_producer]);
+        a.matrix.forEach((row, i) => rows.push([names[cls[i]], ...row, a.producers[i] ?? '']));
+        rows.push([L.lulc_user, ...a.users.map((u) => u ?? '')], []);
+        rows.push([L.lulc_area, 'code', 'ha', '%']);
+        const total = r.areas.reduce((s, x) => s + x.ha, 0) || 1;
+        r.areas.forEach((x) => rows.push([names[x.code], x.code, x.ha.toFixed(2), (100 * x.ha / total).toFixed(2)]));
+        rows.push([], ['variable', 'importance'], ...Object.entries(r.importance).map(([k, v]) => [k, v.toFixed(4)]));
+        return '﻿' + rows.map((r2) => r2.map(q2).join(',')).join('\r\n');
+    };
+
+    btnRun.addEventListener('click', async () => {
+        const area = getAoi();
+        if (!area) return;
+        const id = ++run;
+        btnRun.disabled = true; box.setAttribute('aria-busy', 'true');
+        result.hidden = true; dl.hidden = true; last = null; removeLayer();
+        bar.value = 0; bar.hidden = false;
+        say(L.lulc_running);
+        const s0 = start.value || '2025-01-01', e0 = end.value || '2025-12-31';
+        const r = await call({ cmd: 'run', bbox: bboxOf(area), geometry: area.geometry, start: s0 <= e0 ? s0 : e0, end: s0 <= e0 ? e0 : s0, trees: Number(trees.value) });
+        btnRun.disabled = false; box.setAttribute('aria-busy', 'false'); bar.hidden = true;
+        if (id !== run || getAoi() !== area) return;
+        if (r.error) { say(L[`lulc_${['too_big', 'no_images', 'no_valid', 'few_classes'].includes(r.error) ? r.error : 'failed'}`]); return; }
+        last = r;
+        say('');
+        draw(r); report(r);
+        show.checked = true;
+        dl.hidden = false;
+        window.gtag?.('event', 'lulc_classify', { trees: r.trees, pixel_m: r.grid.res, overall: Math.round(r.accuracy.overall * 1000) / 1000 });
+    });
+    show.addEventListener('change', () => { if (map.getLayer('lulc')) map.setLayoutProperty('lulc', 'visibility', show.checked ? 'visible' : 'none'); });
+    btnTiff.addEventListener('click', async () => {
+        if (!last) return;
+        const r = await call({ cmd: 'tiff', description: `Land use/land cover, Random Forest (${last.trees} trees), Sentinel-2 ${last.scenes.map((s) => s.date).join(' ')}; classes = Sentinel-2 10 m LULC codes (Impact Observatory/Esri). NOT validated with field data. geofloresta.com` });
+        if (r.error) { say(L.lulc_failed); return; }
+        download(fileName('tif'), new Blob([r.buffer], { type: 'image/tiff' }));
+        window.gtag?.('event', 'file_download', { file_name: fileName('tif'), link_text: 'lulc_geotiff' });
+    });
+    btnCsv.addEventListener('click', () => {
+        if (!last) return;
+        download(fileName('csv'), new Blob([csv(last)], { type: 'text/csv;charset=utf-8' }));
+        window.gtag?.('event', 'file_download', { file_name: fileName('csv'), link_text: 'lulc_csv' });
+    });
+
+    return {
+        reset() {
+            run++;
+            box.hidden = !getAoi();
+            result.hidden = true; dl.hidden = true; bar.hidden = true; last = null;
+            btnRun.disabled = false;
+            say('');
+            removeLayer();
         },
     };
 }

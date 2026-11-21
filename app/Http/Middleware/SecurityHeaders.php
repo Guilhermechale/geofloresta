@@ -39,6 +39,8 @@ class SecurityHeaders
         $ga = config('geofloresta.ga4_id') ? ' https://www.googletagmanager.com' : '';
         $gaConnect = config('geofloresta.ga4_id') ? ' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com' : '';
         $tiles = 'https://tiles.openfreemap.org https://gibs.earthdata.nasa.gov https://elevation-tiles-prod.s3.amazonaws.com';
+        // Classificação de uso do solo no navegador: catálogo e imagens Sentinel-2 (AWS) e mapa de referência LULC (Esri)
+        $lulc = 'https://earth-search.aws.element84.com https://sentinel-cogs.s3.us-west-2.amazonaws.com https://ic.imagery1.arcgis.com';
 
         return implode('; ', [
             "default-src 'self'",
@@ -46,7 +48,7 @@ class SecurityHeaders
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: {$tiles}".($ga ? ' https://*.google-analytics.com https://www.googletagmanager.com' : ''),
             "font-src 'self'",
-            "connect-src 'self' {$tiles}{$gaConnect}",
+            "connect-src 'self' {$tiles} {$lulc}{$gaConnect}",
             "worker-src 'self' blob:",
             "child-src blob:",
             "frame-src https://*.projects.earthengine.app https://*.earthengine.app https://www.youtube-nocookie.com", // mapas interactivos dos tutoriais

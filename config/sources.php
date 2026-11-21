@@ -31,6 +31,20 @@ return [
         'verified' => null,
     ],
     [
+        'key' => 'sentinel-2-aws', 'name' => 'Copernicus Sentinel-2 L2A (COG, AWS Open Data; catálogo Earth Search, Element 84)', 'use' => 'land-cover', 'status' => 'service',
+        'url' => 'https://registry.opendata.aws/sentinel-2-l2a-cogs/',
+        'licence' => 'Copernicus Sentinel data — acesso livre, completo e aberto (atribuição)',
+        'attribution' => 'Contains modified Copernicus Sentinel data [year], processed by ESA. Hosted on AWS Open Data (Element 84 Earth Search).',
+        'verified' => '2026-11-21',
+    ],
+    [
+        'key' => 'io-lulc', 'name' => 'Sentinel-2 10 m Land Use/Land Cover (Impact Observatory, Microsoft e Esri)', 'use' => 'land-cover', 'status' => 'service',
+        'url' => 'https://livingatlas.arcgis.com/landcover/',
+        'licence' => 'CC BY 4.0',
+        'attribution' => 'Esri Land Cover: Sentinel-2 10 m Land Use/Land Cover time series of the world. Produced by Impact Observatory, Microsoft, and Esri (CC BY 4.0). Used as reference for training samples in the GEOFLORESTA land cover tool.',
+        'verified' => '2026-11-21',
+    ],
+    [
         'key' => 'firms', 'name' => 'NASA Fire Information for Resource Management System (FIRMS)', 'use' => 'fire', 'status' => 'hosted',
         'url' => 'https://firms.modaps.eosdis.nasa.gov/', 'licence' => 'NASA Earth Science Data — open data policy (no restrictions on reuse)',
         'attribution' => 'We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS).',
