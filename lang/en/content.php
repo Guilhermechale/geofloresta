@@ -2,6 +2,7 @@
 
 return [
     'tutorials' => [
+        'by' => 'By Guilherme Chale, Forest Engineer',
         'title' => 'Tutorials',
         'description' => 'Free GIS and remote sensing tutorials with R, Google Colab, Google Earth Engine and QGIS, with code and sample data.',
         'lede' => 'Step-by-step guides with code to copy, prerequisites and sample data. Free, no registration.',

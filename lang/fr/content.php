@@ -2,6 +2,7 @@
 
 return [
     'tutorials' => [
+        'by' => 'Par Guilherme Chale, ingénieur forestier',
         'title' => 'Tutoriels',
         'description' => 'Tutoriels gratuits de SIG et de télédétection avec R, Google Colab, Google Earth Engine et QGIS, avec code et données d’exemple.',
         'lede' => 'Guides pas à pas avec du code à copier, des prérequis et des données d’exemple. Gratuits et sans inscription.',

@@ -2,6 +2,7 @@
 
 return [
     'tutorials' => [
+        'by' => 'Por Guilherme Chale, Engenheiro Florestal',
         'title' => 'Tutoriais',
         'description' => 'Tutoriais gratuitos de SIG e sensoriamento remoto com R, Google Colab, Google Earth Engine e QGIS, com código e dados de exemplo.',
         'lede' => 'Guias passo a passo com código para copiar, pré-requisitos e dados de exemplo. Gratuitos e sem inscrição.',

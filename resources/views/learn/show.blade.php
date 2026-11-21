@@ -17,7 +17,7 @@
         '@context' => 'https://schema.org', '@type' => 'TechArticle', 'headline' => $title, 'inLanguage' => $locale,
         'url' => $tutorial->url(), 'datePublished' => $tutorial->published_at?->toIso8601String(),
         'dateModified' => ($tutorial->content_updated_at ?? $tutorial->updated_at)?->toIso8601String(),
-        'author' => ['@type' => 'Organization', 'name' => 'GEOFLORESTA'], 'publisher' => ['@type' => 'Organization', 'name' => 'GEOFLORESTA'],
+        'author' => ['@type' => 'Person', 'name' => 'Guilherme Chale', 'jobTitle' => 'Forest Engineer', 'url' => lroute('about')], 'publisher' => ['@type' => 'Organization', 'name' => 'GEOFLORESTA', 'url' => url('/')],
         'proficiencyLevel' => $tutorial->level, 'isAccessibleForFree' => true,
     ];
     if ($objectives) { $ld['teaches'] = $objectives; }
@@ -30,6 +30,7 @@
     <x-page-head :title="$title" :crumbs="$crumbs" :meta="__('content.tutorials.label').' · '.__('content.tutorials.platforms.'.$tutorial->platform)">
         @if ($s = $tutorial->getTranslation('summary', $locale, false))<p class="lede" @if ($fallback) lang="{{ $locale }}" @endif>{{ $s }}</p>@endif
         <ul class="facts">
+            <li><a href="{{ lroute('about') }}" rel="author">{{ __('content.tutorials.by') }}</a></li>
             <li><span>{{ __('content.tutorials.level') }}</span> {{ __('content.tutorials.levels.'.$tutorial->level) }}</li>
             @if ($tutorial->duration_minutes)<li><span>⏱</span> {{ __('content.tutorials.duration', ['n' => $tutorial->duration_minutes]) }}</li>@endif
             @if ($tutorial->published_at)<li>{{ __('content.published', ['date' => format_date($tutorial->published_at)]) }}</li>@endif

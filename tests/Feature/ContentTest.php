@@ -83,7 +83,7 @@ class ContentTest extends TestCase
         ]);
         $html = $this->get('/gee-ndvi')->assertOk()->getContent();
         foreach (['O que vai aprender', 'Calcular o NDVI', 'Antes de começar', 'Acesso ao Earth Engine', 'Neste tutorial', 'id="passo-1-abrir-o-editor"',
-            'Exercício prático', 'Troque a área de interesse', 'Pontos-chave', 'Fontes e documentação', 'href="https://developers.google.com/earth-engine"', 'Livro sem ligação', '30 min'] as $s) {
+            'Exercício prático', 'Troque a área de interesse', 'Pontos-chave', 'Fontes e documentação', 'href="https://developers.google.com/earth-engine"', 'Livro sem ligação', '30 min', 'Por Guilherme Chale, Engenheiro Florestal', 'rel="author"', '"@type":"Person"'] as $s) {
             $this->assertStringContainsString($s, $html, $s);
         }
     }
