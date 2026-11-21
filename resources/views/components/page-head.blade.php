@@ -1,5 +1,5 @@
 @props(['title', 'lede' => null, 'crumbs' => [], 'meta' => null])
-<header class="page-head">
+<header {{ $attributes->merge(['class' => 'page-head']) }}>
     <div class="wrap">
         @if (count($crumbs) > 1)
             <nav aria-label="{{ __('pages.breadcrumb') }}">

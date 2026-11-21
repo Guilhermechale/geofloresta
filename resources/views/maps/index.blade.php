@@ -1,13 +1,15 @@
 @php
     use App\Support\Breadcrumbs;
-    $crumbs = Breadcrumbs::make([['label' => __('map.nav'), 'url' => lroute('maps')]]);
+    $toolTitle = __('map.tools.'.$tool.'.title');
+    $crumbs = Breadcrumbs::make([['label' => __('map.nav'), 'url' => lroute('maps')], ['label' => $toolTitle, 'url' => \App\Support\MapTools::url($tool)]]);
     $nonce = \Illuminate\Support\Facades\Vite::cspNonce();
     $provinceNames = $isMoz ? collect(json_decode((string) \Illuminate\Support\Facades\Storage::disk('public')->get('geo/mz-provincias.geojson'), true)['features'] ?? [])
         ->pluck('properties.nome')->sort()->values() : collect();
     $isoLower = strtolower($config['iso']);
-    $pageTitle = $isMoz && ! request()->has('pais') ? __('map.title') : __('map.title').' · '.$countryName;
+    $pageTitle = $isMoz && ! request()->has('pais') ? $toolTitle : $toolTitle.' · '.$countryName;
+    $on = fn (string $layer) => \App\Support\MapTools::on($tool, $layer);
 @endphp
-<x-layout :title="$pageTitle" :description="__('map.description')" :noindex="request()->has('pais') && $isMoz" :jsonld="[Breadcrumbs::jsonld($crumbs)]">
+<x-layout :title="$pageTitle" :description="__('map.tools.'.$tool.'.text')" :noindex="request()->has('pais') && $isMoz" :jsonld="[Breadcrumbs::jsonld($crumbs)]">
     <x-slot:head>
         @vite(['resources/css/map.css', 'resources/js/map.js'])
         <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
@@ -15,7 +17,8 @@
         <link rel="preconnect" href="https://elevation-tiles-prod.s3.amazonaws.com" crossorigin>
     </x-slot:head>
 
-    <x-page-head :title="__('map.title')" :lede="__('map.lede')" :crumbs="$crumbs">
+    <x-page-head :title="$toolTitle" :lede="__('map.tools.'.$tool.'.text')" :crumbs="$crumbs" class="page-head--compact">
+        @if ($tool === 'fires')
         <p class="meta map-status">
             <span class="dot-fire" aria-hidden="true"></span>{{ __('map.near_real_time') }}
             @if ($summary)
@@ -28,9 +31,21 @@
                 · {{ __('map.no_data') }}
             @endif
         </p>
+        @endif
     </x-page-head>
 
-    <section class="map-shell" aria-label="{{ __('map.map_label') }}">
+    <nav class="tool-tabs" aria-label="{{ __('map.tools_nav') }}">
+        <div class="wrap tool-tabs__row">
+            @foreach (\App\Support\MapTools::TOOLS as $k => $t)
+                <a href="{{ \App\Support\MapTools::url($k, null, request()->filled('pais') ? ['pais' => $isoLower] : []) }}" @if ($k === $tool) aria-current="page" @endif>
+                    <img src="{{ asset($t['image']) }}" width="48" height="30" alt="" loading="lazy">
+                    <span>{{ __('map.tools.'.$k.'.title') }}</span>
+                </a>
+            @endforeach
+        </div>
+    </nav>
+
+    <section class="map-shell" data-tool="{{ $tool }}" aria-label="{{ __('map.map_label') }}">
         <div class="map-canvas" id="map" data-map role="region" aria-label="{{ __('map.map_label_country', ['country' => $countryName]) }}" data-no-webgl="{{ __('map.no_webgl') }}">
             <p class="map-loading">{{ __('map.loading') }}</p>
             <noscript><p class="map-loading">{{ __('map.no_webgl') }}</p></noscript>
@@ -38,7 +53,7 @@
 
         <aside class="map-panel" aria-label="{{ __('map.layers') }}">
             @if ($countries)
-                <form class="map-form map-country" method="get" action="{{ lroute('maps') }}" data-country>
+                <form class="map-form map-country" method="get" action="{{ \App\Support\MapTools::url($tool) }}" data-country>
                     <label for="map-country" class="meta">{{ __('map.country') }}</label>
                     <div class="map-country__row">
                         <select id="map-country" name="pais">
@@ -54,35 +69,39 @@
             <form class="map-form" data-map-layers>
                 <fieldset>
                     <legend class="meta">{{ __('map.layers') }}</legend>
-                    <label class="check"><input type="checkbox" name="fires" checked> <span>{{ __('map.fires') }}</span></label>
-                    <ul class="legend" aria-hidden="true">
-                        <li><span class="sw sw--24"></span>{{ __('map.fires_age.24') }}</li>
-                        <li><span class="sw sw--48"></span>{{ __('map.fires_age.48') }}</li>
-                        <li><span class="sw sw--168"></span>{{ __('map.fires_age.168') }}</li>
-                    </ul>
-                    @if ($isMoz)
-                        <label class="check"><input type="checkbox" name="provinces" checked> <span>{{ __('map.provinces') }}</span></label>
-                        <label class="check"><input type="checkbox" name="districts"> <span>{{ __('map.districts') }}</span></label>
-                    @else
-                        <label class="check"><input type="checkbox" name="outline" checked> <span>{{ __('map.outline') }}</span></label>
+                    @php
+                        $items = [];
+                        if ($tool === 'fires') {
+                            $items['fires'] = '<label class="check"><input type="checkbox" name="fires" checked> <span>'.e(__('map.fires')).'</span></label>'
+                                .'<ul class="legend" aria-hidden="true"><li><span class="sw sw--24"></span>'.e(__('map.fires_age.24')).'</li><li><span class="sw sw--48"></span>'.e(__('map.fires_age.48')).'</li><li><span class="sw sw--168"></span>'.e(__('map.fires_age.168')).'</li></ul>';
+                        }
+                        if (! empty($config['gibs']['truecolor'])) {
+                            $items['truecolor'] = '<label class="check"><input type="checkbox" name="truecolor"'.($on('truecolor') ? ' checked' : '').'> <span>'.e(__('map.truecolor')).'</span></label>';
+                        }
+                        if (! empty($config['gibs']['ndvi'])) {
+                            $items['ndvi'] = '<label class="check"><input type="checkbox" name="ndvi"'.($on('ndvi') ? ' checked' : '').'> <span>'.e(__('map.ndvi')).'</span></label>';
+                        }
+                        $items['hillshade'] = '<label class="check"><input type="checkbox" name="hillshade"'.($on('hillshade') ? ' checked' : '').'> <span>'.e(__('map.relief')).'</span></label>';
+                        $items['relief'] = '<label class="check"><input type="checkbox" name="relief"'.($on('relief') ? ' checked' : '').'> <span>'.e(__('map.relief_color')).'</span></label>'
+                            .'<p class="relief-legend small" aria-hidden="true"><span>'.e(__('map.relief_low')).'</span><span class="relief-legend__bar"></span><span>'.e(__('map.relief_high')).'</span></p>';
+                        $items['boundaries'] = $isMoz
+                            ? '<label class="check"><input type="checkbox" name="provinces" checked> <span>'.e(__('map.provinces')).'</span></label><label class="check"><input type="checkbox" name="districts"> <span>'.e(__('map.districts')).'</span></label>'
+                            : '<label class="check"><input type="checkbox" name="outline" checked> <span>'.e(__('map.outline')).'</span></label>';
+                        $items['date'] = '<div class="field field--inline"><label for="map-date">'.e(__('map.date')).'</label><input type="date" id="map-date" name="date" value="'.e($config['imageDate']).'" max="'.now('UTC')->toDateString().'" min="2012-01-19"></div>';
+                        $main = collect($items)->filter(fn ($v, $k) => $k === 'fires' || $on($k) || ($k === 'date' && $tool === 'satellite'));
+                        $rest = collect($items)->diffKeys($main);
+                    @endphp
+                    {!! $main->implode('') !!}
+                    @if ($rest->isNotEmpty())
+                        <details class="more-layers">
+                            <summary class="small">{{ __('map.more_layers') }}</summary>
+                            {!! $rest->implode('') !!}
+                        </details>
                     @endif
-                    @if (! empty($config['gibs']['truecolor']))
-                        <label class="check"><input type="checkbox" name="truecolor"> <span>{{ __('map.truecolor') }}</span></label>
-                    @endif
-                    @if (! empty($config['gibs']['ndvi']))
-                        <label class="check"><input type="checkbox" name="ndvi"> <span>{{ __('map.ndvi') }}</span></label>
-                    @endif
-                    <label class="check"><input type="checkbox" name="hillshade"> <span>{{ __('map.relief') }}</span></label>
-                    <label class="check"><input type="checkbox" name="relief"> <span>{{ __('map.relief_color') }}</span></label>
-                    <p class="relief-legend small" aria-hidden="true"><span>{{ __('map.relief_low') }}</span><span class="relief-legend__bar"></span><span>{{ __('map.relief_high') }}</span></p>
-                    <div class="field field--inline">
-                        <label for="map-date">{{ __('map.date') }}</label>
-                        <input type="date" id="map-date" name="date" value="{{ $config['imageDate'] }}" max="{{ now('UTC')->toDateString() }}" min="2012-01-19">
-                    </div>
                 </fieldset>
             </form>
 
-            <form class="map-form" data-aoi>
+            <form class="map-form" data-aoi data-only="fires lulc relief">
                 <fieldset>
                     <legend class="meta">{{ __('map.aoi') }}</legend>
                     @if ($isMoz)
@@ -101,7 +120,7 @@
                             </select>
                         </div>
                     @else
-                        <p class="small muted">{{ __('map.aoi_help_world') }}</p>
+                        <p class="small muted">{{ $tool === 'fires' ? __('map.aoi_help_world') : __('map.aoi_help_world_generic') }}</p>
                     @endif
                     <div class="aoi-draw">
                         @unless ($isMoz)<button type="button" class="btn btn--small" data-aoi-country @disabled(! $config['outline'])>{{ __('map.aoi_country') }}</button>@endunless
@@ -111,7 +130,7 @@
                         <button type="button" class="link-btn small" data-aoi-clear hidden>{{ __('map.aoi_clear') }}</button>
                     </div>
                     <p class="small muted" data-draw-help hidden>{{ __('map.aoi_draw_help') }}</p>
-                    <div class="field">
+                    <div class="field" data-only="fires">
                         <label for="aoi-days">{{ __('map.aoi_days') }}</label>
                         <select id="aoi-days" name="days">
                             @foreach ([1, 2, 3, 5, 7] as $n)
@@ -119,15 +138,15 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="aoi-result" data-aoi-result role="status" aria-live="polite">
+                    <div class="aoi-result" data-only="fires" data-aoi-result role="status" aria-live="polite">
                         <p class="small muted">{{ __('map.aoi_pick') }}</p>
                     </div>
-                    <div class="aoi-download" data-aoi-download hidden>
+                    <div class="aoi-download" data-only="fires" data-aoi-download hidden>
                         <button type="button" class="btn btn--small" data-aoi-csv>{{ __('map.aoi_csv') }}</button>
                         <button type="button" class="btn btn--small" data-aoi-geojson>{{ __('map.aoi_geojson') }}</button>
                     </div>
                 </fieldset>
-                <fieldset class="aoi-dem" data-dem hidden>
+                <fieldset class="aoi-dem" data-only="relief" data-dem hidden>
                     <legend class="meta">{{ __('map.dem_title') }}</legend>
                     <p class="small muted">{{ __('map.dem_help') }}</p>
                     <button type="button" class="btn btn--small" data-dem-build>{{ __('map.dem_build') }}</button>
@@ -146,7 +165,7 @@
                     </div>
                     <p class="small muted">{{ __('map.dem_note') }} <a href="{{ lroute('contact') }}?assunto=data">{{ __('map.dem_more') }}</a></p>
                 </fieldset>
-                <fieldset class="aoi-lulc" data-lulc hidden>
+                <fieldset class="aoi-lulc" data-only="lulc" data-lulc hidden>
                     <legend class="meta">{{ __('map.lulc_title') }}</legend>
                     <p class="small muted">{{ __('map.lulc_help') }}</p>
                     <div class="lulc-warning" role="note">
@@ -190,6 +209,7 @@
 
     <script type="application/json" id="map-config" nonce="{{ $nonce }}">{!! json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 
+    @if ($tool === 'fires')
     <div class="section section--tight">
         <div class="wrap grid">
             <section class="span-6" aria-labelledby="by-prov">
@@ -250,4 +270,15 @@
             </section>
         </div>
     </div>
+    @else
+    <div class="section section--tight">
+        <div class="wrap">
+            @php
+                $learn = ['lulc' => $rfTutorialUrl, 'relief' => \App\Models\Tutorial::query()->published()->where('slug->pt', 'curvas-de-nivel-da-sua-area-em-2-minutos-gratis')->first()?->url()];
+            @endphp
+            @if (! empty($learn[$tool]))<p><a class="link-arrow" href="{{ $learn[$tool] }}">{{ __('map.tutorial_link') }}</a></p>@endif
+            <p class="small muted" lang="en">We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS). We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS). Basemap: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Relief: {{ $config['dem']['attribution'] }}</p>
+        </div>
+    </div>
+    @endif
 </x-layout>

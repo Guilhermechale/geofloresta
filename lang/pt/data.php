@@ -4,7 +4,7 @@ return [
     'title' => 'Dados',
     'licence_names' => ['LicenseRef-Public-Domain' => 'Domínio público', 'LicenseRef-NASA-Open-Data' => 'Dados abertos da NASA'],
     'description' => 'Dados geoespaciais abertos para descarregar, de qualquer país do mundo: focos de incêndio, limites administrativos, rios, bacias hidrográficas, floresta, população e mais, com licença e atribuição.',
-    'lede' => 'Dados abertos de qualquer país do mundo, em «Dados por país», e conjuntos preparados pela GEOFLORESTA a partir de fontes abertas. Cada ficha indica a fonte, a licença, a atribuição exacta e o checksum de cada ficheiro. Sem registo.',
+    'lede' => 'Dados abertos de qualquer país, prontos a descarregar. Grátis e sem registo.',
     'filters' => 'Filtros',
     'search' => 'Pesquisar no catálogo',
     'theme' => 'Tema',

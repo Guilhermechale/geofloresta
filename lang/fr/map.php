@@ -132,4 +132,33 @@ return [
     'lulc_learn' => 'Fonctionnement : tutoriel Random Forest',
     'lulc_more' => 'Besoin d’une carte validée sur le terrain ? Demandez une proposition',
     'lulc_classes' => ['Eau', 'Arbres', 'Végétation inondée', 'Cultures', 'Zone bâtie', 'Sol nu', 'Neige et glace', 'Prairies et fourrés'],
+    'hub_title' => 'Cartes et outils',
+    'hub_lede' => 'Choisissez ce que vous voulez faire. Gratuit et dans votre navigateur.',
+    'open' => 'Ouvrir',
+    'tools_nav' => 'Outils cartographiques',
+    'more_layers' => 'Plus de couches',
+    'tools' => [
+        'lulc' => [
+            'title' => 'Occupation du sol (IA)',
+            'text' => 'Classez votre zone avec Random Forest et téléchargez la carte.',
+        ],
+        'fires' => [
+            'title' => 'Suivi des incendies',
+            'text' => 'Foyers de chaleur des 7 derniers jours, mis à jour plusieurs fois par jour.',
+        ],
+        'ndvi' => [
+            'title' => 'Végétation (NDVI)',
+            'text' => 'État de la végétation dans le monde entier, tous les 8 jours.',
+        ],
+        'relief' => [
+            'title' => 'Relief et courbes de niveau',
+            'text' => 'Altitude et courbes de niveau de votre zone, en GeoTIFF et GeoJSON.',
+        ],
+        'satellite' => [
+            'title' => 'Image satellite quotidienne',
+            'text' => 'Voyez n’importe quel lieu du monde tel qu’il était hier, vu de l’espace.',
+        ],
+    ],
+    'aoi_help_world_generic' => 'Utilisez le pays entier ou dessinez un polygone sur la carte.',
+    'tutorial_link' => 'Comment ça marche : tutoriel pas à pas',
 ];

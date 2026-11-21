@@ -65,24 +65,17 @@
                     <a class="btn btn--primary" href="{{ lroute('countries') }}">{{ __('countries.search') }}</a>
                 </div>
                 <p class="meta">{{ trans_choice('data.count', $datasets->count(), ['count' => $datasets->count()]) }}</p>
-                <ul class="catalogue">
+                @php
+                    $themeImg = ['land-cover' => 'dados', 'forest-loss' => 'ndvi', 'fire' => 'incendios', 'hydrology' => 'satelite', 'biomass' => 'servicos', 'boundaries' => 'limites', 'climate' => 'clima'];
+                @endphp
+                <div class="tcards tcards--data">
                     @foreach ($datasets as $d)
                         @php $l = $d->displayLocale($loc); @endphp
-                        <li class="catalogue__item">
-                            <p class="meta">
-                                {{ __('data.themes.'.$d->theme) }} · {{ __('data.regions.'.$d->region) }}@if ($d->period()) · {{ $d->period() }}@endif
-                                @if ($d->isExternal()) <span class="badge">{{ __('data.external') }}</span>@endif
-                            </p>
-                            <h2 class="catalogue__title"><a href="{{ $d->url() }}" @if ($l !== $loc) lang="{{ $l }}" @endif>{{ $d->getTranslation('title', $l) }}</a></h2>
-                            <p class="muted" @if ($l !== $loc) lang="{{ $l }}" @endif>{{ $d->getTranslation('summary', $l, false) }}</p>
-                            <p class="coord">
-                                {{ $d->licenceLabel() }}
-                                @if ($d->files->isNotEmpty()) · {{ $d->files->pluck('format')->unique()->map(fn ($f) => Dataset::FORMATS[$f] ?? $f)->implode(', ') }}@endif
-                                @if ($d->resolution) · {{ $d->resolution }}@endif
-                            </p>
-                        </li>
+                        <x-tool-card :href="$d->url()" :image="'img/cards/'.($themeImg[$d->theme] ?? 'dados').'.webp'" :badge="__('data.themes.'.$d->theme)"
+                            :title="$d->getTranslation('title', $l)" :lang="$l !== $loc ? $l : null"
+                            :text="__('data.regions.'.$d->region).($d->files->isNotEmpty() ? ' · '.$d->files->pluck('format')->unique()->map(fn ($f) => Dataset::FORMATS[$f] ?? $f)->implode(', ') : ' · '.__('data.external'))" />
                     @endforeach
-                </ul>
+                </div>
 
                 <div class="notice">
                     <p>{{ __('data.custom') }}</p>

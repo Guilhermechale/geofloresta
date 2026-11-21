@@ -169,7 +169,8 @@ async function init() {
     map.addControl(new maplibregl.AttributionControl({ compact: false, customAttribution: cfg.attribution }), 'bottom-right');
     el.querySelector('.map-loading')?.remove();
 
-    [fires, provinces, districts, outline] = await Promise.all([loadJson(cfg.fires), loadJson(cfg.provinces), loadJson(cfg.districts), loadJson(cfg.outline)]);
+    // Os focos (alguns MB) só se descarregam no monitor de incêndios
+    [fires, provinces, districts, outline] = await Promise.all([cfg.tool && cfg.tool !== 'fires' ? null : loadJson(cfg.fires), loadJson(cfg.provinces), loadJson(cfg.districts), loadJson(cfg.outline)]);
     if (fires && cfg.compact) fires = fromCompact(fires);
     if (fires) fires.features.forEach((f) => { f.properties.age = Math.max(0, hoursAgo(f.properties.acq)); });
 

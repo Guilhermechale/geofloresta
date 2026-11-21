@@ -66,3 +66,19 @@
     background: linear-gradient(90deg, #2f6b3a, #7fa65a 15%, #d8c97a 35%, #c08a4a 60%, #8c5a3c 80%, #f4f1e8); }
 .aoi-dem { margin-top: var(--s-2); }
 .aoi-dem [data-dem-status] { margin-block: .5rem; }
+
+/* ---------- Ferramentas de mapas ---------- */
+.tool-tabs { border-bottom: 1px solid var(--c-rule); background: var(--c-surface); }
+.tool-tabs__row { display: flex; gap: .5rem; overflow-x: auto; padding-block: .6rem; scrollbar-width: thin; }
+.tool-tabs a { display: inline-flex; align-items: center; gap: .5rem; padding: .35rem .75rem .35rem .35rem; border: 1px solid var(--c-rule); border-radius: 99px; text-decoration: none; color: inherit; white-space: nowrap; font-size: var(--fs-sm); background: var(--c-bg); }
+.tool-tabs a img { width: 2.25rem; height: 1.5rem; object-fit: cover; border-radius: 99px; }
+.tool-tabs a:hover { border-color: var(--c-moss); }
+.tool-tabs a[aria-current="page"] { background: var(--c-forest); color: var(--c-bg); border-color: var(--c-forest); }
+.more-layers { margin-top: var(--s-1); }
+.more-layers summary { cursor: pointer; color: var(--c-muted); margin-bottom: .35rem; }
+/* Cada painel só aparece na ferramenta a que pertence */
+.map-shell[data-tool="fires"] [data-only]:not([data-only~="fires"]),
+.map-shell[data-tool="lulc"] [data-only]:not([data-only~="lulc"]),
+.map-shell[data-tool="ndvi"] [data-only]:not([data-only~="ndvi"]),
+.map-shell[data-tool="relief"] [data-only]:not([data-only~="relief"]),
+.map-shell[data-tool="satellite"] [data-only]:not([data-only~="satellite"]) { display: none !important; }

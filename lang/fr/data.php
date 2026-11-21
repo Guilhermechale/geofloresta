@@ -5,7 +5,7 @@ return [
     'title' => 'Données',
     'licence_names' => ['LicenseRef-Public-Domain' => 'Domaine public', 'LicenseRef-NASA-Open-Data' => 'Données ouvertes de la NASA'],
     'description' => 'Données géospatiales ouvertes à télécharger pour tous les pays du monde : feux actifs, limites administratives, rivières, bassins versants, forêt, population et plus, avec licence et attribution.',
-    'lede' => 'Données ouvertes de tous les pays du monde, dans « Données par pays », et jeux préparés par GEOFLORESTA à partir de sources ouvertes. Chaque fiche indique la source, la licence, l’attribution exacte et la somme de contrôle de chaque fichier. Sans inscription.',
+    'lede' => 'Données ouvertes de tous les pays, prêtes à télécharger. Gratuit et sans inscription.',
     'filters' => 'Filtres',
     'search' => 'Rechercher dans le catalogue',
     'theme' => 'Thème',

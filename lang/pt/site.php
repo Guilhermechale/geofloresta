@@ -123,4 +123,16 @@ return [
         'credits' => 'Mapa de base: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Imagem de satélite: NASA GIBS. Focos de incêndio: NASA FIRMS. Fontes e licenças de cada conjunto de dados na página Dados e Licenças.',
         'rights' => '© :year GEOFLORESTA.',
     ],
+    'home2' => [
+        'lede' => 'Mapas, dados abertos e ferramentas de inteligência artificial para florestas e ambiente. Grátis e em qualquer país.',
+        'find' => 'O que procura?',
+        'latest_learn' => 'Tutoriais recentes',
+        'latest_studies' => 'Pesquisas recentes',
+        'cards' => [
+            'data' => ['title' => 'Dados abertos', 'text' => 'Descarregue dados de qualquer país: limites, rios, floresta, incêndios.'],
+            'learn' => ['title' => 'Tutoriais', 'text' => 'Aprenda SIG e sensoriamento remoto, passo a passo e grátis.'],
+            'studies' => ['title' => 'Pesquisas', 'text' => 'Estudos e análises sobre floresta, clima e ambiente.'],
+            'services' => ['title' => 'Serviços', 'text' => 'Mapas, análises e consultoria para o seu projecto.'],
+        ],
+    ],
 ];

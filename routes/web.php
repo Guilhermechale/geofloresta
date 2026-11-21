@@ -51,6 +51,7 @@ foreach (Locales::all() as $locale) {
             Route::get($slug('data').'/{slug}', [DatasetController::class, 'show'])->name('data.show')->where('slug', '[a-z0-9-]+');
 
             Route::get($slug('maps'), MapController::class)->name('maps');
+            Route::get($slug('maps').'/{tool}', [MapController::class, 'tool'])->name('maps.tool')->where('tool', '[a-z-]+');
 
             // As duas categorias de conteúdo: Tutoriais e Pesquisas
             Route::get($slug('learn'), [TutorialController::class, 'index'])->name('learn');

@@ -124,4 +124,16 @@ return [
         'credits' => 'Fond de carte : OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Image satellite : NASA GIBS. Foyers d’incendie : NASA FIRMS. Sources et licences de chaque jeu de données sur la page Données et licences.',
         'rights' => '© :year GEOFLORESTA.',
     ],
+    'home2' => [
+        'lede' => 'Cartes, données ouvertes et outils d’intelligence artificielle pour les forêts et l’environnement. Gratuit, dans tous les pays.',
+        'find' => 'Que cherchez-vous ?',
+        'latest_learn' => 'Tutoriels récents',
+        'latest_studies' => 'Recherches récentes',
+        'cards' => [
+            'data' => ['title' => 'Données ouvertes', 'text' => 'Téléchargez les données de n’importe quel pays : limites, rivières, forêts, incendies.'],
+            'learn' => ['title' => 'Tutoriels', 'text' => 'Apprenez le SIG et la télédétection, pas à pas et gratuitement.'],
+            'studies' => ['title' => 'Recherches', 'text' => 'Études et analyses sur la forêt, le climat et l’environnement.'],
+            'services' => ['title' => 'Services', 'text' => 'Cartes, analyses et conseil pour votre projet.'],
+        ],
+    ],
 ];

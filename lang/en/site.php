@@ -124,4 +124,16 @@ return [
         'credits' => 'Basemap: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Satellite imagery: NASA GIBS. Fire detections: NASA FIRMS. Sources and licences for each dataset on the Data and Licences page.',
         'rights' => '© :year GEOFLORESTA.',
     ],
+    'home2' => [
+        'lede' => 'Maps, open data and artificial intelligence tools for forests and the environment. Free, in any country.',
+        'find' => 'What are you looking for?',
+        'latest_learn' => 'Latest tutorials',
+        'latest_studies' => 'Latest research',
+        'cards' => [
+            'data' => ['title' => 'Open data', 'text' => 'Download data for any country: boundaries, rivers, forests, fires.'],
+            'learn' => ['title' => 'Tutorials', 'text' => 'Learn GIS and remote sensing, step by step and free.'],
+            'studies' => ['title' => 'Research', 'text' => 'Studies and analyses on forests, climate and the environment.'],
+            'services' => ['title' => 'Services', 'text' => 'Maps, analysis and consulting for your project.'],
+        ],
+    ],
 ];

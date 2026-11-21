@@ -82,14 +82,16 @@ class CountriesTest extends TestCase
     public function test_map_works_for_any_country(): void
     {
         $this->world();
-        $html = $this->get('/mapas?pais=bra')->assertOk()->assertSee('Usar o país inteiro')->getContent();
+        // Endereço antigo: redirecciona para o monitor de incêndios desse país
+        $this->get('/mapas?pais=bra')->assertRedirect('https://teste.local/mapas/incendios?pais=bra')->assertStatus(301);
+        $html = $this->get('/mapas/incendios?pais=bra')->assertOk()->assertSee('Usar o país inteiro')->getContent();
         $this->assertStringContainsString('"iso":"BRA"', $html);
         $this->assertStringContainsString('"compact":true', $html);
         $this->assertStringContainsString('geo\/fires\/BRA.json', str_replace('/', '\/', $html));
         $this->assertStringContainsString('<option value="bra" selected>Brasil</option>', $html);
         $this->assertStringNotContainsString('name="province"', $html);
         // País desconhecido: volta a Moçambique
-        $this->get('/mapas?pais=zzz')->assertOk()->assertSee('"iso":"MOZ"', false);
+        $this->get('/mapas/incendios?pais=zzz')->assertOk()->assertSee('"iso":"MOZ"', false);
     }
 
     public function test_territories_do_not_take_the_code_of_their_country(): void

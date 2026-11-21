@@ -41,6 +41,11 @@ class SitemapController extends Controller
             $entries[] = ['urls' => $urls, 'lastmod' => null];
         }
 
+        // Ferramentas de mapas (/mapas/incendios, /mapas/uso-do-solo, …)
+        foreach (\App\Support\MapTools::keys() as $tool) {
+            $entries[] = ['urls' => collect(Locales::all())->mapWithKeys(fn ($l) => [$l => \App\Support\MapTools::url($tool, $l)])->all(), 'lastmod' => null];
+        }
+
         foreach ([Dataset::class, Tutorial::class, Study::class] as $model) {
             foreach ($this->safe(fn () => $model::published()->get()) as $item) {
                 $urls = [];

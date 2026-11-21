@@ -6,18 +6,42 @@ use App\Console\Commands\UpdateFirms;
 use App\Console\Commands\UpdateGibsLayers;
 use App\Geo\World;
 use App\Models\Dataset;
+use App\Models\Tutorial;
 use App\Support\FireSummary;
+use App\Support\Locales;
+use App\Support\MapTools;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 /**
+ * Mapas: página de escolha (cartões) e as ferramentas (/mapas/{ferramenta}) — incêndios, uso do solo, NDVI, relevo, imagem de satélite.
  * Monitor de incêndios para qualquer país (?pais=iso3). Moçambique mantém províncias e distritos
  * (geofloresta:firms); os restantes países usam os ficheiros por país de geofloresta:firms-world.
  */
 class MapController extends Controller
 {
-    public function __invoke(Request $request): View
+    /** Página de escolha da ferramenta. Os endereços antigos com ?pais= abrem o monitor de incêndios desse país. */
+    public function __invoke(Request $request): View|RedirectResponse
+    {
+        if ($request->filled('pais')) {
+            return redirect()->to(MapTools::url('fires', null, ['pais' => strtolower((string) $request->query('pais'))]), 301);
+        }
+
+        return view('maps.hub');
+    }
+
+    public function tool(Request $request, string $tool): View
+    {
+        $key = MapTools::fromSlug($tool) ?? abort(404);
+        $query = $request->filled('pais') ? ['pais' => strtolower(substr(preg_replace('/[^a-z]/i', '', (string) $request->query('pais')), 0, 3))] : [];
+        Locales::setAlternates(collect(Locales::all())->mapWithKeys(fn ($l) => [$l => MapTools::url($key, $l, $query)])->all());
+
+        return $this->map($request, $key);
+    }
+
+    protected function map(Request $request, string $tool): View
     {
         $iso = strtoupper(substr(preg_replace('/[^a-z]/i', '', (string) $request->query('pais', 'moz')), 0, 3));
         $country = World::find($iso) ?? World::find('MOZ');
@@ -87,11 +111,12 @@ class MapController extends Controller
         $fireDataset = $isMoz ? Dataset::published()->where('theme', 'fire')->where('hosting', 'hosted')->orderByDesc('year_end')->first() : null;
 
         // Tutorial que explica o método (ligação no painel de uso do solo)
-        $rfTutorial = \App\Models\Tutorial::query()->published()->where('slug->pt', 'classificacao-supervisionada-random-forest-google-earth-engine')->first();
+        $rfTutorial = Tutorial::query()->published()->where('slug->pt', 'classificacao-supervisionada-random-forest-google-earth-engine')->first();
 
         return view('maps.index', [
             'rfTutorialUrl' => $rfTutorial?->url(app()->getLocale()),
-            'config' => $config,
+            'config' => $config + ['tool' => $tool],
+            'tool' => $tool,
             'summary' => $summary,
             'fireDataset' => $fireDataset,
             'country' => $country,

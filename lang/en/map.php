@@ -132,4 +132,33 @@ return [
     'lulc_learn' => 'How it works: Random Forest tutorial',
     'lulc_more' => 'Need a field-validated map? Request a proposal',
     'lulc_classes' => ['Water', 'Trees', 'Flooded vegetation', 'Crops', 'Built area', 'Bare ground', 'Snow and ice', 'Rangeland'],
+    'hub_title' => 'Maps and tools',
+    'hub_lede' => 'Choose what you want to do. Free, and it all runs in your browser.',
+    'open' => 'Open',
+    'tools_nav' => 'Map tools',
+    'more_layers' => 'More layers',
+    'tools' => [
+        'lulc' => [
+            'title' => 'Land use and land cover (AI)',
+            'text' => 'Classify your area with Random Forest and download the map.',
+        ],
+        'fires' => [
+            'title' => 'Fire monitor',
+            'text' => 'Hotspots from the last 7 days, updated several times a day.',
+        ],
+        'ndvi' => [
+            'title' => 'Vegetation (NDVI)',
+            'text' => 'Vegetation condition worldwide, every 8 days.',
+        ],
+        'relief' => [
+            'title' => 'Terrain and contour lines',
+            'text' => 'Elevation and contour lines for your area, as GeoTIFF and GeoJSON.',
+        ],
+        'satellite' => [
+            'title' => 'Daily satellite image',
+            'text' => 'See any place on Earth as it was yesterday, from space.',
+        ],
+    ],
+    'aoi_help_world_generic' => 'Use the whole country or draw a polygon on the map.',
+    'tutorial_link' => 'How it works: step-by-step tutorial',
 ];

@@ -131,4 +131,33 @@ return [
     'lulc_learn' => 'Como funciona: tutorial do Random Forest',
     'lulc_more' => 'Precisa de um mapa validado no campo? Peça uma proposta',
     'lulc_classes' => ['Água', 'Árvores', 'Vegetação inundada', 'Culturas agrícolas', 'Área construída', 'Solo exposto', 'Neve e gelo', 'Pastagem e matagal'],
+    'hub_title' => 'Mapas e ferramentas',
+    'hub_lede' => 'Escolha o que quer fazer. Tudo grátis e no seu navegador.',
+    'open' => 'Abrir',
+    'tools_nav' => 'Ferramentas de mapas',
+    'more_layers' => 'Mais camadas',
+    'tools' => [
+        'lulc' => [
+            'title' => 'Uso e cobertura do solo (IA)',
+            'text' => 'Classifique a sua área com Random Forest e descarregue o mapa.',
+        ],
+        'fires' => [
+            'title' => 'Monitor de incêndios',
+            'text' => 'Focos de calor dos últimos 7 dias, actualizados várias vezes ao dia.',
+        ],
+        'ndvi' => [
+            'title' => 'Vegetação (NDVI)',
+            'text' => 'Estado da vegetação em todo o mundo, a cada 8 dias.',
+        ],
+        'relief' => [
+            'title' => 'Relevo e curvas de nível',
+            'text' => 'Altitude e curvas de nível da sua área, em GeoTIFF e GeoJSON.',
+        ],
+        'satellite' => [
+            'title' => 'Imagem de satélite diária',
+            'text' => 'Veja qualquer lugar do mundo como estava ontem, visto do espaço.',
+        ],
+    ],
+    'aoi_help_world_generic' => 'Use o país inteiro ou desenhe um polígono no mapa.',
+    'tutorial_link' => 'Como funciona: tutorial passo a passo',
 ];

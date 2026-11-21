@@ -97,31 +97,31 @@ class MapsTest extends TestCase
         Storage::fake('public');
         Storage::fake('local');
         // Sem cache: a página funciona e explica
-        $this->get('/mapas')->assertOk()->assertSee('Ainda não há focos em cache');
+        $this->get('/mapas/incendios')->assertOk()->assertSee('Ainda não há focos em cache');
 
         $this->layers();
         Storage::disk('local')->put(FireSummary::PATH, json_encode([
             'count_24h' => 3, 'count_7d' => 10, 'by_province_24h' => ['Sofala' => 3], 'by_province_7d' => ['Sofala' => 10],
             'latest_acq' => '2026-11-12T23:28:00Z', 'updated_at' => '2026-11-13T04:42:00Z', 'sources' => [],
         ]));
-        $html = $this->get('/mapas')->assertOk()->getContent();
+        $html = $this->get('/mapas/incendios')->assertOk()->getContent();
         $this->assertStringContainsString('id="map-config"', $html);
         $this->assertStringContainsString('tiles.openfreemap.org/styles/positron', $html);
         $this->assertStringContainsString('OpenFreeMap © OpenMapTiles Data from OpenStreetMap', $html);
         $this->assertStringContainsString("Global Imagery Browse Services (GIBS)", $html);
         $this->assertStringContainsString('<option value="Sofala">Sofala</option>', $html);
         $this->assertStringNotContainsString('FIRMS_MAP_KEY', $html);
-        $this->get('/en/maps')->assertOk()->assertSee('Detections by province');
-        $this->get('/fr/cartes')->assertOk()->assertSee('Foyers par province');
-        // Página inicial mostra o resumo
-        $this->get('/')->assertOk()->assertSee('focos activos detectados');
+        $this->get('/en/maps/fires')->assertOk()->assertSee('Detections by province');
+        $this->get('/fr/cartes/incendies')->assertOk()->assertSee('Foyers par province');
+        // A página inicial leva ao monitor por um cartão
+        $this->get('/')->assertOk()->assertSee('https://teste.local/mapas/incendios', false);
     }
 
     public function test_maps_page_has_relief_layers_and_dem_download(): void
     {
         Storage::fake('public');
         Storage::fake('local');
-        $r = $this->get('/mapas')->assertOk();
+        $r = $this->get('/mapas/relevo')->assertOk();
         $html = $r->getContent();
         // Camadas de relevo e bloco de download por área
         $this->assertStringContainsString('name="hillshade"', $html);
@@ -135,15 +135,15 @@ class MapsTest extends TestCase
         $this->assertMatchesRegularExpression('/img-src[^;]*elevation-tiles-prod\.s3\.amazonaws\.com/', $csp);
         $this->assertMatchesRegularExpression('/connect-src[^;]*elevation-tiles-prod\.s3\.amazonaws\.com/', $csp);
         $this->assertMatchesRegularExpression("/worker-src 'self'/", $csp);
-        $this->get('/en/maps')->assertOk()->assertSee('Relief (hillshade)')->assertSee('Contour lines (GeoJSON)');
-        $this->get('/fr/cartes')->assertOk()->assertSee('Relief (ombrage)')->assertSee('Courbes de niveau (GeoJSON)');
+        $this->get('/en/maps/terrain')->assertOk()->assertSee('Relief (hillshade)')->assertSee('Contour lines (GeoJSON)');
+        $this->get('/fr/cartes/relief')->assertOk()->assertSee('Relief (ombrage)')->assertSee('Courbes de niveau (GeoJSON)');
     }
 
     public function test_maps_page_has_land_cover_classifier_with_field_validation_warning(): void
     {
         Storage::fake('public');
         Storage::fake('local');
-        $r = $this->get('/mapas')->assertOk();
+        $r = $this->get('/mapas/uso-do-solo')->assertOk();
         $html = $r->getContent();
         $this->assertStringContainsString('data-lulc-run', $html);
         $this->assertStringContainsString('Uso e cobertura do solo (inteligência artificial)', $html);
@@ -157,7 +157,48 @@ class MapsTest extends TestCase
         foreach (['earth-search\.aws\.element84\.com', 'sentinel-cogs\.s3\.us-west-2\.amazonaws\.com', 'ic\.imagery1\.arcgis\.com'] as $host) {
             $this->assertMatchesRegularExpression("/connect-src[^;]*{$host}/", $csp);
         }
-        $this->get('/en/maps')->assertOk()->assertSee('Map not validated with field data.')->assertSee('Classify');
-        $this->get('/fr/cartes')->assertOk()->assertSee('Carte non validée par des données de terrain.')->assertSee('Classer');
+        $this->get('/en/maps/land-cover')->assertOk()->assertSee('Map not validated with field data.')->assertSee('Classify');
+        $this->get('/fr/cartes/occupation-du-sol')->assertOk()->assertSee('Carte non validée par des données de terrain.')->assertSee('Classer');
+    }
+
+    public function test_maps_hub_shows_tool_cards_and_each_tool_only_its_own_panels(): void
+    {
+        Storage::fake('public');
+        Storage::fake('local');
+        $this->layers();
+        Storage::disk('local')->put(FireSummary::PATH, json_encode([
+            'count_24h' => 3, 'count_7d' => 10, 'by_province_24h' => ['Sofala' => 3], 'by_province_7d' => ['Sofala' => 10],
+            'latest_acq' => '2026-11-12T23:28:00Z', 'updated_at' => '2026-11-13T04:42:00Z', 'sources' => [],
+        ]));
+
+        // Página de escolha: cinco cartões, sem informação de incêndios
+        $hub = $this->get('/mapas')->assertOk()->getContent();
+        foreach (['uso-do-solo', 'incendios', 'vegetacao-ndvi', 'relevo', 'imagem-de-satelite'] as $slug) {
+            $this->assertStringContainsString('href="https://teste.local/mapas/'.$slug.'"', $hub);
+        }
+        $this->assertStringContainsString('img/cards/uso-do-solo.webp', $hub);
+        $this->assertStringNotContainsString('Focos por província', $hub);
+        $this->assertStringNotContainsString('map-config', $hub);
+
+        // Uso do solo: painel de classificação, sem estatísticas nem camada de incêndios
+        $lulc = $this->get('/mapas/uso-do-solo')->assertOk()->getContent();
+        $this->assertStringContainsString('data-tool="lulc"', $lulc);
+        $this->assertStringContainsString('"tool":"lulc"', $lulc);
+        $this->assertStringNotContainsString('Focos por província', $lulc);
+        $this->assertStringNotContainsString('name="fires"', $lulc);
+        $this->assertStringContainsString('aria-current="page"', $lulc);
+
+        // NDVI liga a camada de vegetação; relevo liga o sombreamento
+        $layer = fn ($id) => ['id' => $id, 'maxzoom' => 9, 'default_time' => '2026-11-19', 'tiles' => 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/'.$id.'/default/{time}/x/{z}/{y}/{x}.png'];
+        Storage::disk('local')->put(\App\Console\Commands\UpdateGibsLayers::PATH, json_encode(['layers' => ['truecolor' => $layer('VIIRS'), 'ndvi' => $layer('MODIS_Terra_NDVI_8Day')]]));
+        $this->assertMatchesRegularExpression('/name="ndvi" checked/', $this->get('/mapas/vegetacao-ndvi')->getContent());
+        $this->assertMatchesRegularExpression('/name="truecolor" checked/', $this->get('/mapas/imagem-de-satelite')->getContent());
+        $this->assertDoesNotMatchRegularExpression('/name="truecolor" checked/', $this->get('/mapas/vegetacao-ndvi')->getContent());
+        $this->assertMatchesRegularExpression('/name="hillshade" checked/', $this->get('/mapas/relevo')->getContent());
+
+        // Ferramenta desconhecida: 404; endereços traduzidos e no sitemap
+        $this->get('/mapas/nao-existe')->assertNotFound();
+        $this->get('/en/maps/satellite-image')->assertOk();
+        $this->get('/sitemap.xml')->assertOk()->assertSee('/mapas/uso-do-solo')->assertSee('/en/maps/land-cover')->assertSee('/fr/cartes/incendies');
     }
 }
