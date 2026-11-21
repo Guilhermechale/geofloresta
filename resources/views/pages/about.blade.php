@@ -33,6 +33,7 @@
                     <dl>
                         <dt>{{ __('pages.about.founded') }}</dt><dd>2026</dd>
                         <dt>{{ __('pages.about.base') }}</dt><dd>Beira, Sofala</dd>
+                        <dt>{{ __('pages.about.status') }}</dt><dd>{{ __('pages.about.status_value') }}</dd>
                         <dt>{{ __('pages.about.areas') }}</dt><dd>{{ $servicesCount ?: 4 }}</dd>
                         <dt>{{ __('pages.about.territory') }}</dt><dd>{{ __('pages.about.territory_value') }}</dd>
                         <dt>{{ __('pages.about.founder') }}</dt><dd>Guilherme F. F. Chale</dd>

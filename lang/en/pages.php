@@ -25,6 +25,8 @@ return [
         'facts' => 'Fact sheet',
         'founded' => 'Founded',
         'base' => 'Based in',
+        'status' => 'Status',
+        'status_value' => 'Formal registration in progress',
         'areas' => 'Service areas',
         'territory' => 'Area of work',
         'territory_value' => 'Mozambique and any country in the world',
