@@ -163,7 +163,7 @@ return [
     'tutorial_link' => 'How it works: step-by-step tutorial',
     'howto_title' => 'How to use',
     'howto' => [
-        'lulc' => ['Choose the area: a district or your own polygon (recommended). Maximum 10,000 km²; up to 1,000 km² the map has 20 m pixels.', 'Choose the image dates and the number of trees.', 'Click “Classify” and wait 30 seconds to 2 minutes.', 'Download the map (GeoTIFF) or the accuracy and area table (CSV).'],
+        'lulc' => ['Choose the area: a district or your own polygon (recommended). From 1 to 1,000 km²: 20 m pixels (more detail). From 1,000 to 10,000 km² (maximum): 40 to 80 m pixels.', 'Choose the image dates and the number of trees.', 'Click “Classify” and wait 30 seconds to 2 minutes.', 'Download the map (GeoTIFF) or the accuracy and area table (CSV).'],
         'fires' => ['Choose a province, a district or draw your own polygon.', 'See how many hotspots there were in the area and on which days.', 'Download the hotspots as CSV or GeoJSON.'],
         'ndvi' => ['The vegetation layer is already on: dark green is dense vegetation, brown is sparse vegetation.', 'Zoom in to your region.', 'Turn on other layers under “More layers”.'],
         'relief' => ['Choose the area or draw your own polygon.', 'Click “Prepare the terrain for this area”.', 'Choose the interval and download elevation (GeoTIFF) or contour lines (GeoJSON).'],
@@ -171,6 +171,7 @@ return [
     ],
     'area_none' => 'First choose or draw the area on the map.',
     'area_ok' => 'Area: :km2 km² · :res m pixels. Ready to classify.',
+    'area_small' => 'Area: :km2 km². Too small (minimum 1 km²). Draw a larger polygon.',
     'area_big' => 'Area: :km2 km². Too large (maximum 10,000 km²). Choose a district or draw a smaller polygon.',
     'lulc_ready' => 'Done! Download the results:',
 ];

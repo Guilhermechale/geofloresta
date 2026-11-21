@@ -488,8 +488,10 @@ function setupLulc(q, getAoi, map) {
         const a = getAoi();
         areaEl.classList.remove('is-ok', 'is-bad');
         if (!a) { areaEl.textContent = L.area_none; btnRun.disabled = true; return false; }
-        const km2 = Math.round(area(a) / 1e6).toLocaleString(cfg.locale);
-        const plan = planGrid(bboxOf(a));
+        const sq = area(a) / 1e6;
+        const km2 = (sq < 10 ? Math.round(sq * 10) / 10 : Math.round(sq)).toLocaleString(cfg.locale);
+        if (sq < 1) { areaEl.textContent = L.area_small.replace(':km2', km2); areaEl.classList.add('is-bad'); btnRun.disabled = true; return false; }
+        const plan = sq <= 10000 ? planGrid(bboxOf(a)) : null;
         if (!plan) { areaEl.textContent = L.area_big.replace(':km2', km2); areaEl.classList.add('is-bad'); btnRun.disabled = true; return false; }
         areaEl.textContent = L.area_ok.replace(':km2', km2).replace(':res', plan.res);
         areaEl.classList.add('is-ok');

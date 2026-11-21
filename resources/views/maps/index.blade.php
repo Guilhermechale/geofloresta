@@ -206,6 +206,7 @@
                             <button type="button" class="btn btn--go" data-lulc-csv>{{ __('map.lulc_csv') }}</button>
                         </div>
                         <label class="small"><input type="checkbox" data-lulc-show checked> {{ __('map.lulc_show') }}</label>
+                        <p class="lulc-done__service small">{{ __('site.service_cta.lulc') }} <a class="link-arrow" href="{{ lroute('contact') }}?assunto=proposal">{{ __('site.service_cta.ask') }}</a></p>
                     </div>
                     <div data-lulc-result hidden></div>
                     <p class="small muted">{{ __('map.lulc_note') }}</p>
@@ -292,4 +293,5 @@
         </div>
     </div>
     @endif
+    <x-service-cta compact />
 </x-layout>

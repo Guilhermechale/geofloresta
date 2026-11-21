@@ -136,4 +136,11 @@ return [
             'services' => ['title' => 'Services', 'text' => 'Cartes, analyses et conseil pour votre projet.'],
         ],
     ],
+    'service_cta' => [
+        'title' => 'Besoin d’une carte, d’une étude ou d’une formation pour votre projet ?',
+        'text' => 'GEOFLORESTA s’en charge : cartes d’occupation du sol validées sur le terrain, inventaire et suivi forestier, SIG, télédétection et intelligence artificielle appliquée. Sur place ou à distance, dans tous les pays.',
+        'ask' => 'Demander une proposition',
+        'see' => 'Voir les services',
+        'lulc' => 'Besoin d’une carte validée sur le terrain ou d’une zone plus grande ?',
+    ],
 ];

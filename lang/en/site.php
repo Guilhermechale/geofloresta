@@ -136,4 +136,11 @@ return [
             'services' => ['title' => 'Services', 'text' => 'Maps, analysis and consulting for your project.'],
         ],
     ],
+    'service_cta' => [
+        'title' => 'Need a map, a study or training for your project?',
+        'text' => 'GEOFLORESTA does it for you: field-validated land cover maps, forest inventory and monitoring, GIS, remote sensing and applied artificial intelligence. On site or remotely, in any country.',
+        'ask' => 'Request a proposal',
+        'see' => 'See our services',
+        'lulc' => 'Need a field-validated map or a larger area?',
+    ],
 ];

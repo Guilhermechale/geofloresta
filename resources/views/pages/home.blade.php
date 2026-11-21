@@ -27,6 +27,8 @@
         </div>
     </section>
 
+    <x-service-cta />
+
     @if ($tutorials->isNotEmpty())
         <section class="section section--tight" aria-labelledby="learn-title">
             <div class="wrap">

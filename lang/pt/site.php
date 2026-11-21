@@ -135,4 +135,11 @@ return [
             'services' => ['title' => 'Serviços', 'text' => 'Mapas, análises e consultoria para o seu projecto.'],
         ],
     ],
+    'service_cta' => [
+        'title' => 'Precisa de um mapa, estudo ou formação para o seu projecto?',
+        'text' => 'A GEOFLORESTA faz por si: mapas de uso do solo validados no campo, inventário e monitoria florestal, SIG, sensoriamento remoto e inteligência artificial aplicada. Presencial ou à distância, em qualquer país.',
+        'ask' => 'Pedir proposta',
+        'see' => 'Ver os serviços',
+        'lulc' => 'Precisa de um mapa validado no campo ou de uma área maior?',
+    ],
 ];

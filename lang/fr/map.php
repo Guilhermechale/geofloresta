@@ -163,7 +163,7 @@ return [
     'tutorial_link' => 'Comment ça marche : tutoriel pas à pas',
     'howto_title' => 'Mode d’emploi',
     'howto' => [
-        'lulc' => ['Choisissez la zone : un district ou votre polygone (recommandé). Maximum 10 000 km² ; jusqu’à 1 000 km², la carte a des pixels de 20 m.', 'Choisissez les dates des images et le nombre d’arbres.', 'Cliquez sur « Classer » et patientez de 30 secondes à 2 minutes.', 'Téléchargez la carte (GeoTIFF) ou le tableau de précision et de surfaces (CSV).'],
+        'lulc' => ['Choisissez la zone : un district ou votre polygone (recommandé). De 1 à 1 000 km² : pixel de 20 m (plus de détail). De 1 000 à 10 000 km² (maximum) : pixel de 40 à 80 m.', 'Choisissez les dates des images et le nombre d’arbres.', 'Cliquez sur « Classer » et patientez de 30 secondes à 2 minutes.', 'Téléchargez la carte (GeoTIFF) ou le tableau de précision et de surfaces (CSV).'],
         'fires' => ['Choisissez une province, un district ou dessinez votre polygone.', 'Voyez le nombre de foyers dans la zone et les jours concernés.', 'Téléchargez les foyers en CSV ou GeoJSON.'],
         'ndvi' => ['La couche de végétation est déjà activée : vert foncé = végétation dense, brun = peu de végétation.', 'Zoomez sur votre région.', 'Activez d’autres couches dans « Plus de couches ».'],
         'relief' => ['Choisissez la zone ou dessinez votre polygone.', 'Cliquez sur « Préparer le relief de cette zone ».', 'Choisissez l’équidistance et téléchargez l’altitude (GeoTIFF) ou les courbes (GeoJSON).'],
@@ -171,6 +171,7 @@ return [
     ],
     'area_none' => 'Choisissez ou dessinez d’abord la zone sur la carte.',
     'area_ok' => 'Surface : :km2 km² · pixel de :res m. Prêt à classer.',
+    'area_small' => 'Surface : :km2 km². Trop petite (minimum 1 km²). Dessinez un polygone plus grand.',
     'area_big' => 'Surface : :km2 km². Trop grande (maximum 10 000 km²). Choisissez un district ou dessinez un polygone plus petit.',
     'lulc_ready' => 'Terminé ! Téléchargez les résultats :',
 ];

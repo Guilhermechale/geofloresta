@@ -162,7 +162,7 @@ return [
     'tutorial_link' => 'Como funciona: tutorial passo a passo',
     'howto_title' => 'Como usar',
     'howto' => [
-        'lulc' => ['Escolha a área: um distrito ou o seu polígono (recomendado). Máximo de 10 000 km²; até 1 000 km² o mapa sai com píxeis de 20 m.', 'Escolha as datas das imagens e o número de árvores.', 'Carregue em «Classificar» e aguarde 30 segundos a 2 minutos.', 'Baixe o mapa (GeoTIFF) ou a tabela de precisão e áreas (CSV).'],
+        'lulc' => ['Escolha a área: um distrito ou o seu polígono (recomendado). De 1 a 1 000 km²: píxel de 20 m (mais detalhe). De 1 000 a 10 000 km² (máximo): píxel de 40 a 80 m.', 'Escolha as datas das imagens e o número de árvores.', 'Carregue em «Classificar» e aguarde 30 segundos a 2 minutos.', 'Baixe o mapa (GeoTIFF) ou a tabela de precisão e áreas (CSV).'],
         'fires' => ['Escolha uma província, um distrito ou desenhe o seu polígono.', 'Veja quantos focos houve na área e em que dias.', 'Baixe os focos em CSV ou GeoJSON.'],
         'ndvi' => ['A camada de vegetação já está ligada: verde-escuro é vegetação densa e castanho é pouca vegetação.', 'Aproxime o mapa para ver a sua região.', 'Ligue outras camadas em «Mais camadas».'],
         'relief' => ['Escolha a área ou desenhe o seu polígono.', 'Carregue em «Preparar o relevo desta área».', 'Escolha o intervalo e baixe a altitude (GeoTIFF) ou as curvas de nível (GeoJSON).'],
@@ -170,6 +170,7 @@ return [
     ],
     'area_none' => 'Primeiro escolha ou desenhe a área no mapa.',
     'area_ok' => 'Área: :km2 km² · píxel de :res m. Pronto para classificar.',
+    'area_small' => 'Área: :km2 km². É demasiado pequena (mínimo 1 km²). Desenhe um polígono maior.',
     'area_big' => 'Área: :km2 km². É demasiado grande (máximo 10 000 km²). Escolha um distrito ou desenhe um polígono mais pequeno.',
     'lulc_ready' => 'Pronto! Baixe os resultados:',
 ];
