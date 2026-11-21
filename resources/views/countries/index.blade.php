@@ -37,7 +37,7 @@
                                         <th scope="row"><a href="{{ lroute('countries.show', ['iso' => strtolower($iso)]) }}">{{ World::name($tc) }}</a></th>
                                         <td class="num">{{ format_number($s['n24']) }}</td>
                                         <td class="num">{{ format_number($s['n7']) }}</td>
-                                        <td><a class="link-arrow" href="{{ lroute('maps') }}?pais={{ strtolower($iso) }}">{{ __('countries.see_map') }}</a></td>
+                                        <td><a class="link-arrow" href="{{ \App\Support\MapTools::url('fires', null, ['pais' => strtolower($iso)]) }}">{{ __('countries.see_map') }}</a></td>
                                     </tr>
                                 @endforeach
                             </tbody>

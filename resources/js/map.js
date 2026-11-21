@@ -5,6 +5,7 @@
 import maplibregl from 'maplibre-gl';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import area from '@turf/area';
+import { planGrid } from './lulc-core.js';
 
 const cfg = JSON.parse(document.getElementById('map-config')?.textContent || '{}');
 const el = document.querySelector('[data-map]');
@@ -448,6 +449,7 @@ function setupLulc(q, getAoi, map) {
     const names = Object.fromEntries(LULC_CODES.map((c, k) => [c, (L.lulc_classes || [])[k] || String(c)]));
     const btnRun = q('[data-lulc-run]'), status = q('[data-lulc-status]'), bar = q('[data-lulc-progress]');
     const result = q('[data-lulc-result]'), dl = q('[data-lulc-download]'), show = q('[data-lulc-show]');
+    const areaEl = q('[data-lulc-area]');
     const btnTiff = q('[data-lulc-tiff]'), btnCsv = q('[data-lulc-csv]');
     const start = q('input[name="lulc_start"]'), end = q('input[name="lulc_end"]'), trees = q('select[name="lulc_trees"]');
     end.max = start.max = new Date().toISOString().slice(0, 10);
@@ -480,6 +482,20 @@ function setupLulc(q, getAoi, map) {
         pending.set(id, resolve);
         worker.postMessage({ ...msg, id });
     });
+
+    // Área escolhida: tamanho, resolução e se cabe no limite (o botão só fica activo com uma área válida)
+    const checkArea = () => {
+        const a = getAoi();
+        areaEl.classList.remove('is-ok', 'is-bad');
+        if (!a) { areaEl.textContent = L.area_none; btnRun.disabled = true; return false; }
+        const km2 = Math.round(area(a) / 1e6).toLocaleString(cfg.locale);
+        const plan = planGrid(bboxOf(a));
+        if (!plan) { areaEl.textContent = L.area_big.replace(':km2', km2); areaEl.classList.add('is-bad'); btnRun.disabled = true; return false; }
+        areaEl.textContent = L.area_ok.replace(':km2', km2).replace(':res', plan.res);
+        areaEl.classList.add('is-ok');
+        btnRun.disabled = false;
+        return true;
+    };
 
     const removeLayer = () => {
         if (map.getLayer('lulc')) map.removeLayer('lulc');
@@ -560,7 +576,7 @@ function setupLulc(q, getAoi, map) {
         say(L.lulc_running);
         const s0 = start.value || '2025-01-01', e0 = end.value || '2025-12-31';
         const r = await call({ cmd: 'run', bbox: bboxOf(area), geometry: area.geometry, start: s0 <= e0 ? s0 : e0, end: s0 <= e0 ? e0 : s0, trees: Number(trees.value) });
-        btnRun.disabled = false; box.setAttribute('aria-busy', 'false'); bar.hidden = true;
+        checkArea(); box.setAttribute('aria-busy', 'false'); bar.hidden = true;
         if (id !== run || getAoi() !== area) return;
         if (r.error) { say(L[`lulc_${['too_big', 'no_images', 'no_valid', 'few_classes'].includes(r.error) ? r.error : 'failed'}`]); return; }
         last = r;
@@ -568,6 +584,7 @@ function setupLulc(q, getAoi, map) {
         draw(r); report(r);
         show.checked = true;
         dl.hidden = false;
+        dl.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         window.gtag?.('event', 'lulc_classify', { trees: r.trees, pixel_m: r.grid.res, overall: Math.round(r.accuracy.overall * 1000) / 1000 });
     });
     show.addEventListener('change', () => { if (map.getLayer('lulc')) map.setLayoutProperty('lulc', 'visibility', show.checked ? 'visible' : 'none'); });
@@ -587,9 +604,9 @@ function setupLulc(q, getAoi, map) {
     return {
         reset() {
             run++;
-            box.hidden = !getAoi();
+            box.hidden = false;
             result.hidden = true; dl.hidden = true; bar.hidden = true; last = null;
-            btnRun.disabled = false;
+            checkArea();
             say('');
             removeLayer();
         },

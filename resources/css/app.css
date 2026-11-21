@@ -31,6 +31,9 @@
     --c-forest: #0F2A1D;      /* verde-floresta profundo */
     --c-moss: #3E6B4A;        /* verde-musgo (5,5:1) */
     --c-moss-soft: #DCE5D6;
+    --c-moss-ink: #2C5236;   /* texto sobre verde suave */
+    --c-on-moss: #FFFFFF;
+    --c-forest-btn: #2C5236;
     --c-accent: #D9541E;      /* laranja-queimado: fogo, alertas (decorativo) */
     --c-accent-ink: #B4441A;  /* laranja para texto e botões (4,9:1) */
     --c-on-accent: #FFFFFF;
@@ -78,6 +81,9 @@
     --c-forest: #E9E6DA;
     --c-moss: #7FB08A;
     --c-moss-soft: #1C3A28;
+    --c-moss-ink: #A9D3B2;
+    --c-on-moss: #0B1912;
+    --c-forest-btn: #9CC7A6;
     --c-accent: #F06A33;
     --c-accent-ink: #F06A33;
     --c-on-accent: #0B1912;
@@ -249,18 +255,34 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 
 /* ---------- Botões e ligações de acção ---------- */
 .btn {
-    display: inline-flex; align-items: center; gap: .5rem;
-    font: 500 var(--fs-sm)/1 var(--f-sans);
-    padding: .875rem 1.25rem; min-height: 2.75rem;
-    border: 1px solid var(--c-ink); border-radius: var(--radius);
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    font: 600 var(--fs-sm)/1.1 var(--f-sans);
+    padding: .8rem 1.35rem; min-height: 2.75rem;
+    border: 1.5px solid var(--c-moss); border-radius: 999px;
     background: transparent; color: var(--c-ink); text-decoration: none; cursor: pointer;
-    transition: background-color var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+    transition: background-color var(--t-fast), color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
 }
-.btn:hover { background: var(--c-ink); color: var(--c-bg); }
-.btn--primary { background: var(--c-accent-ink); border-color: var(--c-accent-ink); color: var(--c-on-accent); }
-.btn--primary:hover { background: var(--c-ink); border-color: var(--c-ink); color: var(--c-bg); }
-.link-arrow { font-weight: 500; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
-.link-arrow::after { content: " →"; }
+.btn:hover { background: var(--c-moss); border-color: var(--c-moss); color: var(--c-on-moss); }
+.btn:active { transform: translateY(1px); }
+.btn[disabled], .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+/* Acção principal (laranja da marca) */
+.btn--primary { background: var(--c-accent-ink); border-color: var(--c-accent-ink); color: var(--c-on-accent); box-shadow: 0 4px 14px rgba(180, 68, 26, .28); }
+.btn--primary:hover { background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); box-shadow: 0 6px 18px rgba(180, 68, 26, .36); transform: translateY(-1px); }
+.btn--primary[disabled]:hover { background: var(--c-accent-ink); border-color: var(--c-accent-ink); }
+/* Descargas (verde) */
+.btn--go { background: var(--c-moss); border-color: var(--c-moss); color: var(--c-on-moss); box-shadow: 0 4px 14px rgba(62, 107, 74, .25); }
+.btn--go::before { content: "↓"; font-weight: 700; }
+.btn--go:hover { background: var(--c-forest-btn); border-color: var(--c-forest-btn); color: var(--c-on-moss); transform: translateY(-1px); }
+/* Ligações de acção («Todos os tutoriais →», «Pedir proposta →», …): pílula verde suave */
+.link-arrow {
+    display: inline-flex; align-items: center; gap: .35em; font-weight: 600; font-size: var(--fs-sm); line-height: 1.2;
+    text-decoration: none; padding: .55rem 1.05rem; border-radius: 999px;
+    background: var(--c-moss-soft); color: var(--c-moss-ink); border: 1px solid transparent;
+    transition: background-color var(--t-fast), color var(--t-fast), transform var(--t-fast);
+}
+.link-arrow::after { content: "→"; transition: transform var(--t-fast); }
+.link-arrow:hover { background: var(--c-moss); color: var(--c-on-moss); }
+.link-arrow:hover::after { transform: translateX(3px); }
 
 /* ---------- Herói cartográfico ---------- */
 .hero { position: relative; padding-block: var(--s-6) var(--s-6); overflow: hidden; }
@@ -708,3 +730,31 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 .hero--compact .lede { max-width: 60ch; }
 .tcards--data { grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); margin-block: var(--s-2) var(--s-3); }
 .tcards--data .tcard__title { font-size: var(--fs-base); }
+
+/* Campos de formulário arredondados, iguais em todo o site */
+.field input, .field select, .field textarea, .map-panel select, .map-panel input[type="date"], .filters input, .filters select { border-radius: 10px; }
+
+/* Guia «Como usar» das ferramentas de mapas */
+.howto { background: var(--c-moss-soft); border-radius: 12px; padding: var(--s-2) var(--s-2) .75rem; margin-bottom: var(--s-3); }
+.howto__title { font-weight: 700; margin: 0 0 .5rem; color: var(--c-moss-ink); }
+.howto ol { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: .55rem; }
+.howto li { counter-increment: step; display: grid; grid-template-columns: 1.6rem 1fr; gap: .5rem; font-size: var(--fs-sm); line-height: 1.4; }
+.howto li::before { content: counter(step); display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--c-moss); color: var(--c-on-moss); font-weight: 700; font-size: .8rem; }
+
+/* Estado da área e resultado da classificação */
+.lulc-area { font-size: var(--fs-sm); padding: .55rem .8rem; border-radius: 10px; background: var(--c-surface-2); margin: var(--s-1) 0; }
+.lulc-area.is-ok { background: var(--c-moss-soft); color: var(--c-moss-ink); }
+.lulc-area.is-ok::before { content: "✓ "; font-weight: 700; }
+.lulc-area.is-bad { background: color-mix(in srgb, var(--c-accent) 14%, transparent); color: var(--c-accent-ink); }
+.lulc-area.is-bad::before { content: "! "; font-weight: 700; }
+.aoi-lulc [data-lulc-run] { width: 100%; margin-top: var(--s-1); }
+.lulc-done { border: 2px solid var(--c-moss); border-radius: 12px; padding: var(--s-2); margin: var(--s-2) 0; background: var(--c-surface); }
+.lulc-done__title { font-weight: 700; margin: 0 0 .75rem; color: var(--c-moss-ink); }
+.lulc-done__title::before { content: "✓ "; }
+.lulc-done__btns { display: grid; gap: .6rem; margin-bottom: .6rem; }
+.lulc-done__btns .btn { width: 100%; }
+.aoi-download { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+/* Um fieldset cresce até ao conteúdo mais largo; assim a matriz desliza só dentro da sua caixa */
+.map-panel fieldset, .map-panel form { min-width: 0; max-width: 100%; }
+.map-panel { overflow-x: hidden; }
+.panel-links { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; margin-top: var(--s-2); }

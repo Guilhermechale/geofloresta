@@ -150,6 +150,13 @@ class MapsTest extends TestCase
         $this->assertStringContainsString('Mapa não validado com dados de campo.', $html);
         $this->assertStringContainsString('Impact Observatory, Microsoft e Esri', $html);
         $this->assertStringContainsString('name="lulc_trees"', $html);
+        // Guia «Como usar», estado da área e botões de descarga claros
+        $this->assertStringContainsString('Como usar', $html);
+        $this->assertStringContainsString('Máximo de 10 000 km²', $html);
+        $this->assertStringContainsString('data-lulc-area', $html);
+        $this->assertStringContainsString('Baixar mapa (GeoTIFF)', $html);
+        $this->assertStringContainsString('Baixar tabela (CSV)', $html);
+        $this->assertMatchesRegularExpression('/class="btn btn--primary" data-lulc-run disabled/', $html);
         // Os textos do painel chegam ao JavaScript (classes incluídas)
         $this->assertStringContainsString('"lulc_classes":["Água","Árvores"', $html);
         // A política de segurança permite apenas os três serviços de dados abertos usados pelo trabalhador

@@ -52,6 +52,12 @@
         </div>
 
         <aside class="map-panel" aria-label="{{ __('map.layers') }}">
+            <div class="howto">
+                <p class="howto__title">{{ __('map.howto_title') }}</p>
+                <ol>
+                    @foreach (__('map.howto.'.$tool) as $step)<li>{{ $step }}</li>@endforeach
+                </ol>
+            </div>
             @if ($countries)
                 <form class="map-form map-country" method="get" action="{{ \App\Support\MapTools::url($tool) }}" data-country>
                     <label for="map-country" class="meta">{{ __('map.country') }}</label>
@@ -142,14 +148,14 @@
                         <p class="small muted">{{ __('map.aoi_pick') }}</p>
                     </div>
                     <div class="aoi-download" data-only="fires" data-aoi-download hidden>
-                        <button type="button" class="btn btn--small" data-aoi-csv>{{ __('map.aoi_csv') }}</button>
-                        <button type="button" class="btn btn--small" data-aoi-geojson>{{ __('map.aoi_geojson') }}</button>
+                        <button type="button" class="btn btn--go" data-aoi-csv>{{ __('map.aoi_csv') }}</button>
+                        <button type="button" class="btn btn--go" data-aoi-geojson>{{ __('map.aoi_geojson') }}</button>
                     </div>
                 </fieldset>
                 <fieldset class="aoi-dem" data-only="relief" data-dem hidden>
                     <legend class="meta">{{ __('map.dem_title') }}</legend>
                     <p class="small muted">{{ __('map.dem_help') }}</p>
-                    <button type="button" class="btn btn--small" data-dem-build>{{ __('map.dem_build') }}</button>
+                    <button type="button" class="btn btn--primary" data-dem-build>{{ __('map.dem_build') }}</button>
                     <div class="small" data-dem-status role="status" aria-live="polite"></div>
                     <div data-dem-ready hidden>
                         <div class="field">
@@ -159,19 +165,21 @@
                             </select>
                         </div>
                         <div class="aoi-download">
-                            <button type="button" class="btn btn--small" data-dem-tiff>{{ __('map.dem_tiff') }}</button>
-                            <button type="button" class="btn btn--small" data-dem-contours>{{ __('map.dem_contours') }}</button>
+                            <button type="button" class="btn btn--go" data-dem-tiff>{{ __('map.dem_tiff') }}</button>
+                            <button type="button" class="btn btn--go" data-dem-contours>{{ __('map.dem_contours') }}</button>
                         </div>
                     </div>
-                    <p class="small muted">{{ __('map.dem_note') }} <a href="{{ lroute('contact') }}?assunto=data">{{ __('map.dem_more') }}</a></p>
+                    <p class="small muted">{{ __('map.dem_note') }}</p>
+                    <p class="panel-links"><a class="link-arrow" href="{{ lroute('contact') }}?assunto=data">{{ __('map.dem_more') }}</a></p>
                 </fieldset>
-                <fieldset class="aoi-lulc" data-only="lulc" data-lulc hidden>
+                <fieldset class="aoi-lulc" data-only="lulc" data-lulc>
                     <legend class="meta">{{ __('map.lulc_title') }}</legend>
                     <p class="small muted">{{ __('map.lulc_help') }}</p>
                     <div class="lulc-warning" role="note">
                         <strong>{{ __('map.lulc_warning') }}</strong>
                         <span>{{ __('map.lulc_warning_text') }}</span>
                     </div>
+                    <p class="lulc-area" data-lulc-area role="status" aria-live="polite">{{ __('map.area_none') }}</p>
                     <div class="lulc-fields">
                         <div class="field">
                             <label for="lulc-start">{{ __('map.lulc_start') }}</label>
@@ -188,19 +196,22 @@
                             </select>
                         </div>
                     </div>
-                    <button type="button" class="btn btn--small" data-lulc-run>{{ __('map.lulc_run') }}</button>
+                    <button type="button" class="btn btn--primary" data-lulc-run disabled>{{ __('map.lulc_run') }}</button>
                     <div class="small" data-lulc-status role="status" aria-live="polite"></div>
                     <progress data-lulc-progress max="1" value="0" hidden></progress>
-                    <div data-lulc-result hidden></div>
-                    <div class="aoi-download" data-lulc-download hidden>
+                    <div class="lulc-done" data-lulc-download hidden>
+                        <p class="lulc-done__title">{{ __('map.lulc_ready') }}</p>
+                        <div class="lulc-done__btns">
+                            <button type="button" class="btn btn--go" data-lulc-tiff>{{ __('map.lulc_tiff') }}</button>
+                            <button type="button" class="btn btn--go" data-lulc-csv>{{ __('map.lulc_csv') }}</button>
+                        </div>
                         <label class="small"><input type="checkbox" data-lulc-show checked> {{ __('map.lulc_show') }}</label>
-                        <button type="button" class="btn btn--small" data-lulc-tiff>{{ __('map.lulc_tiff') }}</button>
-                        <button type="button" class="btn btn--small" data-lulc-csv>{{ __('map.lulc_csv') }}</button>
                     </div>
+                    <div data-lulc-result hidden></div>
                     <p class="small muted">{{ __('map.lulc_note') }}</p>
-                    <p class="small">
-                        @if ($rfTutorialUrl)<a href="{{ $rfTutorialUrl }}">{{ __('map.lulc_learn') }}</a> · @endif
-                        <a href="{{ lroute('contact') }}?assunto=proposal">{{ __('map.lulc_more') }}</a>
+                    <p class="panel-links">
+                        @if ($rfTutorialUrl)<a class="link-arrow" href="{{ $rfTutorialUrl }}">{{ __('map.lulc_learn') }}</a>@endif
+                        <a class="link-arrow" href="{{ lroute('contact') }}?assunto=proposal">{{ __('map.lulc_more') }}</a>
                     </p>
                 </fieldset>
             </form>
