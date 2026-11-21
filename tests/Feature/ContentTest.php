@@ -120,7 +120,7 @@ class ContentTest extends TestCase
         $this->get('/tutoriais')->assertOk()->assertSee('thumbs/480/conteudo/capa-teste.webp', false);
         $this->get('/pesquisas')->assertOk()->assertSee('thumbs/480/conteudo/capa-teste.webp', false);
         $this->get('/gee-ndvi')->assertOk()->assertSee('thumbs/1200/conteudo/capa-teste.webp', false)->assertSee('alt="Mapa NDVI"', false);
-        $this->get('/')->assertOk()->assertSee('thumbs/320/conteudo/capa-teste.webp', false);
+        $this->get('/')->assertOk()->assertSee('thumbs/480/conteudo/capa-teste.webp', false);
         \Illuminate\Support\Facades\Storage::disk('public')->assertExists('thumbs/480/conteudo/capa-teste.webp');
         $this->assertSame(480, getimagesize(\Illuminate\Support\Facades\Storage::disk('public')->path('thumbs/480/conteudo/capa-teste.webp'))[0]);
 
