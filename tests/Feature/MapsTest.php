@@ -152,7 +152,9 @@ class MapsTest extends TestCase
         $this->assertStringContainsString('name="lulc_trees"', $html);
         // Guia «Como usar», estado da área e botões de descarga claros
         $this->assertStringContainsString('Como usar', $html);
-        $this->assertStringContainsString('Máximo de 10 000 km²', $html);
+        $this->assertStringContainsString('De 1 a 1 000 km²: píxel de 20 m', $html);
+        $this->assertStringContainsString('10 000 km² (máximo)', $html);
+        $this->assertStringContainsString('Pedir proposta', $html);
         $this->assertStringContainsString('data-lulc-area', $html);
         $this->assertStringContainsString('Baixar mapa (GeoTIFF)', $html);
         $this->assertStringContainsString('Baixar tabela (CSV)', $html);
