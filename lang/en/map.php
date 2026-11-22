@@ -183,4 +183,11 @@ return [
         'link' => 'Watch the video: how it works (1 min)',
         'desc' => 'Video guide to the free supervised land cover classification tool with Random Forest and Sentinel-2 imagery, in the browser.',
     ],
+    'tools_short' => [
+        'lulc' => 'Land cover',
+        'fires' => 'Fires',
+        'ndvi' => 'NDVI',
+        'relief' => 'Terrain',
+        'satellite' => 'Satellite',
+    ],
 ];

@@ -182,4 +182,11 @@ return [
         'link' => 'Ver o vídeo: como funciona (1 min)',
         'desc' => 'Guia em vídeo da ferramenta gratuita de classificação supervisionada do uso e cobertura do solo com Random Forest e imagens Sentinel-2, no navegador.',
     ],
+    'tools_short' => [
+        'lulc' => 'Uso do solo',
+        'fires' => 'Incêndios',
+        'ndvi' => 'NDVI',
+        'relief' => 'Relevo',
+        'satellite' => 'Satélite',
+    ],
 ];

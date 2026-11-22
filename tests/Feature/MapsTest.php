@@ -180,6 +180,9 @@ class MapsTest extends TestCase
         $this->assertStringNotContainsString('<iframe', $html);                      // só ao carregar em play
         $this->assertStringContainsString('Watch the video', $this->get('/en/maps/land-cover')->assertOk()->getContent());
         $this->assertStringNotContainsString('2conaBVmZl8', $this->get('/mapas/relevo')->assertOk()->getContent());
+        // telemóvel: separadores com nome curto (o nome completo fica para leitores de ecrã)
+        $this->assertStringContainsString('<span class="tool-tabs__short" aria-hidden="true">Uso do solo</span>', $html);
+        $this->assertStringContainsString('<span class="tool-tabs__full">Uso e cobertura do solo (IA)</span>', $html);
     }
 
     public function test_maps_hub_shows_tool_cards_and_each_tool_only_its_own_panels(): void

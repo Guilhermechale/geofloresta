@@ -17,7 +17,7 @@
         <link rel="preconnect" href="https://elevation-tiles-prod.s3.amazonaws.com" crossorigin>
     </x-slot:head>
 
-    <x-page-head :title="$toolTitle" :lede="__('map.tools.'.$tool.'.text')" :crumbs="$crumbs" class="page-head--compact">
+    <x-page-head :title="$toolTitle" :lede="__('map.tools.'.$tool.'.text')" :crumbs="$crumbs" class="page-head--compact page-head--tool">
         @if ($tool === 'fires')
         <p class="meta map-status">
             <span class="dot-fire" aria-hidden="true"></span>{{ __('map.near_real_time') }}
@@ -39,7 +39,8 @@
             @foreach (\App\Support\MapTools::TOOLS as $k => $t)
                 <a href="{{ \App\Support\MapTools::url($k, null, request()->filled('pais') ? ['pais' => $isoLower] : []) }}" @if ($k === $tool) aria-current="page" @endif>
                     <img src="{{ asset($t['image']) }}" width="48" height="30" alt="" loading="lazy">
-                    <span>{{ __('map.tools.'.$k.'.title') }}</span>
+                    <span class="tool-tabs__full">{{ __('map.tools.'.$k.'.title') }}</span>
+                    <span class="tool-tabs__short" aria-hidden="true">{{ __('map.tools_short.'.$k) }}</span>
                 </a>
             @endforeach
         </div>

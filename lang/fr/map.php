@@ -183,4 +183,11 @@ return [
         'link' => 'Voir la vidéo : comment ça marche (1 min)',
         'desc' => 'Guide vidéo de l’outil gratuit de classification supervisée de l’occupation du sol avec Random Forest et les images Sentinel-2, dans le navigateur.',
     ],
+    'tools_short' => [
+        'lulc' => 'Occupation',
+        'fires' => 'Incendies',
+        'ndvi' => 'NDVI',
+        'relief' => 'Relief',
+        'satellite' => 'Satellite',
+    ],
 ];
