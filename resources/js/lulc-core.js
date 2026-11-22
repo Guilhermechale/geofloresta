@@ -278,6 +278,26 @@ export function areas(classMap, codes, res) {
 }
 
 // ---------- GeoTIFF de 8 bits (EPSG:4326) com paleta, para abrir directamente no QGIS ----------
+/**
+ * Blocos vazios («sparse tiles»: posição 0 e tamanho 0) são permitidos pelo GDAL e usados pela Esri sobre o mar,
+ * mas a geotiff.js 2.x falha a lê-los («Offset is outside the bounds of the DataView»).
+ * Esta função faz a imagem devolver esses blocos como zeros (= sem dados) e deixa os outros como estão.
+ */
+export function allowSparseTiles(img) {
+    const fd = img.fileDirectory;
+    const counts = img.isTiled ? fd.TileByteCounts : fd.StripByteCounts;
+    if (!counts || !Array.prototype.some.call(counts, (c) => c === 0)) return img;
+    const orig = img.getTileOrStrip.bind(img);
+    const perRow = Math.ceil(img.getWidth() / img.getTileWidth()), perCol = Math.ceil(img.getHeight() / img.getTileHeight());
+    img.getTileOrStrip = async (x, y, sample, poolOrDecoder, signal) => {
+        const index = img.planarConfiguration === 2 ? sample * perRow * perCol + y * perRow + x : y * perRow + x;
+        if (counts[index] !== 0) return orig(x, y, sample, poolOrDecoder, signal);
+        const bpp = img.planarConfiguration === 2 ? img.getSampleByteSize(sample) : img.getBytesPerPixel();
+        return { x, y, sample, data: new ArrayBuffer(img.getTileWidth() * img.getBlockHeight(y) * bpp) };
+    };
+    return img;
+}
+
 export function geotiffClasses(grid, data, description = '') {
     const { width, height, dx, dy, west, north } = grid;
     const ascii = (s) => new TextEncoder().encode(s.replace(/[^\x20-\x7e]/g, '?') + '\0');

@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-    toUtm, planGrid, areaKm2, medianStack, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas, geotiffClasses, rng,
+    toUtm, planGrid, areaKm2, medianStack, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas, geotiffClasses, rng, allowSparseTiles,
 } from '../../resources/js/lulc-core.js';
+import { fromArrayBuffer } from 'geotiff';
 
 test('UTM igual ao GDAL (milímetros)', () => {
     const ref = [[32645, 84.25, 27.75, 228932.244, 3072539.499], [32736, 34.85, -19.84, 693740.534, 7805162.315],
@@ -93,4 +94,31 @@ test('recorte por polígono (com buraco)', async () => {
     assert.equal(m.reduce((a, b) => a + b, 0), 100 - 16);
     assert.equal(m[5 * 10 + 5], 0);
     assert.equal(polygonMask(grid, null).reduce((a, b) => a + b, 0), 100);
+});
+
+// TIFF em blocos 16x16 (2 blocos), com o segundo vazio (posição 0, tamanho 0), como a Esri devolve sobre o mar
+function sparseTiff() {
+    const tile = 256, entries = [[256, 3, 32], [257, 3, 16], [258, 3, 8], [259, 3, 1], [262, 3, 1], [277, 3, 1], [322, 3, 16], [323, 3, 16], [324, 4, 2], [325, 4, 2], [339, 3, 1]];
+    const ifd = 8, n = entries.length, arrays = ifd + 2 + n * 12 + 4, data = arrays + 16;
+    const buf = new ArrayBuffer(data + tile), v = new DataView(buf);
+    v.setUint16(0, 0x4949); v.setUint16(2, 42, true); v.setUint32(4, ifd, true); v.setUint16(ifd, n, true);
+    entries.forEach(([tag, type, val], k) => {
+        const o = ifd + 2 + k * 12;
+        v.setUint16(o, tag, true); v.setUint16(o + 2, type, true); v.setUint32(o + 4, tag === 324 || tag === 325 ? 2 : 1, true);
+        if (tag === 324) v.setUint32(o + 8, arrays, true); else if (tag === 325) v.setUint32(o + 8, arrays + 8, true);
+        else if (type === 3) v.setUint16(o + 8, val, true); else v.setUint32(o + 8, val, true);
+    });
+    v.setUint32(arrays, data, true); v.setUint32(arrays + 4, 0, true);      // posições dos blocos
+    v.setUint32(arrays + 8, tile, true); v.setUint32(arrays + 12, 0, true); // tamanhos: o segundo é vazio
+    new Uint8Array(buf, data, tile).fill(7);
+    return buf;
+}
+
+test('blocos vazios do TIFF (Esri sobre o mar) lidos como «sem dados»', async () => {
+    const img = allowSparseTiles(await (await fromArrayBuffer(sparseTiff())).getImage());
+    const [d] = await img.readRasters();
+    assert.equal(d.length, 32 * 16);
+    assert.equal(d[0], 7);        // primeiro bloco: dados
+    assert.equal(d[20], 0);       // segundo bloco: vazio
+    assert.equal(d[32 * 15 + 31], 0);
 });

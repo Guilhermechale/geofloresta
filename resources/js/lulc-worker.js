@@ -6,6 +6,7 @@
  */
 import { fromUrl, fromArrayBuffer } from 'geotiff';
 import {
+    allowSparseTiles,
     planGrid, toUtm, medianStack, indices, slope, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas,
     geotiffClasses, polygonMask, FEATURES, rng,
 } from './lulc-core.js';
@@ -63,10 +64,10 @@ function utmMapper(grid, epsg, step = 16) {
 async function readToGrid(href, grid, map, nodataTo = NaN) {
     const tiff = await fromUrl(href, { allowFullFile: false });
     const n = await tiff.getImageCount();
-    let img = await tiff.getImage(0);
+    let img = allowSparseTiles(await tiff.getImage(0));
     const base = img;
     for (let k = 1; k < n; k++) {
-        const cand = await tiff.getImage(k);
+        const cand = allowSparseTiles(await tiff.getImage(k));
         const res = base.getWidth() / cand.getWidth() * base.getResolution()[0];
         if (res <= grid.res + 0.1) img = cand; else break;
     }
@@ -151,7 +152,7 @@ async function reference(grid, year) {
     const r = await fetch(`${LULC}?${q}`);
     if (!r.ok) throw new Error(`LULC ${r.status}`);
     const tiff = await fromArrayBuffer(await r.arrayBuffer());
-    const img = await tiff.getImage();
+    const img = allowSparseTiles(await tiff.getImage());
     const [data] = await img.readRasters();
     // o serviço ajusta a extensão para ter píxeis quadrados: usar a georreferência devolvida, não a pedida
     const [ox, oy] = img.getOrigin(), [rx, ry] = img.getResolution();
