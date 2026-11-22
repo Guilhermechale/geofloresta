@@ -126,9 +126,15 @@ return [
     ],
     'home2' => [
         'lede' => 'Cartes, données ouvertes et outils d’intelligence artificielle pour les forêts et l’environnement. Gratuit, dans tous les pays.',
-        'find' => 'Que cherchez-vous ?',
-        'latest_learn' => 'Tutoriels récents',
-        'latest_studies' => 'Recherches récentes',
+        'find' => 'Outils et ressources',
+        'latest_learn' => 'Derniers tutoriels',
+        'latest_studies' => 'Dernières recherches',
+        'find_eyebrow' => 'Explorer',
+        'find_text' => 'Cartes avec intelligence artificielle, données ouvertes, tutoriels et services, réunis en un seul lieu.',
+        'learn_eyebrow' => 'Apprendre',
+        'learn_text' => 'Guides pratiques de SIG, télédétection et IA, pas à pas et gratuits.',
+        'studies_eyebrow' => 'Recherche',
+        'studies_text' => 'Analyses fondées sur les données satellitaires : forêt, climat et environnement.',
         'cards' => [
             'data' => ['title' => 'Données ouvertes', 'text' => 'Téléchargez les données de n’importe quel pays : limites, rivières, forêts, incendies.'],
             'learn' => ['title' => 'Tutoriels', 'text' => 'Apprenez le SIG et la télédétection, pas à pas et gratuitement.'],

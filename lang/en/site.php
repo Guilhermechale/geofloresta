@@ -126,9 +126,15 @@ return [
     ],
     'home2' => [
         'lede' => 'Maps, open data and artificial intelligence tools for forests and the environment. Free, in any country.',
-        'find' => 'What are you looking for?',
+        'find' => 'Tools and resources',
         'latest_learn' => 'Latest tutorials',
         'latest_studies' => 'Latest research',
+        'find_eyebrow' => 'Explore',
+        'find_text' => 'AI-powered maps, open data, tutorials and services, all in one place.',
+        'learn_eyebrow' => 'Learn',
+        'learn_text' => 'Hands-on GIS, remote sensing and AI guides, step by step and free.',
+        'studies_eyebrow' => 'Research',
+        'studies_text' => 'Satellite-based analyses of forests, climate and the environment.',
         'cards' => [
             'data' => ['title' => 'Open data', 'text' => 'Download data for any country: boundaries, rivers, forests, fires.'],
             'learn' => ['title' => 'Tutorials', 'text' => 'Learn GIS and remote sensing, step by step and free.'],

@@ -18,7 +18,7 @@
 
     <section class="section section--tight" aria-labelledby="find-title">
         <div class="wrap">
-            <h2 id="find-title" class="h3">{{ __('site.home2.find') }}</h2>
+            <x-section-title id="find-title" num="01" :eyebrow="__('site.home2.find_eyebrow')" :title="__('site.home2.find')" :text="__('site.home2.find_text')" />
             <div class="tcards tcards--home">
                 @foreach ($cards as $c)
                     <x-tool-card :href="$c['href']" :image="$c['image']" :title="$c['title']" :text="$c['text']" :eager="$loop->index < 4" />
@@ -32,10 +32,7 @@
     @if ($tutorials->isNotEmpty())
         <section class="section section--tight" aria-labelledby="learn-title">
             <div class="wrap">
-                <div class="section-head">
-                    <h2 id="learn-title" class="h3">{{ __('site.home2.latest_learn') }}</h2>
-                    <a class="link-arrow" href="{{ lroute('learn') }}">{{ __('site.home.all_learn') }}</a>
-                </div>
+                <x-section-title id="learn-title" num="02" :eyebrow="__('site.home2.learn_eyebrow')" :title="__('site.home2.latest_learn')" :text="__('site.home2.learn_text')" :href="lroute('learn')" :link="__('site.home.all_learn')" />
                 <div class="tcards">
                     @foreach ($tutorials->take(3) as $t)
                         @php $l = $t->displayLocale(app()->getLocale()); @endphp
@@ -49,10 +46,7 @@
     @if ($studies->isNotEmpty())
         <section class="section section--tight" aria-labelledby="research-title">
             <div class="wrap">
-                <div class="section-head">
-                    <h2 id="research-title" class="h3">{{ __('site.home2.latest_studies') }}</h2>
-                    <a class="link-arrow" href="{{ lroute('studies') }}">{{ __('content.back_research') }}</a>
-                </div>
+                <x-section-title id="research-title" num="03" :eyebrow="__('site.home2.studies_eyebrow')" :title="__('site.home2.latest_studies')" :text="__('site.home2.studies_text')" :href="lroute('studies')" :link="__('content.back_research')" />
                 <div class="tcards">
                     @foreach ($studies->take(3) as $s)
                         @php $l = $s->displayLocale(app()->getLocale()); @endphp

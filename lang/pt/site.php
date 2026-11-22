@@ -125,9 +125,15 @@ return [
     ],
     'home2' => [
         'lede' => 'Mapas, dados abertos e ferramentas de inteligência artificial para florestas e ambiente. Grátis e em qualquer país.',
-        'find' => 'O que procura?',
-        'latest_learn' => 'Tutoriais recentes',
-        'latest_studies' => 'Pesquisas recentes',
+        'find' => 'Ferramentas e recursos',
+        'latest_learn' => 'Últimos tutoriais',
+        'latest_studies' => 'Últimas pesquisas',
+        'find_eyebrow' => 'Explorar',
+        'find_text' => 'Mapas com inteligência artificial, dados abertos, tutoriais e serviços, reunidos num só lugar.',
+        'learn_eyebrow' => 'Aprender',
+        'learn_text' => 'Guias práticos de SIG, sensoriamento remoto e IA, passo a passo e gratuitos.',
+        'studies_eyebrow' => 'Investigação',
+        'studies_text' => 'Análises com dados de satélite sobre floresta, clima e ambiente.',
         'cards' => [
             'data' => ['title' => 'Dados abertos', 'text' => 'Descarregue dados de qualquer país: limites, rios, floresta, incêndios.'],
             'learn' => ['title' => 'Tutoriais', 'text' => 'Aprenda SIG e sensoriamento remoto, passo a passo e grátis.'],
