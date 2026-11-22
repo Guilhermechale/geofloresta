@@ -37,7 +37,7 @@ return [
     ],
 
     'home' => [
-        'title' => 'GEOFLORESTA — Géotechnologie, forêt et environnement, partout dans le monde',
+        'title' => 'GEOFLORESTA - Géotechnologie, forêt et environnement, partout dans le monde',
         'description' => 'Conseil en SIG, télédétection et environnement, sur place ou à distance, pour des projets dans tous les pays. Données géospatiales ouvertes pour tous les pays (feux, rivières, bassins versants, forêt, population), suivi des feux et tutoriels gratuits.',
         'kicker' => 'GEOFLORESTA · Beira, Sofala · Mozambique',
         'h1' => 'Données géospatiales et cartes pour les forêts et l’environnement, partout dans le monde',

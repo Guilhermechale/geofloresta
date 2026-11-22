@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Mapas — Monitor de incêndios',
+    'title' => 'Mapas - Monitor de incêndios',
     'nav' => 'Mapas',
     'description' => 'Monitor de focos de incêndio de qualquer país do mundo (NASA FIRMS, quase em tempo real) com imagem de satélite diária NASA GIBS, NDVI e download dos focos da sua área.',
     'lede' => 'Focos de incêndio dos últimos 7 dias detectados pelos satélites VIIRS, imagem de satélite diária e índice de vegetação, com a data de cada actualização.',
@@ -24,7 +24,7 @@ return [
     'aoi_help' => 'Escolha uma província ou um distrito, ou desenhe um polígono no mapa. Os cálculos são feitos no seu navegador.',
     'aoi_province' => 'Província',
     'aoi_district' => 'Distrito',
-    'aoi_none' => '— escolher —',
+    'aoi_none' => '- escolher -',
     'aoi_draw' => 'Desenhar polígono',
     'aoi_finish' => 'Concluir polígono',
     'aoi_cancel' => 'Cancelar',

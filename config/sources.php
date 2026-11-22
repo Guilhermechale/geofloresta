@@ -19,7 +19,7 @@ return [
     [
         'key' => 'gibs', 'name' => 'NASA Global Imagery Browse Services (GIBS)', 'use' => 'imagery', 'status' => 'service',
         'url' => 'https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api',
-        'licence' => 'NASA Earth Science Data — open, no restrictions',
+        'licence' => 'NASA Earth Science Data - open, no restrictions',
         'attribution' => "We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS).",
         'verified' => null,
     ],
@@ -33,7 +33,7 @@ return [
     [
         'key' => 'sentinel-2-aws', 'name' => 'Copernicus Sentinel-2 L2A (COG, AWS Open Data; catálogo Earth Search, Element 84)', 'use' => 'land-cover', 'status' => 'service',
         'url' => 'https://registry.opendata.aws/sentinel-2-l2a-cogs/',
-        'licence' => 'Copernicus Sentinel data — acesso livre, completo e aberto (atribuição)',
+        'licence' => 'Copernicus Sentinel data - acesso livre, completo e aberto (atribuição)',
         'attribution' => 'Contains modified Copernicus Sentinel data [year], processed by ESA. Hosted on AWS Open Data (Element 84 Earth Search).',
         'verified' => '2026-11-21',
     ],
@@ -46,7 +46,7 @@ return [
     ],
     [
         'key' => 'firms', 'name' => 'NASA Fire Information for Resource Management System (FIRMS)', 'use' => 'fire', 'status' => 'hosted',
-        'url' => 'https://firms.modaps.eosdis.nasa.gov/', 'licence' => 'NASA Earth Science Data — open data policy (no restrictions on reuse)',
+        'url' => 'https://firms.modaps.eosdis.nasa.gov/', 'licence' => 'NASA Earth Science Data - open data policy (no restrictions on reuse)',
         'attribution' => 'We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS).',
         'verified' => '2026-11-13',
     ],
@@ -63,7 +63,7 @@ return [
         'verified' => null,
     ],
     [
-        'key' => 'wri-drivers', 'name' => 'WRI / Google DeepMind — Drivers of forest loss (2001–2024, 1 km)', 'use' => 'forest-loss', 'status' => 'hosted',
+        'key' => 'wri-drivers', 'name' => 'WRI / Google DeepMind - Drivers of forest loss (2001–2024, 1 km)', 'use' => 'forest-loss', 'status' => 'hosted',
         'url' => 'https://data.globalforestwatch.org/', 'licence' => 'CC-BY-4.0',
         'attribution' => 'World Resources Institute and Google DeepMind. Drivers of Forest Loss. Accessed through Global Forest Watch.',
         'verified' => null,
@@ -81,18 +81,18 @@ return [
         'verified' => null,
     ],
     [
-        'key' => 'naturalearth', 'name' => 'Natural Earth — Admin 1 (províncias)', 'use' => 'boundaries', 'status' => 'hosted',
+        'key' => 'naturalearth', 'name' => 'Natural Earth - Admin 1 (províncias)', 'use' => 'boundaries', 'status' => 'hosted',
         'url' => 'https://www.naturalearthdata.com/', 'licence' => 'Public domain',
         'attribution' => 'Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.', 'verified' => '2026-11-13',
     ],
     [
-        'key' => 'geoboundaries', 'name' => 'geoBoundaries — Moçambique ADM2 (distritos), fonte INE / OCHA ROSEA', 'use' => 'boundaries', 'status' => 'hosted',
+        'key' => 'geoboundaries', 'name' => 'geoBoundaries - Moçambique ADM2 (distritos), fonte INE / OCHA ROSEA', 'use' => 'boundaries', 'status' => 'hosted',
         'url' => 'https://www.geoboundaries.org/', 'licence' => 'CC-BY-3.0-IGO',
-        'attribution' => 'Mozambique INE (Instituto Nacional de Estatística), OCHA ROSEA, via geoBoundaries — Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): e0231866.',
+        'attribution' => 'Mozambique INE (Instituto Nacional de Estatística), OCHA ROSEA, via geoBoundaries - Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): e0231866.',
         'verified' => '2026-11-13',
     ],
     [
-        'key' => 'cci-biomass', 'name' => 'ESA Climate Change Initiative — Biomass (v7)', 'use' => 'biomass', 'status' => 'link',
+        'key' => 'cci-biomass', 'name' => 'ESA Climate Change Initiative - Biomass (v7)', 'use' => 'biomass', 'status' => 'link',
         'url' => 'https://climate.esa.int/en/projects/biomass/', 'licence' => 'LicenseRef-CEDA-ESA-CCI (termos próprios)',
         'attribution' => 'Santoro, M.; Cartus, O. ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass. NERC EDS Centre for Environmental Data Analysis.',
         'verified' => null,

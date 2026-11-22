@@ -36,7 +36,7 @@ return [
     ],
 
     'home' => [
-        'title' => 'GEOFLORESTA — Geotecnologia, floresta e ambiente, em qualquer parte do mundo',
+        'title' => 'GEOFLORESTA - Geotecnologia, floresta e ambiente, em qualquer parte do mundo',
         'description' => 'Consultoria em SIG, sensoriamento remoto e ambiente, presencial ou à distância, para projectos em qualquer país. Dados geoespaciais abertos de qualquer país (incêndios, rios, bacias hidrográficas, floresta, população), monitor de incêndios e tutoriais gratuitos.',
         'kicker' => 'GEOFLORESTA · Beira, Sofala · Moçambique',
         'h1' => 'Dados geoespaciais e mapas para florestas e ambiente, em qualquer parte do mundo',

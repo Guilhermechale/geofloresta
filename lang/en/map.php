@@ -2,7 +2,7 @@
 
 // Generated translation — TO REVIEW
 return [
-    'title' => 'Maps — Fire monitor',
+    'title' => 'Maps - Fire monitor',
     'nav' => 'Maps',
     'description' => 'Active fire monitor for any country in the world (NASA FIRMS, near real time) with NASA GIBS daily satellite imagery, NDVI and downloads of the fires in your area.',
     'lede' => 'Fire detections from the last 7 days by the VIIRS satellites, daily satellite imagery and vegetation index, with the date of every update.',
@@ -25,7 +25,7 @@ return [
     'aoi_help' => 'Choose a province or district, or draw a polygon on the map. Calculations run in your browser.',
     'aoi_province' => 'Province',
     'aoi_district' => 'District',
-    'aoi_none' => '— choose —',
+    'aoi_none' => '- choose -',
     'aoi_draw' => 'Draw polygon',
     'aoi_finish' => 'Finish polygon',
     'aoi_cancel' => 'Cancel',

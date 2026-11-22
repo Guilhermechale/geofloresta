@@ -16,7 +16,7 @@ class ContactReceived extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[geofloresta.com] '.$this->msg->subject.' — '.$this->msg->name,
+            subject: '[geofloresta.com] '.$this->msg->subject.' - '.$this->msg->name,
             replyTo: [new Address($this->msg->email, $this->msg->name)],
         );
     }

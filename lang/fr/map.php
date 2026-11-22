@@ -2,7 +2,7 @@
 
 // Traduction générée — À RÉVISER
 return [
-    'title' => 'Cartes — Suivi des incendies',
+    'title' => 'Cartes - Suivi des incendies',
     'nav' => 'Cartes',
     'description' => 'Suivi des foyers d’incendie de tous les pays du monde (NASA FIRMS, quasi temps réel) avec l’image satellite quotidienne NASA GIBS, le NDVI et le téléchargement des feux de votre zone.',
     'lede' => 'Foyers d’incendie des 7 derniers jours détectés par les satellites VIIRS, image satellite quotidienne et indice de végétation, avec la date de chaque mise à jour.',
@@ -25,7 +25,7 @@ return [
     'aoi_help' => 'Choisissez une province ou un district, ou dessinez un polygone sur la carte. Les calculs sont faits dans votre navigateur.',
     'aoi_province' => 'Province',
     'aoi_district' => 'District',
-    'aoi_none' => '— choisir —',
+    'aoi_none' => '- choisir -',
     'aoi_draw' => 'Dessiner un polygone',
     'aoi_finish' => 'Terminer le polygone',
     'aoi_cancel' => 'Annuler',

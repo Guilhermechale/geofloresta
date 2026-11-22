@@ -37,7 +37,7 @@ return [
     ],
 
     'home' => [
-        'title' => 'GEOFLORESTA — Geotechnology, forests and environment, anywhere in the world',
+        'title' => 'GEOFLORESTA - Geotechnology, forests and environment, anywhere in the world',
         'description' => 'GIS, remote sensing and environmental consultancy, on site or remote, for projects in any country. Open geospatial data for any country (fires, rivers, river basins, forest, population), a fire monitor and free tutorials.',
         'kicker' => 'GEOFLORESTA · Beira, Sofala · Mozambique',
         'h1' => 'Geospatial data and maps for forests and the environment, anywhere in the world',

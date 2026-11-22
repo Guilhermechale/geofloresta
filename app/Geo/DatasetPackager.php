@@ -25,9 +25,9 @@ class DatasetPackager
 
     public const FORMAT_NOTES = [
         'shp' => [
-            'pt' => 'Shapefile: formato antigo com limitações — nomes de campo até 10 caracteres, texto até 254 bytes, vários ficheiros (.shp .shx .dbf .prj .cpg) que têm de ficar juntos, máximo 2 GB. Prefira o GeoPackage quando possível.',
-            'fr' => 'Shapefile : format ancien avec des limites — noms de champs de 10 caractères au plus, texte de 254 octets au plus, plusieurs fichiers (.shp .shx .dbf .prj .cpg) à conserver ensemble, 2 Go maximum. Préférez le GeoPackage si possible.',
-            'en' => 'Shapefile: legacy format with limitations — field names of up to 10 characters, text up to 254 bytes, several files (.shp .shx .dbf .prj .cpg) that must stay together, 2 GB maximum. Prefer GeoPackage where possible.',
+            'pt' => 'Shapefile: formato antigo com limitações - nomes de campo até 10 caracteres, texto até 254 bytes, vários ficheiros (.shp .shx .dbf .prj .cpg) que têm de ficar juntos, máximo 2 GB. Prefira o GeoPackage quando possível.',
+            'fr' => 'Shapefile : format ancien avec des limites - noms de champs de 10 caractères au plus, texte de 254 octets au plus, plusieurs fichiers (.shp .shx .dbf .prj .cpg) à conserver ensemble, 2 Go maximum. Préférez le GeoPackage si possible.',
+            'en' => 'Shapefile: legacy format with limitations - field names of up to 10 characters, text up to 254 bytes, several files (.shp .shx .dbf .prj .cpg) that must stay together, 2 GB maximum. Prefer GeoPackage where possible.',
         ],
         'csv' => [
             'pt' => 'CSV em UTF-8, separador vírgula, ponto decimal. Coordenadas em graus decimais WGS 84 (EPSG:4326).',
@@ -93,8 +93,8 @@ class DatasetPackager
                 $out[] = wordwrap($desc, 90);
             }
             $out[] = implode("\n", array_filter([
-                $L('Fonte', 'Source', 'Source').': '.$d->source_name.' — '.$d->source_url,
-                $L('Licença', 'Licence', 'Licence').': '.$d->licence_spdx.($d->licence_url ? ' — '.$d->licence_url : ''),
+                $L('Fonte', 'Source', 'Source').': '.$d->source_name.' - '.$d->source_url,
+                $L('Licença', 'Licence', 'Licence').': '.$d->licence_spdx.($d->licence_url ? ' - '.$d->licence_url : ''),
                 $d->version ? $L('Versão', 'Version', 'Version').': '.$d->version : null,
                 $d->period() ? $L('Período', 'Période', 'Period').': '.$d->period() : null,
                 $d->resolution ? $L('Resolução', 'Résolution', 'Resolution').': '.$d->resolution : null,
@@ -124,7 +124,7 @@ class DatasetPackager
         foreach ($hashes as $name => $h) {
             $out[] = $h['sha256'].'  '.$name.'  ('.$h['size'].' bytes)';
         }
-        $out[] = "\nGEOFLORESTA — https://geofloresta.com — ".now()->toDateString();
+        $out[] = "\nGEOFLORESTA - https://geofloresta.com - ".now()->toDateString();
 
         return implode("\n\n", $out)."\n";
     }

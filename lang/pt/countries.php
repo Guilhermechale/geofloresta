@@ -20,7 +20,7 @@ return [
     'see_map' => 'Ver no mapa',
     'all' => 'Todos os países',
     'kit_title' => 'Dados abertos: :country',
-    'show_description' => ':country — dados geoespaciais abertos para descarregar: focos de incêndio, limites administrativos, rios, bacias hidrográficas, floresta, população, relevo, clima e imagens de satélite.',
+    'show_description' => ':country - dados geoespaciais abertos para descarregar: focos de incêndio, limites administrativos, rios, bacias hidrográficas, floresta, população, relevo, clima e imagens de satélite.',
     'show_lede' => 'Tudo o que precisa para começar um projecto SIG neste país, com dados gratuitos e licenças que permitem uso, incluindo comercial, com a devida atribuição.',
     'sections_nav' => 'Secções desta página',
     'sections' => [

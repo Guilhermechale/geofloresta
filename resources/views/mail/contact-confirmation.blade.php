@@ -9,4 +9,4 @@
 ----
 
 {!! __('mail.signature', [], $msg->locale) !!}
-GEOFLORESTA — https://geofloresta.com
+GEOFLORESTA - https://geofloresta.com

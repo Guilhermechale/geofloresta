@@ -88,7 +88,7 @@
                                             @if (! empty($it['units'])) · {{ trans_choice('countries.units', (int) $it['units'], ['n' => format_number((int) $it['units'])]) }}@endif
                                             @if (! empty($it['year'])) · {{ $it['year'] }}@endif
                                         </p>
-                                        <p class="small muted">{{ $it['source'] }} · {{ __('countries.licence') }}: {{ $it['licence'] ?: '—' }}</p>
+                                        <p class="small muted">{{ $it['source'] }} · {{ __('countries.licence') }}: {{ $it['licence'] ?: '-' }}</p>
                                     </div>
                                     <a class="btn btn--small" href="{{ $it['url'] }}" @if (! empty($it['download'])) download data-track-download="{{ basename(parse_url($it['url'], PHP_URL_PATH)) }}" @else rel="noopener" target="_blank" @endif>
                                         {{ ! empty($it['download']) || preg_match('/\.(zip|xlsx|csv|tif|geojson|json)(\?|$)/i', $it['url']) ? __('data.download') : __('countries.open_source') }}

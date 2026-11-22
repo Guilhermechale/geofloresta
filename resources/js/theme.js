@@ -45,7 +45,7 @@ export function initTheme() {
     const labels = JSON.parse(btn.dataset.labels || '{}');
     const sync = () => {
         const next = ORDER[(ORDER.indexOf(choice) + 1) % ORDER.length];
-        btn.setAttribute('aria-label', `${labels[choice] ?? choice} — ${labels.switchTo ?? ''} ${labels[next] ?? next}`.trim());
+        btn.setAttribute('aria-label', `${labels[choice] ?? choice} - ${labels.switchTo ?? ''} ${labels[next] ?? next}`.trim());
         btn.title = labels[choice] ?? choice;
     };
     sync();

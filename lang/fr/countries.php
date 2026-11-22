@@ -20,7 +20,7 @@ return [
     'see_map' => 'Voir sur la carte',
     'all' => 'Tous les pays',
     'kit_title' => 'Données ouvertes : :country',
-    'show_description' => ':country — données géospatiales ouvertes à télécharger : feux actifs, limites administratives, rivières, bassins versants, forêt, population, relief, climat et images satellite.',
+    'show_description' => ':country - données géospatiales ouvertes à télécharger : feux actifs, limites administratives, rivières, bassins versants, forêt, population, relief, climat et images satellite.',
     'show_lede' => 'Tout ce qu’il faut pour démarrer un projet SIG dans ce pays, avec des données gratuites sous des licences qui autorisent l’usage, y compris commercial, avec attribution.',
     'sections_nav' => 'Sections de cette page',
     'sections' => [
