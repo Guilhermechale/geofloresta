@@ -128,7 +128,7 @@ return [
     'lulc_failed' => 'Não foi possível concluir a classificação. Verifique a ligação à internet e tente de novo.',
     'lulc_ref_year' => 'Amostras do mapa de referência de :year.',
     'lulc_note' => 'Imagens: Copernicus Sentinel-2 (ESA), AWS Open Data. Referência para as amostras: Sentinel-2 10 m Land Use/Land Cover, Impact Observatory, Microsoft e Esri (CC BY 4.0). Relevo: Terrain Tiles.',
-    'lulc_learn' => 'Como funciona: tutorial do Random Forest',
+    'lulc_learn' => 'Aprofundar: Random Forest no Google Earth Engine (tutorial)',
     'lulc_more' => 'Precisa de um mapa validado no campo? Peça uma proposta',
     'lulc_classes' => ['Água', 'Árvores', 'Vegetação inundada', 'Culturas agrícolas', 'Área construída', 'Solo exposto', 'Neve e gelo', 'Pastagem e matagal'],
     'hub_title' => 'Mapas e ferramentas',

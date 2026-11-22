@@ -129,7 +129,7 @@ return [
     'lulc_failed' => 'La classification n’a pas pu aboutir. Vérifiez la connexion et réessayez.',
     'lulc_ref_year' => 'Échantillons issus de la carte de référence :year.',
     'lulc_note' => 'Images : Copernicus Sentinel-2 (ESA), AWS Open Data. Référence pour les échantillons : Sentinel-2 10 m Land Use/Land Cover, Impact Observatory, Microsoft et Esri (CC BY 4.0). Relief : Terrain Tiles.',
-    'lulc_learn' => 'Fonctionnement : tutoriel Random Forest',
+    'lulc_learn' => 'Aller plus loin : Random Forest dans Google Earth Engine (tutoriel)',
     'lulc_more' => 'Besoin d’une carte validée sur le terrain ? Demandez une proposition',
     'lulc_classes' => ['Eau', 'Arbres', 'Végétation inondée', 'Cultures', 'Zone bâtie', 'Sol nu', 'Neige et glace', 'Prairies et fourrés'],
     'hub_title' => 'Cartes et outils',

@@ -129,7 +129,7 @@ return [
     'lulc_failed' => 'The classification could not be completed. Check your connection and try again.',
     'lulc_ref_year' => 'Samples from the :year reference map.',
     'lulc_note' => 'Imagery: Copernicus Sentinel-2 (ESA), AWS Open Data. Reference for the samples: Sentinel-2 10 m Land Use/Land Cover, Impact Observatory, Microsoft and Esri (CC BY 4.0). Terrain: Terrain Tiles.',
-    'lulc_learn' => 'How it works: Random Forest tutorial',
+    'lulc_learn' => 'Go further: Random Forest in Google Earth Engine (tutorial)',
     'lulc_more' => 'Need a field-validated map? Request a proposal',
     'lulc_classes' => ['Water', 'Trees', 'Flooded vegetation', 'Crops', 'Built area', 'Bare ground', 'Snow and ice', 'Rangeland'],
     'hub_title' => 'Maps and tools',

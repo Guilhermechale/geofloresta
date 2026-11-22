@@ -185,6 +185,18 @@ class MapsTest extends TestCase
         $this->assertStringContainsString('<span class="tool-tabs__full">Uso e cobertura do solo (IA)</span>', $html);
     }
 
+    public function test_land_cover_links_to_gee_tutorial_as_further_reading_not_as_how_it_works(): void
+    {
+        \App\Models\Tutorial::create([
+            'slug' => ['pt' => 'classificacao-supervisionada-random-forest-google-earth-engine'], 'title' => ['pt' => 'Random Forest no GEE'],
+            'summary' => ['pt' => 'Resumo'], 'body' => ['pt' => '<p>Texto</p>'], 'platform' => 'gee', 'status' => 'published', 'published_at' => '2026-11-01 10:00:00',
+        ]);
+        $html = $this->get('/mapas/uso-do-solo')->assertOk()->getContent();
+        $this->assertSame(2, substr_count($html, '>Aprofundar: Random Forest no Google Earth Engine (tutorial)</a>'));
+        $this->assertStringNotContainsString('Como funciona: tutorial passo a passo', $html);
+        $this->assertStringNotContainsString('Como funciona: tutorial do Random Forest', $html);
+    }
+
     public function test_maps_hub_shows_tool_cards_and_each_tool_only_its_own_panels(): void
     {
         Storage::fake('public');
