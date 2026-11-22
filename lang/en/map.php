@@ -174,4 +174,13 @@ return [
     'area_small' => 'Area: :km2 km². Too small (minimum 1 km²). Draw a larger polygon.',
     'area_big' => 'Area: :km2 km². Too large (maximum 10,000 km²). Choose a district or draw a smaller polygon.',
     'lulc_ready' => 'Done! Download the results:',
+    'video' => [
+        'title' => 'See how it works',
+        'text' => 'In just over a minute: choose the area, classify with Random Forest, read the confusion matrix and Kappa, then download the GeoTIFF and CSV. Real example at Lake Urema, Gorongosa. Video in Portuguese.',
+        'play' => 'Watch the video “How to classify land cover with AI” (1 min 16 s)',
+        'alt' => 'Video cover: land cover map of Lake Urema, Gorongosa, classified with AI',
+        'frame' => 'Video: how to classify land cover with AI',
+        'link' => 'Watch the video: how it works (1 min)',
+        'desc' => 'Video guide to the free supervised land cover classification tool with Random Forest and Sentinel-2 imagery, in the browser.',
+    ],
 ];

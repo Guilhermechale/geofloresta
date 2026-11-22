@@ -65,7 +65,16 @@ class Schema
     /** Cada ferramenta de mapas: aplicação web gratuita. */
     public static function mapTool(string $tool): array
     {
-        return [[
+        $video = config('geofloresta.lulc_video');
+        $extra = ($tool === 'lulc' && ! empty($video['id'])) ? [[
+            '@context' => 'https://schema.org', '@type' => 'VideoObject',
+            'name' => __('map.video.frame'), 'description' => __('map.video.desc'),
+            'thumbnailUrl' => [asset('img/video-uso-do-solo.webp')], 'uploadDate' => $video['uploaded'], 'duration' => $video['duration'],
+            'embedUrl' => 'https://www.youtube-nocookie.com/embed/'.$video['id'], 'contentUrl' => 'https://www.youtube.com/watch?v='.$video['id'],
+            'inLanguage' => 'pt', 'publisher' => self::org(),
+        ]] : [];
+
+        return [...$extra, [
             '@context' => 'https://schema.org', '@type' => 'WebApplication',
             'name' => __('map.tools.'.$tool.'.title').' · GEOFLORESTA', 'description' => __('map.tools.'.$tool.'.text'),
             'url' => MapTools::url($tool), 'applicationCategory' => 'EducationalApplication', 'applicationSubCategory' => 'GIS',

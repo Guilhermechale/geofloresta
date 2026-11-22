@@ -174,4 +174,13 @@ return [
     'area_small' => 'Surface : :km2 km². Trop petite (minimum 1 km²). Dessinez un polygone plus grand.',
     'area_big' => 'Surface : :km2 km². Trop grande (maximum 10 000 km²). Choisissez un district ou dessinez un polygone plus petit.',
     'lulc_ready' => 'Terminé ! Téléchargez les résultats :',
+    'video' => [
+        'title' => 'Voir comment ça marche',
+        'text' => 'En un peu plus d’une minute : choisir la zone, classer avec Random Forest, lire la matrice de confusion et le Kappa, puis télécharger le GeoTIFF et le CSV. Exemple réel au lac Urema, Gorongosa. Vidéo en portugais.',
+        'play' => 'Voir la vidéo « Classer l’occupation du sol avec l’IA » (1 min 16 s)',
+        'alt' => 'Couverture de la vidéo : carte d’occupation du sol du lac Urema, Gorongosa, classée par IA',
+        'frame' => 'Vidéo : classer l’occupation du sol avec l’IA',
+        'link' => 'Voir la vidéo : comment ça marche (1 min)',
+        'desc' => 'Guide vidéo de l’outil gratuit de classification supervisée de l’occupation du sol avec Random Forest et les images Sentinel-2, dans le navigateur.',
+    ],
 ];

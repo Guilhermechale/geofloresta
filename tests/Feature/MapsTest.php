@@ -170,6 +170,18 @@ class MapsTest extends TestCase
         $this->get('/fr/cartes/occupation-du-sol')->assertOk()->assertSee('Carte non validée par des données de terrain.')->assertSee('Classer');
     }
 
+    public function test_land_cover_tool_has_its_guide_video_without_contacting_youtube_first(): void
+    {
+        $html = $this->get('/mapas/uso-do-solo')->assertOk()->getContent();
+        $this->assertStringContainsString('data-video-id="2conaBVmZl8"', $html);
+        $this->assertStringContainsString('href="#video"', $html);
+        $this->assertStringContainsString('"@type":"VideoObject"', $html);
+        $this->assertStringContainsString('img/video-uso-do-solo.webp', $html);
+        $this->assertStringNotContainsString('<iframe', $html);                      // só ao carregar em play
+        $this->assertStringContainsString('Watch the video', $this->get('/en/maps/land-cover')->assertOk()->getContent());
+        $this->assertStringNotContainsString('2conaBVmZl8', $this->get('/mapas/relevo')->assertOk()->getContent());
+    }
+
     public function test_maps_hub_shows_tool_cards_and_each_tool_only_its_own_panels(): void
     {
         Storage::fake('public');

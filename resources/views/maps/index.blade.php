@@ -57,6 +57,7 @@
                 <ol>
                     @foreach (__('map.howto.'.$tool) as $step)<li>{{ $step }}</li>@endforeach
                 </ol>
+                @if ($tool === 'lulc' && config('geofloresta.lulc_video.id'))<p class="howto__video"><a class="link-arrow" href="#video">{{ __('map.video.link') }}</a></p>@endif
             </div>
             @if ($countries)
                 <form class="map-form map-country" method="get" action="{{ \App\Support\MapTools::url($tool) }}" data-country>
@@ -283,6 +284,9 @@
         </div>
     </div>
     @else
+    @if ($tool === 'lulc' && config('geofloresta.lulc_video.id'))
+        <x-tool-video :id="config('geofloresta.lulc_video.id')" cover="img/video-uso-do-solo.webp" />
+    @endif
     <div class="section section--tight">
         <div class="wrap">
             @php

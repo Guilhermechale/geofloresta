@@ -173,4 +173,13 @@ return [
     'area_small' => 'Área: :km2 km². É demasiado pequena (mínimo 1 km²). Desenhe um polígono maior.',
     'area_big' => 'Área: :km2 km². É demasiado grande (máximo 10 000 km²). Escolha um distrito ou desenhe um polígono mais pequeno.',
     'lulc_ready' => 'Pronto! Baixe os resultados:',
+    'video' => [
+        'title' => 'Veja como funciona',
+        'text' => 'Em pouco mais de um minuto: escolher a área, classificar com Random Forest, ler a matriz de confusão e o Kappa, e baixar o GeoTIFF e o CSV. Exemplo real no lago Urema, Gorongosa.',
+        'play' => 'Ver o vídeo «Como classificar o uso do solo com IA» (1 min 16 s)',
+        'alt' => 'Capa do vídeo: mapa de uso do solo do lago Urema, Gorongosa, classificado com IA',
+        'frame' => 'Vídeo: como classificar o uso do solo com IA',
+        'link' => 'Ver o vídeo: como funciona (1 min)',
+        'desc' => 'Guia em vídeo da ferramenta gratuita de classificação supervisionada do uso e cobertura do solo com Random Forest e imagens Sentinel-2, no navegador.',
+    ],
 ];

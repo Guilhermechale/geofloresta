@@ -23,6 +23,12 @@ return [
     ],
 
     // Vídeo de apresentação no YouTube (página inicial). Vazio = secção escondida.
+    // Vídeo-guia da ferramenta de uso e cobertura do solo (classificação supervisionada com IA)
+    'lulc_video' => [
+        'id' => env('LULC_VIDEO_ID', '2conaBVmZl8'),
+        'duration' => 'PT1M16S',
+        'uploaded' => '2026-11-22T08:00:00+02:00',
+    ],
     'intro_video' => [
         'id' => env('INTRO_VIDEO_ID', '1annxj00NGI'),
         'duration' => 'PT1M36S',
