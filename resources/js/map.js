@@ -6,6 +6,7 @@ import maplibregl from 'maplibre-gl';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import area from '@turf/area';
 import { planGrid } from './lulc-core.js';
+import { setupResizer } from './map-resizer.js';
 
 const cfg = JSON.parse(document.getElementById('map-config')?.textContent || '{}');
 const el = document.querySelector('[data-map]');
@@ -33,6 +34,7 @@ function supported() {
     } catch { return false; }
 }
 
+setupResizer();
 if (el && supported()) init();
 else if (el) el.querySelector('.map-loading')?.replaceChildren(document.createTextNode(el.dataset.noWebgl || ''));
 
@@ -165,6 +167,8 @@ async function init() {
         locale: {},
     });
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), 'top-right');
+    // O mapa acompanha a largura escolhida na barra entre o mapa e o painel
+    if ('ResizeObserver' in window) new ResizeObserver(() => map.resize()).observe(el);
     map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
     // O estilo OpenFreeMap já traz a sua atribuição; aqui só se acrescentam as fontes NASA
     map.addControl(new maplibregl.AttributionControl({ compact: false, customAttribution: cfg.attribution }), 'bottom-right');

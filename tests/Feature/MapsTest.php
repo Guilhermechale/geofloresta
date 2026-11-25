@@ -180,6 +180,9 @@ class MapsTest extends TestCase
         $this->assertStringNotContainsString('<iframe', $html);                      // só ao carregar em play
         $this->assertStringContainsString('Watch the video', $this->get('/en/maps/land-cover')->assertOk()->getContent());
         $this->assertStringNotContainsString('2conaBVmZl8', $this->get('/mapas/relevo')->assertOk()->getContent());
+        // barra para ajustar a largura do mapa e do painel (computador)
+        $this->assertStringContainsString('data-map-resizer role="separator"', $html);
+        $this->assertStringContainsString('data-map-panel-toggle', $html);
         // telemóvel: separadores com nome curto (o nome completo fica para leitores de ecrã)
         $this->assertStringContainsString('<span class="tool-tabs__short" aria-hidden="true">Uso do solo</span>', $html);
         $this->assertStringContainsString('<span class="tool-tabs__full">Uso e cobertura do solo (IA)</span>', $html);

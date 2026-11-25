@@ -52,7 +52,15 @@
             <noscript><p class="map-loading">{{ __('map.no_webgl') }}</p></noscript>
         </div>
 
-        <aside class="map-panel" aria-label="{{ __('map.layers') }}">
+        <div class="map-resizer" data-map-resizer role="separator" aria-orientation="vertical" tabindex="0" aria-controls="map-panel"
+             aria-label="{{ __('map.resize') }}" title="{{ __('map.resize') }}">
+            <button type="button" class="map-resizer__toggle" data-map-panel-toggle aria-controls="map-panel" aria-expanded="true"
+                    data-label-hide="{{ __('map.panel_hide') }}" data-label-show="{{ __('map.panel_show') }}" aria-label="{{ __('map.panel_hide') }}" title="{{ __('map.panel_hide') }}">
+                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+
+        <aside class="map-panel" id="map-panel" aria-label="{{ __('map.layers') }}">
             <div class="howto">
                 <p class="howto__title">{{ __('map.howto_title') }}</p>
                 <ol>

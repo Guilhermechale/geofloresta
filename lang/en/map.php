@@ -190,4 +190,7 @@ return [
         'relief' => 'Terrain',
         'satellite' => 'Satellite',
     ],
+    'resize' => 'Drag to resize the map and the panel (double-click to reset)',
+    'panel_hide' => 'Hide the panel',
+    'panel_show' => 'Show the panel',
 ];

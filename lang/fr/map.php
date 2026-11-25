@@ -190,4 +190,7 @@ return [
         'relief' => 'Relief',
         'satellite' => 'Satellite',
     ],
+    'resize' => 'Faites glisser pour ajuster la largeur de la carte et du panneau (double-clic pour réinitialiser)',
+    'panel_hide' => 'Masquer le panneau',
+    'panel_show' => 'Afficher le panneau',
 ];

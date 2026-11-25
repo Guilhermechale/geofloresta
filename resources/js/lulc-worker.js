@@ -16,7 +16,7 @@ export const STAC = 'https://earth-search.aws.element84.com/v1/search';
 export const LULC = 'https://ic.imagery1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer/exportImage';
 const BANDS = { B2: 'blue', B3: 'green', B4: 'red', B8: 'nir', B11: 'swir16', B12: 'swir22' };
 const BAD_SCL = new Set([0, 1, 3, 8, 9, 10, 11]);   // sem dados, saturado, sombra de nuvem, nuvens, cirros, neve
-const PER_TILE = 3, MAX_ITEMS = 8;
+const PER_TILE = 3, MAX_ITEMS = 30; // teto total: todas as quadrículas MGRS da área recebem imagens (antes 8 cortava as últimas)
 
 let state = null;
 const progress = (step, frac = 0, extra = {}) => postMessage({ progress: step, frac, ...extra });
@@ -31,13 +31,22 @@ async function findScenes(bbox, start, end, maxCloud = 30) {
     if (!r.ok) throw new Error(`STAC ${r.status}`);
     const need = ['scl', ...Object.values(BANDS)];
     const items = ((await r.json()).features || []).filter((it) => it.properties?.['proj:epsg'] && need.every((k) => it.assets?.[k]?.href));
+    // Por quadrícula MGRS: primeiro as imagens que cobrem a quadrícula inteira (as da borda da passagem do
+    // satélite só cobrem parte), depois as com menos nuvens.
+    const nodata = (it) => Number(it.properties['s2:nodata_pixel_percentage'] ?? 0);
     const byTile = new Map();
     for (const it of items) {
         const tile = it.properties['s2:mgrs_tile'] || it.properties['grid:code'] || it.id.split('_')[1];
         if (!byTile.has(tile)) byTile.set(tile, []);
-        if (byTile.get(tile).length < PER_TILE) byTile.get(tile).push(it);
+        byTile.get(tile).push(it);
     }
-    return [...byTile.values()].flat().slice(0, MAX_ITEMS);
+    const picked = [...byTile.values()].map((list) => list
+        .sort((a, b) => (nodata(a) > 40) - (nodata(b) > 40) || a.properties['eo:cloud_cover'] - b.properties['eo:cloud_cover'] || nodata(a) - nodata(b))
+        .slice(0, PER_TILE));
+    // Intercala as quadrículas (1.ª imagem de cada, depois a 2.ª...) para o teto nunca deixar uma quadrícula sem imagens
+    const out = [];
+    for (let k = 0; k < PER_TILE; k++) for (const list of picked) if (list[k]) out.push(list[k]);
+    return out.slice(0, MAX_ITEMS);
 }
 
 // ---------- mapeamento píxel -> UTM (grelha grossa interpolada: rápido e preciso) ----------
@@ -62,7 +71,22 @@ function utmMapper(grid, epsg, step = 16) {
 
 /** Lê a banda de um COG para a grelha (vizinho mais próximo), usando a visão geral com resolução mais adequada. */
 async function readToGrid(href, grid, map, nodataTo = NaN) {
-    const tiff = await fromUrl(href, { allowFullFile: false });
+    // Falhas passageiras de rede (ou o servidor a pedir para abrandar) deixam blocos em falta e a geotiff.js
+    // não repete: repetimos a leitura inteira até 3 vezes, com pausa crescente.
+    let err;
+    for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+            return await readToGridOnce(href, grid, map, nodataTo);
+        } catch (e) {
+            err = e;
+            await new Promise((r) => setTimeout(r, 600 * (attempt + 1) ** 2));
+        }
+    }
+    throw err;
+}
+
+async function readToGridOnce(href, grid, map, nodataTo = NaN) {
+    const tiff = await fromUrl(href, { allowFullFile: false, cacheSize: 2000 });
     const n = await tiff.getImageCount();
     let img = allowSparseTiles(await tiff.getImage(0));
     const base = img;
@@ -188,19 +212,31 @@ async function run({ bbox, geometry, start, end, trees = 100, seed = 42 }) {
         progress('clouds', k / scenes.length, { scenes: scenes.length });
         const map = utmMapper(grid, it.properties['proj:epsg']);
         maps.push(map);
-        const scl = await readToGrid(it.assets.scl.href, grid, map, 0);
-        const m = new Uint8Array(N);
-        for (let p = 0; p < N; p++) m[p] = scl[p] && !BAD_SCL.has(scl[p]) ? 1 : 0;
-        masks.push(m);
+        try {
+            const scl = await readToGrid(it.assets.scl.href, grid, map, 0);
+            const m = new Uint8Array(N);
+            for (let p = 0; p < N; p++) m[p] = scl[p] && !BAD_SCL.has(scl[p]) ? 1 : 0;
+            masks.push(m);
+        } catch {
+            masks.push(null); // imagem que não foi possível ler: segue-se com as outras
+        }
     }
+    if (!masks.some(Boolean)) throw new Error('no scene could be read');
     const bands = {};
     const names = Object.keys(BANDS);
     for (const [b, name] of names.entries()) {
         const layers = [];
         for (const [k, it] of scenes.entries()) {
             progress('bands', (b * scenes.length + k) / (names.length * scenes.length), { scenes: scenes.length });
-            const L = await readToGrid(it.assets[BANDS[name]].href, grid, maps[k]);
             const m = masks[k];
+            if (!m) continue;
+            let L;
+            try {
+                L = await readToGrid(it.assets[BANDS[name]].href, grid, maps[k]);
+            } catch {
+                masks[k] = null; // a partir daqui esta imagem deixa de contar (todas as bandas têm de vir da mesma imagem)
+                continue;
+            }
             for (let p = 0; p < N; p++) L[p] = m[p] ? L[p] / 10000 : NaN;
             layers.push(L);
         }

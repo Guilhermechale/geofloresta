@@ -189,4 +189,7 @@ return [
         'relief' => 'Relevo',
         'satellite' => 'Satélite',
     ],
+    'resize' => 'Arraste para ajustar a largura do mapa e do painel (duplo clique repõe)',
+    'panel_hide' => 'Recolher o painel',
+    'panel_show' => 'Mostrar o painel',
 ];
