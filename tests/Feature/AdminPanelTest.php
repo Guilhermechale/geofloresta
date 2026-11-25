@@ -48,6 +48,22 @@ class AdminPanelTest extends TestCase
         $this->actingAs($this->admin())->get('/painel-teste/contact-messages')->assertOk()->assertSee('Ana')->assertSee('Bob')->assertSee('EN');
     }
 
+    public function test_opening_a_message_marks_it_read_and_updates_the_badge(): void
+    {
+        $admin = $this->admin();
+        $m = \App\Models\ContactMessage::create(['name' => 'Ana', 'email' => 'ana@exemplo.test', 'subject' => 'proposal', 'message' => 'Preciso de um mapa da minha área.', 'locale' => 'pt']);
+        \App\Models\ContactMessage::create(['name' => 'Bob', 'email' => 'bob@exemplo.test', 'message' => 'Hello', 'locale' => 'en']);
+        $this->assertSame('2', \App\Filament\Resources\ContactMessages\ContactMessageResource::getNavigationBadge());
+
+        $this->actingAs($admin)->get('/painel-teste/contact-messages/'.$m->id)
+            ->assertOk()->assertSee('Preciso de um mapa da minha área.')->assertSee('Responder');
+        $this->assertNotNull($m->fresh()->read_at);
+        $this->assertSame('1', \App\Filament\Resources\ContactMessages\ContactMessageResource::getNavigationBadge());
+
+        // a lista liga cada mensagem à sua página
+        $this->actingAs($admin)->get('/painel-teste/contact-messages')->assertOk()->assertSee('/painel-teste/contact-messages/'.$m->id, false);
+    }
+
     public function test_admin_lists_with_records_and_search_work(): void
     {
         $admin = $this->admin();

@@ -76,7 +76,7 @@ class ContactMessageResource extends Resource
         ])->filters([
             TernaryFilter::make('read_at')->label('Lidas')->nullable(),
         ])->recordActions([
-            ViewAction::make()->after(fn (ContactMessage $r) => $r->read_at ?: $r->update(['read_at' => now()])),
+            ViewAction::make(),
             Action::make('reply')->label('Responder')->icon('heroicon-o-arrow-uturn-left')
                 ->url(fn (ContactMessage $r) => 'mailto:'.$r->email.'?subject='.rawurlencode('Re: '.($r->subject ?: 'GEOFLORESTA'))),
             DeleteAction::make(),
@@ -87,6 +87,7 @@ class ContactMessageResource extends Resource
     {
         return [
             'index' => Pages\ListContactMessages::route('/'),
+            'view' => Pages\ViewContactMessage::route('/{record}'),
         ];
     }
 }
