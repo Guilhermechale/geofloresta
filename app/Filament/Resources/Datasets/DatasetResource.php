@@ -113,12 +113,15 @@ class DatasetResource extends Resource
     {
         return $table->defaultSort('updated_at', 'desc')->columns([
             TextColumn::make('title')->label('Dataset')->getStateUsing(fn (Dataset $r) => $r->getTranslation('title', 'pt'))->wrap()
-                ->searchable(query: fn ($q, $s) => $q->where('title', 'like', "%{$s}%")),
-            TextColumn::make('theme')->label('Tema')->formatStateUsing(fn ($s) => self::THEME_LABELS[$s] ?? $s),
+                ->searchable(query: fn ($query, string $search) => $query->where('title', 'like', "%{$search}%")),
+            TextColumn::make('theme')->label('Tema')->formatStateUsing(fn ($state) => self::THEME_LABELS[$state] ?? $state),
             TextColumn::make('licence_spdx')->label('Licença')->fontFamily('mono'),
-            TextColumn::make('hosting')->label('Alojamento')->badge()->formatStateUsing(fn ($s) => $s === 'external' ? 'Ligação externa' : 'Alojado'),
+            TextColumn::make('hosting')->label('Alojamento')->badge()->formatStateUsing(fn ($state) => $state === 'external' ? 'Ligação externa' : 'Alojado'),
             TextColumn::make('files_count')->counts('files')->label('Ficheiros'),
-            IconColumn::make('featured')->label('Destaque')->boolean(),
+            IconColumn::make('featured')->label('Destaque')->boolean()
+                ->trueIcon(Heroicon::Star)->trueColor('warning')
+                ->falseIcon(Heroicon::OutlinedMinus)->falseColor('gray')
+                ->tooltip(fn (bool $state) => $state ? 'Em destaque' : 'Sem destaque (normal)'),
             Fields::translationColumn(),
             Fields::statusColumn(),
         ])->filters([

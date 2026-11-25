@@ -55,7 +55,10 @@ class ServiceResource extends Resource
     {
         return $table->defaultSort('sort')->reorderable('sort')->columns([
             TextColumn::make('title')->label('Serviço')->getStateUsing(fn (Service $r) => $r->getTranslation('title', 'pt')),
-            IconColumn::make('needs_review')->label('A confirmar')->boolean(),
+            IconColumn::make('needs_review')->label('Revisão')->boolean()
+                ->trueIcon(Heroicon::OutlinedExclamationTriangle)->trueColor('warning')
+                ->falseIcon(Heroicon::OutlinedCheckCircle)->falseColor('success')
+                ->tooltip(fn (bool $state) => $state ? 'Tem afirmações por confirmar: reveja o texto e desmarque «Para o utilizador confirmar».' : 'Revisto'),
             Fields::translationColumn(),
             Fields::statusColumn(),
         ])->recordActions([EditAction::make()]);

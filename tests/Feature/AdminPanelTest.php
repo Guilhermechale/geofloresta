@@ -41,6 +41,34 @@ class AdminPanelTest extends TestCase
         $this->actingAs($this->admin())->get('/painel-teste/'.$page)->assertOk();
     }
 
+    public function test_contact_messages_list_and_view_with_real_messages(): void
+    {
+        \App\Models\ContactMessage::create(['name' => 'Ana', 'email' => 'ana@exemplo.test', 'subject' => 'proposal', 'message' => 'Preciso de um mapa.', 'locale' => 'pt']);
+        \App\Models\ContactMessage::create(['name' => 'Bob', 'email' => 'bob@exemplo.test', 'subject' => null, 'organisation' => null, 'message' => 'Hello', 'locale' => 'en', 'read_at' => now()]);
+        $this->actingAs($this->admin())->get('/painel-teste/contact-messages')->assertOk()->assertSee('Ana')->assertSee('Bob')->assertSee('EN');
+    }
+
+    public function test_admin_lists_with_records_and_search_work(): void
+    {
+        $admin = $this->admin();
+        \App\Models\Service::create(['key' => 'sig', 'title' => ['pt' => 'SIG'], 'summary' => ['pt' => 'Resumo'], 'needs_review' => true, 'status' => 'published']);
+        $this->actingAs($admin)->get('/painel-teste/services')->assertOk()->assertSee('SIG');
+        $this->actingAs($admin)->get('/painel-teste/redirects')->assertOk();
+        $this->actingAs($admin)->get('/painel-teste/tutorials')->assertOk();
+        Dataset::create([
+            'slug' => ['pt' => 'cobertura-do-solo'], 'title' => ['pt' => 'Cobertura do solo'], 'summary' => ['pt' => 'Resumo'],
+            'theme' => 'land-cover', 'region' => 'sofala', 'source_name' => 'ESA', 'source_url' => 'https://esa-worldcover.org',
+            'licence_spdx' => 'CC-BY-4.0', 'attribution' => '© ESA WorldCover project 2021',
+        ]);
+        // a coluna «Tema» mostra o nome do tema (antes ficava vazia)
+        $this->actingAs($admin)->get('/painel-teste/datasets')->assertOk()->assertSee('Uso e cobertura do solo');
+        // pesquisa na tabela (antes rebentava)
+        \Livewire\Livewire::actingAs($admin)->test(\App\Filament\Resources\Datasets\Pages\ListDatasets::class)
+            ->searchTable('Cobertura')->assertCanSeeTableRecords(Dataset::all());
+        \Livewire\Livewire::actingAs($admin)->test(\App\Filament\Resources\Tutorials\Pages\ListTutorials::class)->searchTable('x')->assertOk();
+        \Livewire\Livewire::actingAs($admin)->test(\App\Filament\Resources\Studies\Pages\ListStudies::class)->searchTable('x')->assertOk();
+    }
+
     public function test_guest_is_sent_to_login(): void
     {
         $this->get('/painel-teste/datasets')->assertRedirect();

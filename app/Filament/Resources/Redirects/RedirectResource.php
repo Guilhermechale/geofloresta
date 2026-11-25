@@ -53,9 +53,9 @@ class RedirectResource extends Resource
         return $table->defaultSort('from_path')->columns([
             TextColumn::make('from_path')->label('De')->searchable()->fontFamily('mono'),
             TextColumn::make('status_code')->label('Código')->badge()
-                ->color(fn ($s) => (int) $s === 410 ? 'danger' : 'gray'),
+                ->color(fn ($state) => (int) $state === 410 ? 'danger' : 'gray'),
             TextColumn::make('to_url')->label('Para')->searchable()->fontFamily('mono')->placeholder('—'),
-            TextColumn::make('source')->label('Origem')->formatStateUsing(fn ($s) => ['manual' => 'Manual', 'slug' => 'Mudança de slug', 'migration' => 'Migração'][$s] ?? $s),
+            TextColumn::make('source')->label('Origem')->formatStateUsing(fn ($state) => ['manual' => 'Manual', 'slug' => 'Mudança de slug', 'migration' => 'Migração'][$state] ?? $state),
             TextColumn::make('hits')->label('Acessos')->numeric()->sortable(),
             TextColumn::make('last_hit_at')->label('Último acesso')->dateTime('d/m/Y')->sortable(),
         ])->filters([

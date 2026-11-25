@@ -94,9 +94,9 @@ class TutorialResource extends Resource
     {
         return $table->defaultSort('updated_at', 'desc')->columns([
             TextColumn::make('title')->label('Tutorial')->getStateUsing(fn (Tutorial $r) => $r->getTranslation('title', 'pt'))->wrap()
-                ->searchable(query: fn ($q, $s) => $q->where('title', 'like', "%{$s}%")),
-            TextColumn::make('platform')->label('Plataforma')->formatStateUsing(fn ($s) => Tutorial::PLATFORMS[$s] ?? $s),
-            TextColumn::make('level')->label('Nível')->formatStateUsing(fn ($s) => self::LEVEL_LABELS[$s] ?? $s),
+                ->searchable(query: fn ($query, string $search) => $query->where('title', 'like', "%{$search}%")),
+            TextColumn::make('platform')->label('Plataforma')->formatStateUsing(fn ($state) => Tutorial::PLATFORMS[$state] ?? $state),
+            TextColumn::make('level')->label('Nível')->formatStateUsing(fn ($state) => self::LEVEL_LABELS[$state] ?? $state),
             Fields::translationColumn(),
             Fields::statusColumn(),
         ])->filters([

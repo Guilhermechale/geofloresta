@@ -53,7 +53,7 @@ class ContactMessageResource extends Resource
                 TextEntry::make('email')->label('E-mail')->copyable(),
                 TextEntry::make('organisation')->label('Organização')->placeholder('—'),
                 TextEntry::make('subject')->label('Assunto')->placeholder('—'),
-                TextEntry::make('locale')->label('Idioma')->formatStateUsing(fn ($s) => strtoupper($s)),
+                TextEntry::make('locale')->label('Idioma')->formatStateUsing(fn (?string $state) => strtoupper((string) $state)),
                 TextEntry::make('created_at')->label('Recebida')->dateTime('d/m/Y H:i'),
                 TextEntry::make('emailed_at')->label('E-mail enviado')->dateTime('d/m/Y H:i')->placeholder('não enviado'),
                 TextEntry::make('message')->label('Mensagem')->columnSpanFull()->prose(),
@@ -64,12 +64,15 @@ class ContactMessageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->defaultSort('created_at', 'desc')->columns([
-            IconColumn::make('read_at')->label('Lida')->boolean()->getStateUsing(fn ($r) => (bool) $r->read_at),
+            IconColumn::make('read_at')->label('Lida')->boolean()->getStateUsing(fn (ContactMessage $record) => (bool) $record->read_at)
+                ->trueIcon(Heroicon::OutlinedEnvelopeOpen)->trueColor('gray')
+                ->falseIcon(Heroicon::OutlinedEnvelope)->falseColor('warning')
+                ->tooltip(fn (bool $state) => $state ? 'Lida' : 'Por ler'),
             TextColumn::make('created_at')->label('Data')->dateTime('d/m/Y H:i')->sortable(),
             TextColumn::make('name')->label('Nome')->searchable(),
             TextColumn::make('email')->label('E-mail')->searchable(),
             TextColumn::make('subject')->label('Assunto')->limit(40),
-            TextColumn::make('locale')->label('Idioma')->formatStateUsing(fn ($s) => strtoupper($s)),
+            TextColumn::make('locale')->label('Idioma')->formatStateUsing(fn (?string $state) => strtoupper((string) $state)),
         ])->filters([
             TernaryFilter::make('read_at')->label('Lidas')->nullable(),
         ])->recordActions([

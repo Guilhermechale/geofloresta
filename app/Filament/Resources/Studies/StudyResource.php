@@ -73,7 +73,7 @@ class StudyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->defaultSort('year', 'desc')->columns([
-            TextColumn::make('title')->label('Título')->getStateUsing(fn (Study $r) => $r->getTranslation('title', 'pt'))->wrap()->searchable(query: fn ($q, $s) => $q->where('title', 'like', "%{$s}%")),
+            TextColumn::make('title')->label('Título')->getStateUsing(fn (Study $r) => $r->getTranslation('title', 'pt'))->wrap()->searchable(query: fn ($query, string $search) => $query->where('title', 'like', "%{$search}%")),
             TextColumn::make('year')->label('Ano')->sortable(),
             Fields::translationColumn(),
             Fields::statusColumn(),
