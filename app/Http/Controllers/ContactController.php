@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ContactConfirmation;
 use App\Mail\ContactReceived;
+use App\Models\BlockedSender;
 use App\Models\ContactMessage;
 use App\Models\Setting;
 use Illuminate\Contracts\View\View;
@@ -76,6 +77,14 @@ class ContactController extends Controller
             'locale' => $locale,
             'ip_hash' => $ipHash,
         ]);
+
+        // Remetente bloqueado ou domínio que imita o nosso: vai para o spam, sem e-mails (nem para nós, nem de resposta).
+        $reason = BlockedSender::isBlocked($msg->email) ? 'blocked' : (BlockedSender::isLookalike($msg->email) ? 'lookalike' : null);
+        if ($reason) {
+            $msg->markSpam($reason);
+
+            return redirect()->to(lroute('thanks'))->with('contact_sent', true);
+        }
 
         // E-mail para a GEOFLORESTA e confirmação no idioma usado. Falhas não perdem a mensagem.
         try {

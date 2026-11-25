@@ -122,6 +122,25 @@ class PublicSiteTest extends TestCase
         Mail::assertSent(\App\Mail\ContactConfirmation::class, fn ($mail) => $mail->hasTo('ana@exemplo.org'));
     }
 
+    public function test_blocked_sender_and_lookalike_domain_go_to_spam_without_any_email(): void
+    {
+        Mail::fake();
+        \App\Models\BlockedSender::block('x@burla.example', 'domain');
+        $this->post('/contacto', $this->contactPayload(['email' => 'outro@mail.burla.example']))->assertRedirect();
+        $this->post('/contacto', $this->contactPayload(['email' => 'domains@search-geofloresta.com']))->assertRedirect();
+        $this->post('/contacto', $this->contactPayload(['email' => 'cliente@empresa.co.mz']))->assertRedirect();
+
+        $this->assertSame('blocked', ContactMessage::where('email', 'outro@mail.burla.example')->value('spam_reason'));
+        $this->assertSame('lookalike', ContactMessage::where('email', 'domains@search-geofloresta.com')->value('spam_reason'));
+        $this->assertNull(ContactMessage::where('email', 'cliente@empresa.co.mz')->value('spam_at'));
+        // só o cliente verdadeiro gera e-mails (o nosso e a confirmação)
+        Mail::assertSent(\App\Mail\ContactReceived::class, 1);
+        Mail::assertSent(\App\Mail\ContactConfirmation::class, fn ($m) => $m->hasTo('cliente@empresa.co.mz'));
+        Mail::assertNotSent(\App\Mail\ContactConfirmation::class, fn ($m) => $m->hasTo('domains@search-geofloresta.com'));
+        $this->assertFalse(\App\Models\BlockedSender::isLookalike('guilherme@geofloresta.com'));
+        $this->assertFalse(\App\Models\BlockedSender::isBlocked('alguem@gmail.com'));
+    }
+
     public function test_contact_saves_even_if_mail_fails(): void
     {
         config(['mail.default' => 'smtp', 'mail.mailers.smtp.host' => '127.0.0.1', 'mail.mailers.smtp.port' => 1, 'mail.mailers.smtp.timeout' => 1]);

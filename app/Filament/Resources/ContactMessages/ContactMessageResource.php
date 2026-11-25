@@ -2,14 +2,19 @@
 
 namespace App\Filament\Resources\ContactMessages;
 
+use App\Models\BlockedSender;
 use App\Models\ContactMessage;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Radio;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Collection;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -35,7 +40,7 @@ class ContactMessageResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $n = ContactMessage::whereNull('read_at')->count();
+        $n = ContactMessage::inbox()->whereNull('read_at')->count();
 
         return $n ? (string) $n : null;
     }
@@ -73,14 +78,62 @@ class ContactMessageResource extends Resource
             TextColumn::make('email')->label('E-mail')->searchable(),
             TextColumn::make('subject')->label('Assunto')->limit(40),
             TextColumn::make('locale')->label('Idioma')->formatStateUsing(fn (?string $state) => strtoupper((string) $state)),
+            TextColumn::make('spam_reason')->label('Spam')->badge()->color('warning')->placeholder('')
+                ->formatStateUsing(fn (?string $state) => ['manual' => 'Marcado', 'blocked' => 'Bloqueado', 'lookalike' => 'Domínio falso'][$state] ?? $state),
         ])->filters([
             TernaryFilter::make('read_at')->label('Lidas')->nullable(),
         ])->recordActions([
             ViewAction::make(),
+            ...self::spamActions(),
             Action::make('reply')->label('Responder')->icon('heroicon-o-arrow-uturn-left')
                 ->url(fn (ContactMessage $r) => 'mailto:'.$r->email.'?subject='.rawurlencode('Re: '.($r->subject ?: 'GEOFLORESTA'))),
             DeleteAction::make(),
-        ])->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+        ])->toolbarActions([BulkActionGroup::make([
+            BulkAction::make('spam')->label('Marcar como spam')->icon('heroicon-o-shield-exclamation')->color('warning')
+                ->action(fn (Collection $records) => $records->each->markSpam())->deselectRecordsAfterCompletion(),
+            DeleteBulkAction::make(),
+        ])]);
+    }
+
+    /** Acções de spam e bloqueio (na lista e na página da mensagem). */
+    public static function spamActions(): array
+    {
+        return [
+            Action::make('spam')->label('Spam')->icon('heroicon-o-shield-exclamation')->color('warning')
+                ->visible(fn (ContactMessage $record) => ! $record->spam_at)
+                ->requiresConfirmation()->modalHeading('Marcar como spam?')
+                ->modalDescription('A mensagem sai da caixa de entrada e deixa de contar nas notificações.')
+                ->action(function (ContactMessage $record) {
+                    $record->markSpam();
+                    Notification::make()->title('Mensagem movida para o spam')->success()->send();
+                }),
+            Action::make('block')->label('Bloquear')->icon('heroicon-o-no-symbol')->color('danger')
+                ->modalHeading('Bloquear remetente')
+                ->modalDescription('As próximas mensagens deste remetente vão directamente para o spam, sem e-mail nem notificação. O remetente não é avisado.')
+                ->schema([
+                    Radio::make('kind')->label('O que bloquear')->required()->default('email')
+                        ->options(fn (ContactMessage $record) => [
+                            'email' => 'Só este endereço ('.$record->email.')',
+                            'domain' => 'Todo o domínio ('.BlockedSender::domainOf($record->email).')',
+                        ])
+                        ->helperText('Não bloqueie domínios públicos como gmail.com ou hotmail.com: bloquearia toda a gente.'),
+                ])
+                ->action(function (ContactMessage $record, array $data) {
+                    $b = BlockedSender::block($record->email, $data['kind'], 'Bloqueado a partir da mensagem #'.$record->id);
+                    $same = $data['kind'] === 'domain'
+                        ? ContactMessage::inbox()->where('email', 'like', '%@'.$b->value)
+                        : ContactMessage::inbox()->where('email', $record->email);
+                    $same->get()->each->markSpam('blocked');
+                    $record->spam_at ?: $record->markSpam('blocked');
+                    Notification::make()->title('Remetente bloqueado: '.$b->value)->success()->send();
+                }),
+            Action::make('notSpam')->label('Não é spam')->icon('heroicon-o-inbox-arrow-down')->color('gray')
+                ->visible(fn (ContactMessage $record) => (bool) $record->spam_at)
+                ->action(function (ContactMessage $record) {
+                    $record->markNotSpam();
+                    Notification::make()->title('Mensagem devolvida à caixa de entrada')->success()->send();
+                }),
+        ];
     }
 
     public static function getPages(): array

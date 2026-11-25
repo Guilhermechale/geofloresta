@@ -26,6 +26,7 @@ class ViewContactMessage extends ViewRecord
         return [
             Action::make('reply')->label('Responder')->icon('heroicon-o-arrow-uturn-left')
                 ->url(fn (ContactMessage $record) => 'mailto:'.$record->email.'?subject='.rawurlencode('Re: '.($record->subject ?: 'GEOFLORESTA'))),
+            ...ContactMessageResource::spamActions(),
             Action::make('unread')->label('Marcar como não lida')->icon('heroicon-o-envelope')->color('gray')
                 ->action(function (ContactMessage $record) {
                     $record->update(['read_at' => null]);
