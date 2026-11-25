@@ -153,7 +153,11 @@ class MapsTest extends TestCase
         // Guia «Como usar», estado da área e botões de descarga claros
         $this->assertStringContainsString('Como usar', $html);
         $this->assertStringContainsString('De 1 a 1 000 km²: píxel de 20 m', $html);
-        $this->assertStringContainsString('10 000 km² (máximo)', $html);
+        $this->assertStringContainsString('130 000 km² (máximo, modo regional)', $html);
+        foreach ([50, 100, 200, 300, 400, 500] as $n) {
+            $this->assertStringContainsString('<option value="'.$n.'"', $html);
+        }
+        $this->assertStringContainsString('100 é o recomendado', $html);
         $this->assertStringContainsString('Pedir proposta', $html);
         $this->assertStringContainsString('data-lulc-area', $html);
         $this->assertStringContainsString('Baixar mapa (GeoTIFF)', $html);

@@ -7,7 +7,7 @@
 import { fromUrl, fromArrayBuffer } from 'geotiff';
 import {
     allowSparseTiles,
-    planGrid, toUtm, medianStack, indices, slope, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas,
+    planGrid, toUtm, medianStack, slotStack, slotAdd, slotMedians, indices, slope, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas,
     geotiffClasses, polygonMask, FEATURES, rng,
 } from './lulc-core.js';
 import { TILE_URL, planTiles, decodeTerrarium, buildGrid } from './dem-core.js';
@@ -16,36 +16,45 @@ export const STAC = 'https://earth-search.aws.element84.com/v1/search';
 export const LULC = 'https://ic.imagery1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer/exportImage';
 const BANDS = { B2: 'blue', B3: 'green', B4: 'red', B8: 'nir', B11: 'swir16', B12: 'swir22' };
 const BAD_SCL = new Set([0, 1, 3, 8, 9, 10, 11]);   // sem dados, saturado, sombra de nuvem, nuvens, cirros, neve
-const PER_TILE = 3, MAX_ITEMS = 30; // teto total: todas as quadrículas MGRS da área recebem imagens (antes 8 cortava as últimas)
+// Imagens por quadrícula MGRS (2 quando a área tem muitas quadrículas, para não demorar demasiado) e teto total
+const PER_TILE = 3, PER_TILE_MANY = 2, MANY_TILES = 12, MAX_ITEMS = 60, MAX_PAGES = 8;
 
 let state = null;
 const progress = (step, frac = 0, extra = {}) => postMessage({ progress: step, frac, ...extra });
 
 // ---------- catálogo ----------
 async function findScenes(bbox, start, end, maxCloud = 30) {
-    const body = {
+    let body = {
         collections: ['sentinel-2-l2a'], bbox, datetime: `${start}T00:00:00Z/${end}T23:59:59Z`, limit: 100,
         query: { 'eo:cloud_cover': { lt: maxCloud } }, sortby: [{ field: 'properties.eo:cloud_cover', direction: 'asc' }],
     };
-    const r = await fetch(STAC, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (!r.ok) throw new Error(`STAC ${r.status}`);
     const need = ['scl', ...Object.values(BANDS)];
-    const items = ((await r.json()).features || []).filter((it) => it.properties?.['proj:epsg'] && need.every((k) => it.assets?.[k]?.href));
-    // Por quadrícula MGRS: primeiro as imagens que cobrem a quadrícula inteira (as da borda da passagem do
-    // satélite só cobrem parte), depois as com menos nuvens.
-    const nodata = (it) => Number(it.properties['s2:nodata_pixel_percentage'] ?? 0);
     const byTile = new Map();
-    for (const it of items) {
-        const tile = it.properties['s2:mgrs_tile'] || it.properties['grid:code'] || it.id.split('_')[1];
-        if (!byTile.has(tile)) byTile.set(tile, []);
-        byTile.get(tile).push(it);
+    // Várias páginas do catálogo: numa província, as 100 imagens com menos nuvens podem não cobrir todas as quadrículas
+    for (let page = 0; page < MAX_PAGES && body; page++) {
+        const r = await fetch(STAC, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (!r.ok) throw new Error(`STAC ${r.status}`);
+        const json = await r.json();
+        for (const it of json.features || []) {
+            if (!it.properties?.['proj:epsg'] || !need.every((k) => it.assets?.[k]?.href)) continue;
+            const tile = it.properties['s2:mgrs_tile'] || it.properties['grid:code'] || it.id.split('_')[1];
+            if (!byTile.has(tile)) byTile.set(tile, []);
+            byTile.get(tile).push(it);
+        }
+        const next = (json.links || []).find((l) => l.rel === 'next');
+        const enough = [...byTile.values()].every((l) => l.length >= PER_TILE * 3);
+        body = next?.body && !enough && (json.features || []).length === 100 ? { ...body, ...next.body } : null;
     }
+    const perTile = byTile.size > MANY_TILES ? PER_TILE_MANY : PER_TILE;
+    // Por quadrícula: primeiro as imagens que cobrem a quadrícula inteira (as da borda da passagem do satélite
+    // só cobrem parte), depois as com menos nuvens.
+    const nodata = (it) => Number(it.properties['s2:nodata_pixel_percentage'] ?? 0);
     const picked = [...byTile.values()].map((list) => list
         .sort((a, b) => (nodata(a) > 40) - (nodata(b) > 40) || a.properties['eo:cloud_cover'] - b.properties['eo:cloud_cover'] || nodata(a) - nodata(b))
-        .slice(0, PER_TILE));
+        .slice(0, perTile));
     // Intercala as quadrículas (1.ª imagem de cada, depois a 2.ª...) para o teto nunca deixar uma quadrícula sem imagens
     const out = [];
-    for (let k = 0; k < PER_TILE; k++) for (const list of picked) if (list[k]) out.push(list[k]);
+    for (let k = 0; k < perTile; k++) for (const list of picked) if (list[k]) out.push(list[k]);
     return out.slice(0, MAX_ITEMS);
 }
 
@@ -206,42 +215,31 @@ async function run({ bbox, geometry, start, end, trees = 100, seed = 42 }) {
     const scenes = await findScenes(bbox, start, end);
     if (!scenes.length) return { error: 'no_images' };
 
-    // máscara de nuvens por cena (SCL) e bandas, cena a cena
-    const masks = [], maps = [];
+    // Imagem a imagem: máscara de nuvens (SCL) e as 6 bandas; os valores válidos entram na mediana em fluxo
+    // e a imagem é descartada logo (memória limitada mesmo numa província).
+    const names = Object.keys(BANDS);
+    const stack = slotStack(N, names.length, 4);
+    let used = 0;
     for (const [k, it] of scenes.entries()) {
-        progress('clouds', k / scenes.length, { scenes: scenes.length });
+        progress('bands', k / scenes.length, { scenes: scenes.length });
         const map = utmMapper(grid, it.properties['proj:epsg']);
-        maps.push(map);
         try {
             const scl = await readToGrid(it.assets.scl.href, grid, map, 0);
-            const m = new Uint8Array(N);
-            for (let p = 0; p < N; p++) m[p] = scl[p] && !BAD_SCL.has(scl[p]) ? 1 : 0;
-            masks.push(m);
+            const ok = new Uint8Array(N);
+            let any = false;
+            for (let p = 0; p < N; p++) if (inside[p] && scl[p] && !BAD_SCL.has(scl[p])) { ok[p] = 1; any = true; }
+            if (!any) continue; // imagem toda com nuvens (ou fora do polígono): não vale a pena ler as bandas
+            const layers = [];
+            for (const name of names) layers.push(await readToGrid(it.assets[BANDS[name]].href, grid, map));
+            slotAdd(stack, layers, ok);
+            used++;
         } catch {
-            masks.push(null); // imagem que não foi possível ler: segue-se com as outras
+            // imagem que não foi possível ler (mesmo depois de repetir): segue-se com as outras
         }
     }
-    if (!masks.some(Boolean)) throw new Error('no scene could be read');
-    const bands = {};
-    const names = Object.keys(BANDS);
-    for (const [b, name] of names.entries()) {
-        const layers = [];
-        for (const [k, it] of scenes.entries()) {
-            progress('bands', (b * scenes.length + k) / (names.length * scenes.length), { scenes: scenes.length });
-            const m = masks[k];
-            if (!m) continue;
-            let L;
-            try {
-                L = await readToGrid(it.assets[BANDS[name]].href, grid, maps[k]);
-            } catch {
-                masks[k] = null; // a partir daqui esta imagem deixa de contar (todas as bandas têm de vir da mesma imagem)
-                continue;
-            }
-            for (let p = 0; p < N; p++) L[p] = m[p] ? L[p] / 10000 : NaN;
-            layers.push(L);
-        }
-        bands[name] = medianStack(layers, N);
-    }
+    if (!used) throw new Error('no scene could be read');
+    const medians = slotMedians(stack);
+    const bands = Object.fromEntries(names.map((name, b) => [name, medians[b]]));
     progress('terrain');
     const elev = await elevation(grid);
     progress('reference');

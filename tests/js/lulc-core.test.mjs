@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-    toUtm, planGrid, areaKm2, medianStack, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas, geotiffClasses, rng, allowSparseTiles,
+    toUtm, planGrid, areaKm2, medianStack, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas, geotiffClasses, rng, allowSparseTiles, slotStack, slotAdd, slotMedians, MAX_AREA_KM2,
 } from '../../resources/js/lulc-core.js';
 import { fromArrayBuffer } from 'geotiff';
 
@@ -121,4 +121,27 @@ test('blocos vazios do TIFF (Esri sobre o mar) lidos como «sem dados»', async 
     assert.equal(d[0], 7);        // primeiro bloco: dados
     assert.equal(d[20], 0);       // segundo bloco: vazio
     assert.equal(d[32 * 15 + 31], 0);
+});
+
+test('mediana em fluxo igual à mediana normal e limitada a k valores', () => {
+    const n = 4, st = slotStack(n, 2, 4);
+    const ok = Uint8Array.from([1, 1, 1, 0]);
+    // 5 imagens: só as 4 primeiras válidas entram; o píxel 3 é nuvem em todas; o píxel 2 tem uma falha (NaN)
+    const imgs = [[100, 200, 300, 1], [300, 400, NaN, 1], [200, 600, 500, 1], [400, 800, 700, 1], [999, 999, 999, 1]];
+    for (const v of imgs) slotAdd(st, [Float32Array.from(v), Float32Array.from(v.map((x) => x * 2))], ok);
+    const [b1, b2] = slotMedians(st, 1);
+    assert.equal(b1[0], 250);          // 100 200 300 400 -> (200+300)/2 (a 5.ª imagem não entra: k = 4)
+    assert.equal(b1[1], 500);          // 200 400 600 800
+    assert.equal(b1[2], 600);          // 300 500 700 999: o NaN não conta e a 5.ª imagem ocupa o lugar
+    assert.ok(Number.isNaN(b1[3]));    // nuvem em todas
+    assert.equal(b2[0], 500);          // a segunda banda acompanha a primeira
+});
+
+test('modo regional: uma província de ~130 000 km² cabe na grelha com píxel de 250 a 400 m', () => {
+    const niassa = planGrid([34.5, -15.4, 38.5, -11.4]);   // rectângulo de ~190 000 km²
+    assert.ok(niassa, 'deve caber');
+    assert.ok(niassa.res >= 250 && niassa.res <= 400, String(niassa.res));
+    assert.ok(niassa.width * niassa.height <= 2_500_000);
+    assert.equal(planGrid([84.25, 27.45, 84.45, 27.6]).res, 20);   // áreas pequenas não mudam
+    assert.equal(MAX_AREA_KM2, 130000);
 });

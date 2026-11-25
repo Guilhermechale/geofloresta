@@ -202,8 +202,9 @@
                         <div class="field">
                             <label for="lulc-trees">{{ __('map.lulc_trees') }}</label>
                             <select id="lulc-trees" name="lulc_trees">
-                                @foreach ([50, 100, 200] as $n)<option value="{{ $n }}" @selected($n === 100)>{{ $n }}</option>@endforeach
+                                @foreach ([50, 100, 200, 300, 400, 500] as $n)<option value="{{ $n }}" @selected($n === 100)>{{ $n }}</option>@endforeach
                             </select>
+                            <p class="small muted lulc-hint">{{ __('map.lulc_trees_hint') }}</p>
                         </div>
                     </div>
                     <button type="button" class="btn btn--primary" data-lulc-run disabled>{{ __('map.lulc_run') }}</button>

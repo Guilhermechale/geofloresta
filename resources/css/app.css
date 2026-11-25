@@ -770,6 +770,7 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 .lulc-area { font-size: var(--fs-sm); padding: .55rem .8rem; border-radius: 10px; background: var(--c-surface-2); margin: var(--s-1) 0; }
 .lulc-area.is-ok { background: var(--c-moss-soft); color: var(--c-moss-ink); }
 .lulc-area.is-ok::before { content: "✓ "; font-weight: 700; }
+.lulc-area.is-ok.is-warn { background: color-mix(in srgb, var(--c-accent) 12%, var(--c-surface)); color: var(--c-ink); box-shadow: inset 3px 0 0 var(--c-accent); }
 .lulc-area.is-bad { background: color-mix(in srgb, var(--c-accent) 14%, transparent); color: var(--c-accent-ink); }
 .lulc-area.is-bad::before { content: "! "; font-weight: 700; }
 .aoi-lulc [data-lulc-run] { width: 100%; margin-top: var(--s-1); }

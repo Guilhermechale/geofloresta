@@ -5,7 +5,7 @@
 import maplibregl from 'maplibre-gl';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import area from '@turf/area';
-import { planGrid } from './lulc-core.js';
+import { planGrid, MAX_AREA_KM2, REGIONAL_KM2 } from './lulc-core.js';
 import { setupResizer } from './map-resizer.js';
 
 const cfg = JSON.parse(document.getElementById('map-config')?.textContent || '{}');
@@ -488,17 +488,27 @@ function setupLulc(q, getAoi, map) {
     });
 
     // Área escolhida: tamanho, resolução e se cabe no limite (o botão só fica activo com uma área válida)
+    let regional = false;
     const checkArea = () => {
         const a = getAoi();
-        areaEl.classList.remove('is-ok', 'is-bad');
+        areaEl.classList.remove('is-ok', 'is-bad', 'is-warn');
         if (!a) { areaEl.textContent = L.area_none; btnRun.disabled = true; return false; }
         const sq = area(a) / 1e6;
         const km2 = (sq < 10 ? Math.round(sq * 10) / 10 : Math.round(sq)).toLocaleString(cfg.locale);
         if (sq < 1) { areaEl.textContent = L.area_small.replace(':km2', km2); areaEl.classList.add('is-bad'); btnRun.disabled = true; return false; }
-        const plan = sq <= 10000 ? planGrid(bboxOf(a)) : null;
+        const plan = sq <= MAX_AREA_KM2 ? planGrid(bboxOf(a)) : null;
         if (!plan) { areaEl.textContent = L.area_big.replace(':km2', km2); areaEl.classList.add('is-bad'); btnRun.disabled = true; return false; }
-        areaEl.textContent = L.area_ok.replace(':km2', km2).replace(':res', plan.res);
-        areaEl.classList.add('is-ok');
+        regional = sq > REGIONAL_KM2;
+        if (regional) {
+            // Modo regional: píxel maior, mais tempo; no telemóvel pode faltar memória
+            const phone = matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory && navigator.deviceMemory < 4);
+            areaEl.textContent = L.area_regional.replace(':km2', km2).replace(':res', plan.res) + (phone ? ' ' + L.area_regional_phone : '');
+            areaEl.classList.add('is-ok', 'is-warn');
+        } else {
+            areaEl.classList.remove('is-warn');
+            areaEl.textContent = L.area_ok.replace(':km2', km2).replace(':res', plan.res);
+            areaEl.classList.add('is-ok');
+        }
         btnRun.disabled = false;
         return true;
     };
@@ -579,7 +589,7 @@ function setupLulc(q, getAoi, map) {
         btnRun.disabled = true; box.setAttribute('aria-busy', 'true');
         result.hidden = true; dl.hidden = true; last = null; removeLayer();
         bar.value = 0; bar.hidden = false;
-        say(L.lulc_running);
+        say(regional ? L.lulc_running_regional : L.lulc_running);
         const s0 = start.value || '2025-01-01', e0 = end.value || '2025-12-31';
         const r = await call({ cmd: 'run', bbox: bboxOf(area), geometry: area.geometry, start: s0 <= e0 ? s0 : e0, end: s0 <= e0 ? e0 : s0, trees: Number(trees.value) });
         checkArea(); box.setAttribute('aria-busy', 'false'); bar.hidden = true;

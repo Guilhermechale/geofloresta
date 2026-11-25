@@ -57,12 +57,17 @@ export function toUtm(lon, lat, epsg) {
 // ---------- grelha de saída (WGS 84, píxeis com o mesmo tamanho em metros) ----------
 export const MAX_PIXELS = 2_500_000;
 
-/** Escolhe a resolução (20, 40, 60 ou 80 m) para a área caber no limite de píxeis. */
+/** Área máxima do polígono (km²): até 10 000 km² com píxel de 20 a 80 m; acima disso, modo regional. */
+export const MAX_AREA_KM2 = 130_000;
+export const REGIONAL_KM2 = 10_000;
+export const RESOLUTIONS = [20, 40, 60, 80, 100, 120, 150, 200, 250, 300, 400];
+
+/** Escolhe a resolução (20 m a 400 m) para o rectângulo da área caber no limite de píxeis. */
 export function planGrid(bbox, maxPixels = MAX_PIXELS) {
     const [w, s, e, n] = bbox;
     const lat = (s + n) / 2;
     const mLat = 111320, mLon = 111320 * Math.cos(lat * Math.PI / 180);
-    for (const res of [20, 40, 60, 80]) {
+    for (const res of RESOLUTIONS) {
         const dy = res / mLat, dx = res / mLon;
         const width = Math.max(1, Math.round((e - w) / dx)), height = Math.max(1, Math.round((n - s) / dy));
         if (width * height <= maxPixels) return { res, dx, dy, width, height, west: w, north: n, south: n - height * dy, east: w + width * dx };
@@ -88,6 +93,51 @@ export function medianStack(layers, n) {
         out[p] = k % 2 ? s[(k - 1) / 2] : (s[k / 2 - 1] + s[k / 2]) / 2;
     }
     return out;
+}
+
+/**
+ * Mediana «em fluxo» de várias bandas: guarda até k valores por píxel (Uint16, número digital da imagem),
+ * pela ordem em que as imagens chegam, e descarta cada imagem logo a seguir. Para uma província usa cerca de
+ * 120 MB em vez de ~600 MB (todas as imagens em memória). Os contadores são comuns às bandas.
+ */
+export function slotStack(n, nBands, k = 4) {
+    return { n, k, count: new Uint8Array(n), values: Array.from({ length: nBands }, () => new Uint16Array(n * k)) };
+}
+
+/** Junta uma imagem: layers[b][p] = valor da banda b no píxel p (NaN/0 = sem dados); ok[p] = máscara de nuvens. */
+export function slotAdd(st, layers, ok) {
+    const { n, k, count, values } = st;
+    const nb = layers.length;
+    for (let p = 0; p < n; p++) {
+        const c = count[p];
+        if (c >= k || !ok[p]) continue;
+        let valid = true;
+        for (let b = 0; b < nb; b++) { const x = layers[b][p]; if (!(x > 0)) { valid = false; break; } }
+        if (!valid) continue;
+        for (let b = 0; b < nb; b++) values[b][p * k + c] = Math.min(65535, Math.round(layers[b][p]));
+        count[p] = c + 1;
+    }
+}
+
+/** Medianas por banda (Float32, NaN onde não houve dados), multiplicadas por scale (reflectância = DN/10000). */
+export function slotMedians(st, scale = 1 / 10000) {
+    const { n, k, count, values } = st;
+    const tmp = new Uint16Array(k);
+    return values.map((V) => {
+        const out = new Float32Array(n).fill(NaN);
+        for (let p = 0; p < n; p++) {
+            const c = count[p];
+            if (!c) continue;
+            for (let i = 0; i < c; i++) {
+                const x = V[p * k + i];
+                let j = i - 1;
+                while (j >= 0 && tmp[j] > x) { tmp[j + 1] = tmp[j]; j--; }
+                tmp[j + 1] = x;
+            }
+            out[p] = (c % 2 ? tmp[(c - 1) / 2] : (tmp[c / 2 - 1] + tmp[c / 2]) / 2) * scale;
+        }
+        return out;
+    });
 }
 
 /** Variáveis derivadas: NDVI, NDWI e declive (graus) a partir da altitude. */
