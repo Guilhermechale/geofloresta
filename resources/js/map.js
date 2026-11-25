@@ -452,7 +452,7 @@ function setupLulc(q, getAoi, map) {
     const L = T.lulc || {};
     const names = Object.fromEntries(LULC_CODES.map((c, k) => [c, (L.lulc_classes || [])[k] || String(c)]));
     const btnRun = q('[data-lulc-run]'), status = q('[data-lulc-status]'), bar = q('[data-lulc-progress]');
-    const result = q('[data-lulc-result]'), dl = q('[data-lulc-download]'), show = q('[data-lulc-show]');
+    const result = q('[data-lulc-result]'), extra = q('[data-lulc-extra]'), dl = q('[data-lulc-download]'), show = q('[data-lulc-show]');
     const areaEl = q('[data-lulc-area]');
     const btnTiff = q('[data-lulc-tiff]'), btnCsv = q('[data-lulc-csv]');
     const start = q('input[name="lulc_start"]'), end = q('input[name="lulc_end"]'), trees = q('select[name="lulc_trees"]');
@@ -537,24 +537,36 @@ function setupLulc(q, getAoi, map) {
     };
 
     const report = (r) => {
-        const a = r.accuracy, cls = r.classes;
-        const th = (c) => `<th scope="col"><span class="lulc-swatch" style="background:${LULC_COLORS[c]}"></span>${esc(names[c])}</th>`;
-        let h = `<div class="lulc-kpis"><div><span class="lulc-kpi">${pct(a.overall)}</span><span class="small">${esc(L.lulc_accuracy)}</span></div>`
-            + `<div><span class="lulc-kpi">${num(a.kappa, 2)}</span><span class="small">${esc(L.lulc_kappa)}</span></div></div>`;
-        h += `<p class="small muted">${esc(L.lulc_done.replace(':s', num(r.seconds)).replace(':res', r.grid.res).replace(':trees', r.trees))} ${esc(L.lulc_samples.replace(':train', r.samples.train).replace(':val', r.samples.validation))}</p>`;
-        h += `<p class="small"><strong>${esc(L.lulc_matrix)}</strong></p><div class="table-scroll"><table class="lulc-matrix"><thead><tr><th scope="col" class="small">${esc(L.lulc_ref_map)}</th>${cls.map(th).join('')}<th scope="col">${esc(L.lulc_producer)}</th></tr></thead><tbody>`;
-        a.matrix.forEach((row, i) => {
-            h += `<tr><th scope="row"><span class="lulc-swatch" style="background:${LULC_COLORS[cls[i]]}"></span>${esc(names[cls[i]])}</th>`
-                + row.map((v, j) => `<td${i === j ? ' class="lulc-diag"' : ''}>${v}</td>`).join('') + `<td>${pct(a.producers[i])}</td></tr>`;
-        });
-        h += `<tr><th scope="row">${esc(L.lulc_user)}</th>${a.users.map((u) => `<td>${pct(u)}</td>`).join('')}<td></td></tr></tbody></table></div>`;
-        const total = r.areas.reduce((s, x) => s + x.ha, 0) || 1;
-        h += `<p class="small"><strong>${esc(L.lulc_area)}</strong></p><table class="lulc-areas"><tbody>`
-            + r.areas.map((x) => `<tr><th scope="row"><span class="lulc-swatch" style="background:${LULC_COLORS[x.code]}"></span>${esc(names[x.code])}</th><td>${num(x.ha)} ha</td><td>${pct(x.ha / total)}</td></tr>`).join('')
-            + '</tbody></table>';
-        h += `<p class="small muted">${esc(L.lulc_ref_year.replace(':year', r.year))} ${esc(L.lulc_scenes.replace(':list', r.scenes.map((s) => s.date).join(', ')))}</p>`;
-        result.innerHTML = h;
+        const a = r.accuracy, cls = r.classes, P = L.panel || {};
+        const sw = (c) => `<span class="lulc-swatch" style="background:${LULC_COLORS[c]}"></span>`;
+        // Indicadores em destaque e uma linha com o essencial
+        result.innerHTML = `<div class="lulc-kpis"><div><span class="lulc-kpi">${pct(a.overall)}</span><span class="small">${esc(L.lulc_accuracy)}</span></div>`
+            + `<div><span class="lulc-kpi">${num(a.kappa, 2)}</span><span class="small">${esc(L.lulc_kappa)}</span></div></div>`
+            + `<p class="lulc-meta small muted">${esc((P.lulc_meta || '').replace(':s', num(r.seconds)).replace(':res', r.grid.res).replace(':trees', r.trees))}</p>`;
         result.hidden = false;
+        // Área por classe em barras (do maior para o menor)
+        const total = r.areas.reduce((s2, x) => s2 + x.ha, 0) || 1;
+        let h = `<h4 class="lulc-sub">${esc(L.lulc_area)}</h4><ul class="lulc-bars">`
+            + [...r.areas].sort((x, y) => y.ha - x.ha).map((x) => `<li><span class="lulc-bars__name">${sw(x.code)}${esc(names[x.code])}</span>`
+                + `<span class="lulc-bars__val">${pct(x.ha / total)} · ${num(x.ha)} ha</span>`
+                + `<span class="lulc-bars__bar"><span style="width:${(100 * x.ha / total).toFixed(1)}%;background:${LULC_COLORS[x.code]}"></span></span></li>`).join('')
+            + '</ul>';
+        // Matriz de confusão e detalhes técnicos: recolhidos, para não encher o painel
+        // Matriz compacta: cada classe é o seu quadrado de cor (o nome aparece ao passar o rato; as cores estão nas barras acima)
+        const p0 = (v) => (v == null || Number.isNaN(v) ? '' : Math.round(v * 100) + '%');
+        const sq = (c) => `<span class="lulc-swatch" style="background:${LULC_COLORS[c]}" title="${esc(names[c])}"></span><span class="visually-hidden">${esc(names[c])}</span>`;
+        h += `<details class="panel-fold"><summary>${esc(P.lulc_matrix_short || L.lulc_matrix)}</summary>`
+            + `<div class="table-scroll"><table class="lulc-matrix lulc-matrix--compact"><caption class="small muted">${esc(L.lulc_ref_map)}</caption><thead><tr><th scope="col"></th>`
+            + cls.map((c) => `<th scope="col">${sq(c)}</th>`).join('') + `<th scope="col" title="${esc(L.lulc_producer)}"><abbr title="${esc(L.lulc_producer)}">${esc(L.lulc_producer.slice(0, 4))}.</abbr></th></tr></thead><tbody>`;
+        a.matrix.forEach((row, i) => {
+            h += `<tr><th scope="row">${sq(cls[i])}</th>`
+                + row.map((v, j) => `<td${i === j ? ' class="lulc-diag"' : ''}>${v}</td>`).join('') + `<td>${p0(a.producers[i])}</td></tr>`;
+        });
+        h += `<tr><th scope="row"><abbr title="${esc(L.lulc_user)}">${esc(L.lulc_user.slice(0, 4))}.</abbr></th>${a.users.map((u) => `<td>${p0(u)}</td>`).join('')}<td></td></tr></tbody></table></div></details>`;
+        h += `<details class="panel-fold"><summary>${esc(P.lulc_details || '')}</summary><p class="small muted">`
+            + `${esc(L.lulc_samples.replace(':train', r.samples.train).replace(':val', r.samples.validation))} ${esc(L.lulc_ref_year.replace(':year', r.year))} `
+            + `${esc(L.lulc_scenes.replace(':list', (() => { const d = [...new Set(r.scenes.map((x) => x.date))].sort(); return `${r.scenes.length} (${d[0]}${d.length > 1 ? ' – ' + d[d.length - 1] : ''})`; })()))}</p></details>`;
+        extra.innerHTML = h;
     };
 
     const fileName = (ext) => `uso_solo_rf_${(cfg.iso || 'area').toLowerCase()}_${new Date().toISOString().slice(0, 10)}.${ext}`;

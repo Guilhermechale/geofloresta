@@ -102,7 +102,7 @@ class MapController extends Controller
                 'dem_empty' => __('map.dem_empty'),
                 'dem_failed' => __('map.dem_failed'),
                 'dem_contours_done' => __('map.dem_contours_done'),
-                'lulc' => collect(trans('map'))->filter(fn ($v, $k) => str_starts_with($k, 'lulc_') || str_starts_with($k, 'area_'))->all(),
+                'lulc' => collect(trans('map'))->filter(fn ($v, $k) => str_starts_with($k, 'lulc_') || str_starts_with($k, 'area_'))->all() + ['panel' => trans('map.panel')],
                 'drawHelp' => __('map.aoi_draw_help'),
                 'polygon' => __('map.aoi_polygon'),
             ],

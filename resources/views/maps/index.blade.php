@@ -61,13 +61,14 @@
         </div>
 
         <aside class="map-panel" id="map-panel" aria-label="{{ __('map.layers') }}">
-            <div class="howto">
-                <p class="howto__title">{{ __('map.howto_title') }}</p>
+            @if ($tool === 'lulc')<p class="panel-intro">{{ __('map.panel.lulc_intro') }}</p>@endif
+            <details class="howto" @if ($tool !== 'lulc') open @endif>
+                <summary class="howto__title">{{ __('map.howto_title') }}</summary>
                 <ol>
                     @foreach (__('map.howto.'.$tool) as $step)<li>{{ $step }}</li>@endforeach
                 </ol>
                 @if ($tool === 'lulc' && config('geofloresta.lulc_video.id'))<p class="howto__video"><a class="link-arrow" href="#video">{{ __('map.video.link') }}</a></p>@endif
-            </div>
+            </details>
             @if ($countries)
                 <form class="map-form map-country" method="get" action="{{ \App\Support\MapTools::url($tool) }}" data-country>
                     <label for="map-country" class="meta">{{ __('map.country') }}</label>
@@ -79,10 +80,11 @@
                         </select>
                         <button type="submit" class="btn btn--small">{{ __('map.country_go') }}</button>
                     </div>
-                    <p class="small muted">{{ __('map.country_help') }}</p>
+                    @if ($tool === 'fires')<p class="small muted">{{ __('map.country_help') }}</p>@endif
                 </form>
             @endif
             <form class="map-form" data-map-layers>
+                @if ($tool === 'lulc')<details class="panel-fold"><summary>{{ __('map.panel.layers_fold') }}</summary>@endif
                 <fieldset>
                     <legend class="meta">{{ __('map.layers') }}</legend>
                     @php
@@ -115,13 +117,19 @@
                         </details>
                     @endif
                 </fieldset>
+                @if ($tool === 'lulc')</details>@endif
             </form>
 
             <form class="map-form" data-aoi data-only="fires lulc relief">
-                <fieldset>
-                    <legend class="meta">{{ __('map.aoi') }}</legend>
+                <fieldset class="@if ($tool === 'lulc') panel-step @endif">
+                    @if ($tool === 'lulc')
+                        <legend class="panel-step__title"><span class="panel-step__n">1</span>{{ __('map.panel.step_area') }}</legend>
+                    @else
+                        <legend class="meta">{{ __('map.aoi') }}</legend>
+                    @endif
                     @if ($isMoz)
-                        <p class="small muted">{{ __('map.aoi_help') }}</p>
+                        <p class="small muted">{{ $tool === 'lulc' ? __('map.panel.aoi_hint_lulc') : __('map.aoi_help') }}</p>
+                        <div class="aoi-selects">
                         <div class="field">
                             <label for="aoi-prov">{{ __('map.aoi_province') }}</label>
                             <select id="aoi-prov" name="province">
@@ -134,6 +142,7 @@
                             <select id="aoi-dist" name="district" disabled>
                                 <option value="">{{ __('map.aoi_none') }}</option>
                             </select>
+                        </div>
                         </div>
                     @else
                         <p class="small muted">{{ $tool === 'fires' ? __('map.aoi_help_world') : __('map.aoi_help_world_generic') }}</p>
@@ -182,50 +191,63 @@
                     <p class="small muted">{{ __('map.dem_note') }}</p>
                     <p class="panel-links"><a class="link-arrow" href="{{ lroute('contact') }}?assunto=data">{{ __('map.dem_more') }}</a></p>
                 </fieldset>
-                <fieldset class="aoi-lulc" data-only="lulc" data-lulc>
-                    <legend class="meta">{{ __('map.lulc_title') }}</legend>
-                    <p class="small muted">{{ __('map.lulc_help') }}</p>
-                    <div class="lulc-warning" role="note">
-                        <strong>{{ __('map.lulc_warning') }}</strong>
-                        <span>{{ __('map.lulc_warning_text') }}</span>
-                    </div>
+                <div class="aoi-lulc" data-only="lulc" data-lulc>
                     <p class="lulc-area" data-lulc-area role="status" aria-live="polite">{{ __('map.area_none') }}</p>
-                    <div class="lulc-fields">
-                        <div class="field">
-                            <label for="lulc-start">{{ __('map.lulc_start') }}</label>
-                            <input type="date" id="lulc-start" name="lulc_start" value="2025-01-01" min="2017-04-01">
+
+                    <fieldset class="panel-step">
+                        <legend class="panel-step__title"><span class="panel-step__n">2</span>{{ __('map.panel.step_params') }}</legend>
+                        <div class="lulc-fields">
+                            <div class="field">
+                                <label for="lulc-start">{{ __('map.lulc_start') }}</label>
+                                <input type="date" id="lulc-start" name="lulc_start" value="2025-01-01" min="2017-04-01">
+                            </div>
+                            <div class="field">
+                                <label for="lulc-end">{{ __('map.lulc_end') }}</label>
+                                <input type="date" id="lulc-end" name="lulc_end" value="2025-12-31" min="2017-04-01">
+                            </div>
+                            <div class="field lulc-fields__trees">
+                                <label for="lulc-trees">{{ __('map.lulc_trees') }}</label>
+                                <select id="lulc-trees" name="lulc_trees" aria-describedby="lulc-trees-hint">
+                                    @foreach ([50, 100, 200, 300, 400, 500] as $n)<option value="{{ $n }}" @selected($n === 100)>{{ $n }}</option>@endforeach
+                                </select>
+                                <p class="small muted lulc-hint" id="lulc-trees-hint">{{ __('map.lulc_trees_hint') }}</p>
+                            </div>
                         </div>
-                        <div class="field">
-                            <label for="lulc-end">{{ __('map.lulc_end') }}</label>
-                            <input type="date" id="lulc-end" name="lulc_end" value="2025-12-31" min="2017-04-01">
-                        </div>
-                        <div class="field">
-                            <label for="lulc-trees">{{ __('map.lulc_trees') }}</label>
-                            <select id="lulc-trees" name="lulc_trees">
-                                @foreach ([50, 100, 200, 300, 400, 500] as $n)<option value="{{ $n }}" @selected($n === 100)>{{ $n }}</option>@endforeach
-                            </select>
-                            <p class="small muted lulc-hint">{{ __('map.lulc_trees_hint') }}</p>
-                        </div>
+                    </fieldset>
+
+                    <div class="panel-step panel-step--run">
+                        <button type="button" class="btn btn--primary btn--block" data-lulc-run disabled>{{ __('map.lulc_run') }}</button>
+                        <details class="lulc-warning" role="note">
+                            <summary><strong>{{ __('map.lulc_warning') }}</strong> <span class="lulc-warning__more">{{ __('map.panel.lulc_why') }}</span></summary>
+                            <p>{{ __('map.lulc_warning_text') }}</p>
+                        </details>
+                        <div class="small" data-lulc-status role="status" aria-live="polite"></div>
+                        <progress data-lulc-progress max="1" value="0" hidden></progress>
                     </div>
-                    <button type="button" class="btn btn--primary" data-lulc-run disabled>{{ __('map.lulc_run') }}</button>
-                    <div class="small" data-lulc-status role="status" aria-live="polite"></div>
-                    <progress data-lulc-progress max="1" value="0" hidden></progress>
-                    <div class="lulc-done" data-lulc-download hidden>
-                        <p class="lulc-done__title">{{ __('map.lulc_ready') }}</p>
+
+                    <section class="lulc-card" data-lulc-download hidden aria-labelledby="lulc-result-title">
+                        <h3 class="panel-step__title" id="lulc-result-title"><span class="panel-step__n panel-step__n--ok">✓</span>{{ __('map.panel.step_result') }}</h3>
+                        <div data-lulc-result hidden></div>
                         <div class="lulc-done__btns">
                             <button type="button" class="btn btn--go" data-lulc-tiff>{{ __('map.lulc_tiff') }}</button>
                             <button type="button" class="btn btn--go" data-lulc-csv>{{ __('map.lulc_csv') }}</button>
                         </div>
-                        <label class="small"><input type="checkbox" data-lulc-show checked> {{ __('map.lulc_show') }}</label>
-                        <p class="lulc-done__service small">{{ __('site.service_cta.lulc') }} <a class="link-arrow" href="{{ lroute('contact') }}?assunto=proposal">{{ __('site.service_cta.ask') }}</a></p>
-                    </div>
-                    <div data-lulc-result hidden></div>
-                    <p class="small muted">{{ __('map.lulc_note') }}</p>
-                    <p class="panel-links">
-                        @if ($rfTutorialUrl)<a class="link-arrow" href="{{ $rfTutorialUrl }}">{{ __('map.lulc_learn') }}</a>@endif
-                        <a class="link-arrow" href="{{ lroute('contact') }}?assunto=proposal">{{ __('map.lulc_more') }}</a>
-                    </p>
-                </fieldset>
+                        <label class="lulc-toggle"><input type="checkbox" data-lulc-show checked> <span>{{ __('map.lulc_show') }}</span></label>
+                        <div data-lulc-extra></div>
+                    </section>
+
+                    <nav class="panel-cards" aria-label="{{ __('map.panel.learn_title') }}">
+                        @if ($rfTutorialUrl)
+                            <a class="panel-card" href="{{ $rfTutorialUrl }}"><span class="panel-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M9 7h6M9 11h6"/></svg></span><span><strong>{{ __('map.panel.learn_title') }}</strong><span class="small muted">{{ __('map.panel.learn_sub') }}</span></span></a>
+                        @endif
+                        <a class="panel-card panel-card--accent" href="{{ lroute('contact') }}?assunto=proposal"><span class="panel-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span><strong>{{ __('map.panel.more_title') }}</strong><span class="small muted">{{ __('map.panel.more_sub') }}</span></span></a>
+                    </nav>
+
+                    <details class="panel-fold panel-fold--small">
+                        <summary>{{ __('map.panel.lulc_sources') }}</summary>
+                        <p class="small muted">{{ __('map.lulc_note') }}</p>
+                    </details>
+                </div>
             </form>
         </aside>
     </section>

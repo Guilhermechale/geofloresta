@@ -162,7 +162,13 @@ class MapsTest extends TestCase
         $this->assertStringContainsString('data-lulc-area', $html);
         $this->assertStringContainsString('Baixar mapa (GeoTIFF)', $html);
         $this->assertStringContainsString('Baixar tabela (CSV)', $html);
-        $this->assertMatchesRegularExpression('/class="btn btn--primary" data-lulc-run disabled/', $html);
+        $this->assertMatchesRegularExpression('/class="btn btn--primary btn--block" data-lulc-run disabled/', $html);
+        // Painel resumido: passos numerados, aviso e fontes recolhidos, ligações em cartões
+        $this->assertStringContainsString('panel-step__n">1</span>Área', $html);
+        $this->assertStringContainsString('panel-step__n">2</span>Imagens e modelo', $html);
+        $this->assertMatchesRegularExpression('/<details class="lulc-warning"/', $html);
+        $this->assertStringContainsString('Fontes dos dados', $html);
+        $this->assertStringContainsString('Mapa validado no campo', $html);
         // Os textos do painel chegam ao JavaScript (classes incluídas)
         $this->assertStringContainsString('"lulc_classes":["Água","Árvores"', $html);
         // A política de segurança permite apenas os três serviços de dados abertos usados pelo trabalhador
@@ -199,7 +205,9 @@ class MapsTest extends TestCase
             'summary' => ['pt' => 'Resumo'], 'body' => ['pt' => '<p>Texto</p>'], 'platform' => 'gee', 'status' => 'published', 'published_at' => '2026-11-01 10:00:00',
         ]);
         $html = $this->get('/mapas/uso-do-solo')->assertOk()->getContent();
-        $this->assertSame(2, substr_count($html, '>Aprofundar: Random Forest no Google Earth Engine (tutorial)</a>'));
+        // por baixo do vídeo: «Aprofundar…»; no painel: cartão «Tutorial: Random Forest · No Google Earth Engine»
+        $this->assertSame(1, substr_count($html, '>Aprofundar: Random Forest no Google Earth Engine (tutorial)</a>'));
+        $this->assertStringContainsString('<strong>Tutorial: Random Forest</strong><span class="small muted">No Google Earth Engine, passo a passo</span>', $html);
         $this->assertStringNotContainsString('Como funciona: tutorial passo a passo', $html);
         $this->assertStringNotContainsString('Como funciona: tutorial do Random Forest', $html);
     }
