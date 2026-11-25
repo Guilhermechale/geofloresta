@@ -64,30 +64,30 @@ class AdminPanelTest extends TestCase
         $this->actingAs($admin)->get('/painel-teste/contact-messages')->assertOk()->assertSee('/painel-teste/contact-messages/'.$m->id, false);
     }
 
-    public function test_spam_and_block_actions_from_the_panel(): void
+    public function test_spam_actions_from_the_panel_and_no_block_function(): void
     {
         $admin = $this->admin();
         $burla = \App\Models\ContactMessage::create(['name' => 'Jarrod', 'email' => 'domains@search-geofloresta.com', 'message' => 'Renove o seu domínio', 'locale' => 'pt']);
-        $outra = \App\Models\ContactMessage::create(['name' => 'Jarrod 2', 'email' => 'seo@search-geofloresta.com', 'message' => 'SEO barato', 'locale' => 'pt']);
         $boa = \App\Models\ContactMessage::create(['name' => 'Ana', 'email' => 'ana@exemplo.test', 'message' => 'Preciso de um mapa', 'locale' => 'pt']);
 
         \Livewire\Livewire::actingAs($admin)->test(\App\Filament\Resources\ContactMessages\Pages\ListContactMessages::class)
-            ->callTableAction('block', $burla, data: ['kind' => 'domain'])->assertHasNoTableActionErrors();
-
-        $this->assertDatabaseHas('blocked_senders', ['value' => 'search-geofloresta.com', 'kind' => 'domain']);
+            ->assertTableActionDoesNotExist('block')
+            ->callTableAction('spam', $burla)->assertHasNoTableActionErrors();
         $this->assertNotNull($burla->fresh()->spam_at);
-        $this->assertNotNull($outra->fresh()->spam_at);          // o mesmo domínio também foi para o spam
-        $this->assertNull($boa->fresh()->spam_at);
+        $this->assertSame('manual', $burla->fresh()->spam_reason);
         $this->assertSame('1', \App\Filament\Resources\ContactMessages\ContactMessageResource::getNavigationBadge()); // só a da Ana
 
         \Livewire\Livewire::actingAs($admin)->test(\App\Filament\Resources\ContactMessages\Pages\ListContactMessages::class)
-            ->assertCanSeeTableRecords([$boa])->assertCanNotSeeTableRecords([$burla, $outra])
-            ->set('activeTab', 'spam')->assertCanSeeTableRecords([$burla, $outra])
-            ->callTableAction('notSpam', $outra);
-        $this->assertNull($outra->fresh()->spam_at);
+            ->assertCanSeeTableRecords([$boa])->assertCanNotSeeTableRecords([$burla])
+            ->set('activeTab', 'spam')->assertCanSeeTableRecords([$burla])
+            ->callTableAction('notSpam', $burla);
+        $this->assertNull($burla->fresh()->spam_at);
 
-        $this->actingAs($admin)->get('/painel-teste/blocked-senders')->assertOk()->assertSee('search-geofloresta.com');
-        $this->actingAs($admin)->get('/painel-teste/blocked-senders/create')->assertOk();
+        // página de uma mensagem detectada automaticamente mostra o motivo
+        $auto = \App\Models\ContactMessage::create(['name' => 'X', 'email' => 'x@example.org', 'message' => 'bitcoin', 'locale' => 'en']);
+        $auto->markSpam('auto', 'dinheiro fácil ou burla financeira');
+        $this->actingAs($admin)->get('/painel-teste/contact-messages/'.$auto->id)->assertOk()->assertSee('Motivo do spam')->assertSee('dinheiro fácil ou burla financeira');
+        $this->actingAs($admin)->get('/painel-teste/blocked-senders')->assertNotFound();
     }
 
     public function test_admin_lists_with_records_and_search_work(): void

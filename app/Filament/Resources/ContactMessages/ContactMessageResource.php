@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\ContactMessages;
 
-use App\Models\BlockedSender;
 use App\Models\ContactMessage;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -11,7 +10,6 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Radio;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Collection;
@@ -61,6 +59,9 @@ class ContactMessageResource extends Resource
                 TextEntry::make('locale')->label('Idioma')->formatStateUsing(fn (?string $state) => strtoupper((string) $state)),
                 TextEntry::make('created_at')->label('Recebida')->dateTime('d/m/Y H:i'),
                 TextEntry::make('emailed_at')->label('E-mail enviado')->dateTime('d/m/Y H:i')->placeholder('não enviado'),
+                TextEntry::make('spam_note')->label('Motivo do spam')->columnSpanFull()->color('warning')
+                    ->visible(fn (ContactMessage $record) => (bool) $record->spam_at)
+                    ->getStateUsing(fn (ContactMessage $record) => $record->spam_note ?: ($record->spam_reason === 'manual' ? 'Marcada por si' : 'Detectada automaticamente')),
                 TextEntry::make('message')->label('Mensagem')->columnSpanFull()->prose(),
             ])->columns(3),
         ]);
@@ -79,7 +80,7 @@ class ContactMessageResource extends Resource
             TextColumn::make('subject')->label('Assunto')->limit(40),
             TextColumn::make('locale')->label('Idioma')->formatStateUsing(fn (?string $state) => strtoupper((string) $state)),
             TextColumn::make('spam_reason')->label('Spam')->badge()->color('warning')->placeholder('')
-                ->formatStateUsing(fn (?string $state) => ['manual' => 'Marcado', 'blocked' => 'Bloqueado', 'lookalike' => 'Domínio falso'][$state] ?? $state),
+                ->formatStateUsing(fn (?string $state) => ['manual' => 'Marcado por si', 'auto' => 'Automático', 'blocked' => 'Automático', 'lookalike' => 'Automático'][$state] ?? $state),
         ])->filters([
             TernaryFilter::make('read_at')->label('Lidas')->nullable(),
         ])->recordActions([
@@ -106,26 +107,6 @@ class ContactMessageResource extends Resource
                 ->action(function (ContactMessage $record) {
                     $record->markSpam();
                     Notification::make()->title('Mensagem movida para o spam')->success()->send();
-                }),
-            Action::make('block')->label('Bloquear')->icon('heroicon-o-no-symbol')->color('danger')
-                ->modalHeading('Bloquear remetente')
-                ->modalDescription('As próximas mensagens deste remetente vão directamente para o spam, sem e-mail nem notificação. O remetente não é avisado.')
-                ->schema([
-                    Radio::make('kind')->label('O que bloquear')->required()->default('email')
-                        ->options(fn (ContactMessage $record) => [
-                            'email' => 'Só este endereço ('.$record->email.')',
-                            'domain' => 'Todo o domínio ('.BlockedSender::domainOf($record->email).')',
-                        ])
-                        ->helperText('Não bloqueie domínios públicos como gmail.com ou hotmail.com: bloquearia toda a gente.'),
-                ])
-                ->action(function (ContactMessage $record, array $data) {
-                    $b = BlockedSender::block($record->email, $data['kind'], 'Bloqueado a partir da mensagem #'.$record->id);
-                    $same = $data['kind'] === 'domain'
-                        ? ContactMessage::inbox()->where('email', 'like', '%@'.$b->value)
-                        : ContactMessage::inbox()->where('email', $record->email);
-                    $same->get()->each->markSpam('blocked');
-                    $record->spam_at ?: $record->markSpam('blocked');
-                    Notification::make()->title('Remetente bloqueado: '.$b->value)->success()->send();
                 }),
             Action::make('notSpam')->label('Não é spam')->icon('heroicon-o-inbox-arrow-down')->color('gray')
                 ->visible(fn (ContactMessage $record) => (bool) $record->spam_at)

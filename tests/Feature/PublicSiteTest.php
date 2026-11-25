@@ -122,23 +122,49 @@ class PublicSiteTest extends TestCase
         Mail::assertSent(\App\Mail\ContactConfirmation::class, fn ($mail) => $mail->hasTo('ana@exemplo.org'));
     }
 
-    public function test_blocked_sender_and_lookalike_domain_go_to_spam_without_any_email(): void
+    public function test_scam_messages_go_to_spam_automatically_without_any_email(): void
     {
         Mail::fake();
-        \App\Models\BlockedSender::block('x@burla.example', 'domain');
-        $this->post('/contacto', $this->contactPayload(['email' => 'outro@mail.burla.example']))->assertRedirect();
-        $this->post('/contacto', $this->contactPayload(['email' => 'domains@search-geofloresta.com']))->assertRedirect();
+        $this->post('/contacto', $this->contactPayload(['email' => 'domains@search-geofloresta.com', 'message' => 'Pedido de recorte de dados para o vosso site.']))->assertRedirect();
+        $this->post('/contacto', $this->contactPayload(['email' => 'mr.james@example.net', 'message' => 'Dear friend, I have an inheritance of 10 million dollars and you are the beneficiary. Contact me via Western Union.']))->assertRedirect();
         $this->post('/contacto', $this->contactPayload(['email' => 'cliente@empresa.co.mz']))->assertRedirect();
 
-        $this->assertSame('blocked', ContactMessage::where('email', 'outro@mail.burla.example')->value('spam_reason'));
-        $this->assertSame('lookalike', ContactMessage::where('email', 'domains@search-geofloresta.com')->value('spam_reason'));
+        $lookalike = ContactMessage::where('email', 'domains@search-geofloresta.com')->first();
+        $this->assertNotNull($lookalike->spam_at);
+        $this->assertSame('auto', $lookalike->spam_reason);
+        $this->assertStringContainsString('imita o nosso', $lookalike->spam_note);
+        $this->assertNotNull(ContactMessage::where('email', 'mr.james@example.net')->value('spam_at'));
         $this->assertNull(ContactMessage::where('email', 'cliente@empresa.co.mz')->value('spam_at'));
         // só o cliente verdadeiro gera e-mails (o nosso e a confirmação)
         Mail::assertSent(\App\Mail\ContactReceived::class, 1);
         Mail::assertSent(\App\Mail\ContactConfirmation::class, fn ($m) => $m->hasTo('cliente@empresa.co.mz'));
         Mail::assertNotSent(\App\Mail\ContactConfirmation::class, fn ($m) => $m->hasTo('domains@search-geofloresta.com'));
-        $this->assertFalse(\App\Models\BlockedSender::isLookalike('guilherme@geofloresta.com'));
-        $this->assertFalse(\App\Models\BlockedSender::isBlocked('alguem@gmail.com'));
+    }
+
+    public function test_spam_detector_catches_scams_and_lets_real_clients_through(): void
+    {
+        $d = \App\Support\SpamDetector::class;
+        $scams = [
+            ['Jarrod', 'domains@search-geofloresta.com', 'Pedido de recorte de dados'],
+            ['SEO Team', 'x@seo-agency.example', 'We can put your website on the first page of Google with quality backlinks. Click here: https://a.example https://b.example https://c.example'],
+            ['Support', 'no-reply@example.org', 'Your account suspended. Please verify your account and send your password to avoid final notice.'],
+            ['Invest', 'inv@example.org', 'Oportunidade de investimento em bitcoin com lucro garantido, sem risco.'],
+            ['Domain Services', 'admin@example.org', 'Final notice: domain registration and search engine submission for geofloresta.com expires today.'],
+            ['https://spam.example', 'a@example.org', 'Hello'],
+        ];
+        foreach ($scams as [$n, $e, $m]) {
+            $this->assertTrue($d::isSpam($d::check($n, $e, $m)), "devia ser spam: $m");
+        }
+        $clients = [
+            ['Ana Macuácua', 'ana@gmail.com', 'Bom dia, preciso de um mapa de uso do solo do distrito de Dondo para um projecto. Podem enviar uma proposta?'],
+            ['João', 'joao@empresa.co.mz', 'É urgente: precisamos do inventário florestal até ao fim do mês. Qual é o preço? Segue o link do terreno: https://maps.google.com/x'],
+            ['Marie Dupont', 'marie@ong.org', 'Bonjour, nous cherchons une formation en télédétection et SIG pour notre équipe à Beira.'],
+            ['Guilherme', 'guilhermechale@geofloresta.com', 'Teste do formulário'],
+            ['Dr. Smith', 'smith@university.edu', 'Could you share the land cover dataset for Sofala? We would cite GEOFLORESTA in our paper. Our transferência bancária for the service can be arranged.'],
+        ];
+        foreach ($clients as [$n, $e, $m]) {
+            $this->assertFalse($d::isSpam($d::check($n, $e, $m)), "não devia ser spam: $m");
+        }
     }
 
     public function test_contact_saves_even_if_mail_fails(): void

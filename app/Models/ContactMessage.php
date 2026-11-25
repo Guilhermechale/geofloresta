@@ -23,14 +23,14 @@ class ContactMessage extends Model
         return $q->whereNotNull('spam_at');
     }
 
-    public function markSpam(string $reason = 'manual'): void
+    public function markSpam(string $reason = 'manual', ?string $note = null): void
     {
-        $this->forceFill(['spam_at' => now(), 'spam_reason' => $reason, 'read_at' => $this->read_at ?? now()])->save();
+        $this->forceFill(['spam_at' => now(), 'spam_reason' => $reason, 'spam_note' => $note ? mb_substr($note, 0, 255) : null, 'read_at' => $this->read_at ?? now()])->save();
     }
 
     public function markNotSpam(): void
     {
-        $this->forceFill(['spam_at' => null, 'spam_reason' => null])->save();
+        $this->forceFill(['spam_at' => null, 'spam_reason' => null, 'spam_note' => null])->save();
     }
 
     /** Hash com sal do IP: permite limitar abusos sem guardar o IP. */

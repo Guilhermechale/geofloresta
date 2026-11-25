@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Mail\ContactConfirmation;
 use App\Mail\ContactReceived;
-use App\Models\BlockedSender;
 use App\Models\ContactMessage;
 use App\Models\Setting;
+use App\Support\SpamDetector;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -78,10 +78,10 @@ class ContactController extends Controller
             'ip_hash' => $ipHash,
         ]);
 
-        // Remetente bloqueado ou domínio que imita o nosso: vai para o spam, sem e-mails (nem para nós, nem de resposta).
-        $reason = BlockedSender::isBlocked($msg->email) ? 'blocked' : (BlockedSender::isLookalike($msg->email) ? 'lookalike' : null);
-        if ($reason) {
-            $msg->markSpam($reason);
+        // Mensagem enganosa ou de burla: vai para o spam (fica guardada, com o motivo), sem e-mails nem resposta automática.
+        $check = SpamDetector::check($msg->name, $msg->email, $msg->message, $msg->organisation);
+        if (SpamDetector::isSpam($check)) {
+            $msg->markSpam('auto', implode('; ', $check['reasons']));
 
             return redirect()->to(lroute('thanks'))->with('contact_sent', true);
         }
