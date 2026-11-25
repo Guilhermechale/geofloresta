@@ -103,6 +103,7 @@ return [
     'lulc_step_search' => 'Recherche d’images Sentinel-2 sans nuages…',
     'lulc_step_clouds' => 'Préparation du masque de nuages (:scenes images)…',
     'lulc_step_bands' => 'Lecture des images Sentinel-2 (:scenes images)…',
+    'lulc_step_gaps' => 'Complément des zones sans images (:scenes images)…',
     'lulc_step_terrain' => 'Lecture du relief…',
     'lulc_step_reference' => 'Récupération de la carte de référence pour les échantillons…',
     'lulc_step_features' => 'Calcul du NDVI, du NDWI et de la pente…',

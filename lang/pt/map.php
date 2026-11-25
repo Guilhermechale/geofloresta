@@ -102,6 +102,7 @@ return [
     'lulc_step_search' => 'A procurar imagens Sentinel-2 sem nuvens…',
     'lulc_step_clouds' => 'A preparar a máscara de nuvens (:scenes imagens)…',
     'lulc_step_bands' => 'A ler as imagens Sentinel-2 (:scenes imagens)…',
+    'lulc_step_gaps' => 'A completar zonas sem imagens (:scenes imagens)…',
     'lulc_step_terrain' => 'A ler o relevo…',
     'lulc_step_reference' => 'A obter o mapa de referência para as amostras…',
     'lulc_step_features' => 'A calcular NDVI, NDWI e declive…',

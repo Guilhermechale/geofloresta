@@ -17,15 +17,15 @@ export const LULC = 'https://ic.imagery1.arcgis.com/arcgis/rest/services/Sentine
 const BANDS = { B2: 'blue', B3: 'green', B4: 'red', B8: 'nir', B11: 'swir16', B12: 'swir22' };
 const BAD_SCL = new Set([0, 1, 3, 8, 9, 10, 11]);   // sem dados, saturado, sombra de nuvem, nuvens, cirros, neve
 // Imagens por quadrícula MGRS (2 quando a área tem muitas quadrículas, para não demorar demasiado) e teto total
-const PER_TILE = 3, PER_TILE_MANY = 2, MANY_TILES = 12, MAX_ITEMS = 60, MAX_PAGES = 8;
+const PER_TILE = 3, PER_TILE_MANY = 2, MANY_TILES = 12, MAX_ITEMS = 72, MAX_PAGES = 8;
 
 let state = null;
 const progress = (step, frac = 0, extra = {}) => postMessage({ progress: step, frac, ...extra });
 
 // ---------- catálogo ----------
-async function findScenes(bbox, start, end, maxCloud = 30) {
+async function findScenes(area, start, end, maxCloud = 30, exclude = null) {
     let body = {
-        collections: ['sentinel-2-l2a'], bbox, datetime: `${start}T00:00:00Z/${end}T23:59:59Z`, limit: 100,
+        collections: ['sentinel-2-l2a'], ...(Array.isArray(area) ? { bbox: area } : { intersects: area }), datetime: `${start}T00:00:00Z/${end}T23:59:59Z`, limit: 100,
         query: { 'eo:cloud_cover': { lt: maxCloud } }, sortby: [{ field: 'properties.eo:cloud_cover', direction: 'asc' }],
     };
     const need = ['scl', ...Object.values(BANDS)];
@@ -36,7 +36,7 @@ async function findScenes(bbox, start, end, maxCloud = 30) {
         if (!r.ok) throw new Error(`STAC ${r.status}`);
         const json = await r.json();
         for (const it of json.features || []) {
-            if (!it.properties?.['proj:epsg'] || !need.every((k) => it.assets?.[k]?.href)) continue;
+            if (!it.properties?.['proj:epsg'] || !need.every((k) => it.assets?.[k]?.href) || exclude?.has(it.id)) continue;
             const tile = it.properties['s2:mgrs_tile'] || it.properties['grid:code'] || it.id.split('_')[1];
             if (!byTile.has(tile)) byTile.set(tile, []);
             byTile.get(tile).push(it);
@@ -49,12 +49,29 @@ async function findScenes(bbox, start, end, maxCloud = 30) {
     // Por quadrícula: primeiro as imagens que cobrem a quadrícula inteira (as da borda da passagem do satélite
     // só cobrem parte), depois as com menos nuvens.
     const nodata = (it) => Number(it.properties['s2:nodata_pixel_percentage'] ?? 0);
-    const picked = [...byTile.values()].map((list) => list
-        .sort((a, b) => (nodata(a) > 40) - (nodata(b) > 40) || a.properties['eo:cloud_cover'] - b.properties['eo:cloud_cover'] || nodata(a) - nodata(b))
-        .slice(0, perTile));
-    // Intercala as quadrículas (1.ª imagem de cada, depois a 2.ª...) para o teto nunca deixar uma quadrícula sem imagens
+    const quality = (a, b) => (nodata(a) > 40) - (nodata(b) > 40) || a.properties['eo:cloud_cover'] - b.properties['eo:cloud_cover'] || nodata(a) - nodata(b);
+    // Quadrículas na borda da faixa do satélite: cada passagem (órbita relativa) só cobre parte da quadrícula.
+    // Alterna entre passagens (a melhor imagem de cada, depois a segunda...) para a quadrícula ficar coberta inteira.
+    const orbit = (it) => it.properties['sat:relative_orbit'] ?? it.properties['s2:datatake_id']?.split('_')?.[3] ?? 0;
+    const picked = [...byTile.values()].map((list) => {
+        list.sort(quality);
+        if (nodata(list[0]) <= 5) return list.slice(0, perTile); // há imagens completas: as melhores bastam
+        const groups = new Map();
+        for (const it of list) {
+            const o = orbit(it);
+            if (!groups.has(o)) groups.set(o, []);
+            groups.get(o).push(it);
+        }
+        const ordered = [...groups.values()];
+        const out = [];
+        for (let k = 0; out.length < list.length; k++) for (const g of ordered) if (g[k]) out.push(g[k]);
+        return out.slice(0, perTile);
+    });
+    // Intercala as quadrículas (1.ª imagem de cada, depois a 2.ª...) para o teto nunca deixar uma quadrícula sem imagens.
+    // Na 2.ª ronda em diante vêm primeiro as quadrículas cuja 1.ª imagem está incompleta (borda da faixa do satélite).
+    const partialFirst = [...picked].sort((a, b) => (nodata(b[0]) > 5) - (nodata(a[0]) > 5));
     const out = [];
-    for (let k = 0; k < perTile; k++) for (const list of picked) if (list[k]) out.push(list[k]);
+    for (let k = 0; k < perTile; k++) for (const list of (k === 0 ? picked : partialFirst)) if (list[k]) out.push(list[k]);
     return out.slice(0, MAX_ITEMS);
 }
 
@@ -220,15 +237,16 @@ async function run({ bbox, geometry, start, end, trees = 100, seed = 42 }) {
     const names = Object.keys(BANDS);
     const stack = slotStack(N, names.length, 4);
     let used = 0;
-    for (const [k, it] of scenes.entries()) {
-        progress('bands', k / scenes.length, { scenes: scenes.length });
+    const seen = new Set();
+    const addScene = async (it) => {
+        seen.add(it.id);
         const map = utmMapper(grid, it.properties['proj:epsg']);
         try {
             const scl = await readToGrid(it.assets.scl.href, grid, map, 0);
             const ok = new Uint8Array(N);
             let any = false;
-            for (let p = 0; p < N; p++) if (inside[p] && scl[p] && !BAD_SCL.has(scl[p])) { ok[p] = 1; any = true; }
-            if (!any) continue; // imagem toda com nuvens (ou fora do polígono): não vale a pena ler as bandas
+            for (let p = 0; p < N; p++) if (inside[p] && stack.count[p] < stack.k && scl[p] && !BAD_SCL.has(scl[p])) { ok[p] = 1; any = true; }
+            if (!any) return; // nada de novo (nuvens, fora do polígono ou píxeis já completos): não lê as bandas
             const layers = [];
             for (const name of names) layers.push(await readToGrid(it.assets[BANDS[name]].href, grid, map));
             slotAdd(stack, layers, ok);
@@ -236,6 +254,42 @@ async function run({ bbox, geometry, start, end, trees = 100, seed = 42 }) {
         } catch {
             // imagem que não foi possível ler (mesmo depois de repetir): segue-se com as outras
         }
+    };
+    for (const [k, it] of scenes.entries()) {
+        progress('bands', k / scenes.length, { scenes: scenes.length });
+        await addScene(it);
+    }
+    // Zonas que ficaram sem dados (quadrículas que o catálogo não devolveu, nuvens persistentes, bordas da faixa
+    // do satélite): a área é dividida em 10 x 10 células e procura-se de novo só nas células com muitas falhas.
+    const CELLS = 10;
+    for (let round = 0; round < 3; round++) {
+        const cw = Math.ceil(grid.width / CELLS), chh = Math.ceil(grid.height / CELLS);
+        const inC = new Int32Array(CELLS * CELLS), missC = new Int32Array(CELLS * CELLS), sx = new Float64Array(CELLS * CELLS), sy = new Float64Array(CELLS * CELLS);
+        for (let p = 0; p < N; p++) {
+            if (!inside[p]) continue;
+            const i = p % grid.width, j = (p / grid.width) | 0;
+            const c = Math.min(CELLS - 1, (j / chh) | 0) * CELLS + Math.min(CELLS - 1, (i / cw) | 0);
+            inC[c]++;
+            if (stack.count[p]) continue;
+            missC[c]++; sx[c] += i; sy[c] += j;
+        }
+        const cells = [...inC.keys()].filter((c) => missC[c] >= 100 && missC[c] / inC[c] > 0.01).sort((a, b) => missC[b] - missC[a]).slice(0, 8);
+        if (!cells.length) break;
+        const extra = [];
+        for (const c of cells) {
+            // ponto central das falhas desta célula: o catálogo só devolve imagens cujo contorno de dados o cobre
+            const pt = { type: 'Point', coordinates: [grid.west + (sx[c] / missC[c] + 0.5) * grid.dx, grid.north - (sy[c] / missC[c] + 0.5) * grid.dy] };
+            try {
+                const found = (await findScenes(pt, start, end, round ? 60 : 30, seen)).filter((it) => !extra.some((x) => x.id === it.id));
+                extra.push(...found.slice(0, 3));
+            } catch { /* catálogo indisponível: segue-se sem esta célula */ }
+        }
+        if (!extra.length) break;
+        for (const [k, it] of extra.entries()) {
+            progress('gaps', k / extra.length, { scenes: extra.length });
+            await addScene(it);
+        }
+        scenes.push(...extra);
     }
     if (!used) throw new Error('no scene could be read');
     const medians = slotMedians(stack);
