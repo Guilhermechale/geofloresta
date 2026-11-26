@@ -75,4 +75,16 @@ class AgentReadyTest extends TestCase
 
         $this->assertStringContainsString('"@type":"ItemList"', $this->get('/mapas')->assertOk()->getContent());
     }
+
+    public function test_adsense_ownership_meta_tag_and_ads_txt(): void
+    {
+        $ads = $this->get('/ads.txt')->assertOk();
+        $this->assertStringStartsWith('text/plain', $ads->headers->get('Content-Type'));
+        $this->assertSame("google.com, pub-7090076588420977, DIRECT, f08c47fec0942fa0\n", $ads->getContent());
+        foreach (['/', '/en', '/fr', '/mapas'] as $url) {
+            $this->assertStringContainsString('<meta name="google-adsense-account" content="ca-pub-7090076588420977">', $this->get($url)->assertOk()->getContent(), $url);
+        }
+        // os anúncios ainda não são carregados (só depois da aprovação e com consentimento)
+        $this->assertStringNotContainsString('adsbygoogle.js', $this->get('/')->getContent());
+    }
 }

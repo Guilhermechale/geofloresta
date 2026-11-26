@@ -43,6 +43,7 @@
     <script nonce="{{ $nonce }}">(function(){var d=document.documentElement,c='auto';try{c=localStorage.getItem('gf-theme')||sessionStorage.getItem('gf-theme')||'auto'}catch(e){}var t=c==='auto'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):c;d.setAttribute('data-theme',t);d.setAttribute('data-theme-choice',c);})();</script>
     <title>{{ $fullTitle }}</title>
     <meta name="description" content="{{ $desc }}">
+    @if (config('geofloresta.adsense_client'))<meta name="google-adsense-account" content="{{ config('geofloresta.adsense_client') }}">@endif
     @if ($noindex || app()->environment('staging'))
         <meta name="robots" content="noindex, nofollow">
     @endif

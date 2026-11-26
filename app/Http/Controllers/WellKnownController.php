@@ -30,6 +30,16 @@ class WellKnownController extends Controller
         return response(\App\Support\LlmsTxt::build(), 200, ['Content-Type' => 'text/markdown; charset=UTF-8', 'Cache-Control' => 'public, max-age=3600']);
     }
 
+    /** ads.txt (IAB): declara a Google como vendedor autorizado da publicidade do site (AdSense). */
+    public function ads(): Response
+    {
+        $client = (string) config('geofloresta.adsense_client');
+        $pub = preg_replace('/^ca-/', '', $client);
+        $body = $pub !== '' ? "google.com, {$pub}, DIRECT, f08c47fec0942fa0\n" : "# sem vendedores de publicidade autorizados\n";
+
+        return response($body, 200, ['Content-Type' => 'text/plain; charset=utf-8', 'Cache-Control' => 'public, max-age=86400']);
+    }
+
     public function security(): Response
     {
         $email = Setting::get('contact_email') ?: config('geofloresta.contact_email');

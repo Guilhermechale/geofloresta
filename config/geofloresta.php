@@ -8,6 +8,9 @@ return [
     'default_locale' => 'pt',
 
     'contact_email' => env('CONTACT_EMAIL', 'guilhermechale@geofloresta.com'),
+    // Google AdSense: identificador público do editor (aparece no ads.txt e na etiqueta de verificação).
+    // Só verifica a propriedade do site; os anúncios ainda não são carregados.
+    'adsense_client' => env('ADSENSE_CLIENT', 'ca-pub-7090076588420977'),
 
     // Chaves e identificadores opcionais (gratuitos). Vazios = funcionalidade desligada.
     'firms_map_key' => env('FIRMS_MAP_KEY'),
