@@ -93,7 +93,7 @@
                                             <br><small class="coord sha" title="SHA-256">sha256 {{ $f->sha256 }}</small>
                                         </td>
                                         <td class="num">{{ format_bytes((int) $f->size_bytes) }}</td>
-                                        <td>
+                                        <td class="nowrap">
                                             <a class="btn btn--small" href="{{ route('download', [$f->id, $f->filename]) }}" download
                                                data-track-download="{{ $f->filename }}" data-dataset="{{ $dataset->getTranslation('slug', 'pt') }}"
                                                aria-label="{{ __('data.download_label', ['name' => $f->formatLabel(), 'size' => format_bytes((int) $f->size_bytes)]) }}">{{ __('data.download') }}</a>

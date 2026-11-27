@@ -1,30 +1,20 @@
-<div class="table-scroll">
-<table class="table">
-    <caption class="visually-hidden">{{ __('pages.legal.sources_table') }}</caption>
-    <thead>
-        <tr>
-            <th scope="col">{{ __('pages.licences.name') }}</th>
-            <th scope="col">{{ __('pages.licences.use') }}</th>
-            <th scope="col">{{ __('pages.licences.licence') }}</th>
-            <th scope="col">{{ __('pages.licences.attribution') }}</th>
-            <th scope="col">{{ __('pages.licences.status') }}</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($sources as $s)
-            <tr>
-                <td><a href="{{ $s['url'] }}" rel="noopener" lang="en">{{ $s['name'] }}</a></td>
-                <td>{{ __('pages.licences.uses.'.$s['use']) }}</td>
-                <td><code lang="en">{{ $s['licence'] }}</code></td>
-                <td><small lang="en">{{ $s['attribution'] }}</small></td>
-                <td>
-                    {{ __('pages.licences.statuses.'.$s['status']) }}
+<ul class="src-list" aria-label="{{ __('pages.legal.sources_table') }}">
+    @foreach ($sources as $s)
+        <li class="src-item">
+            <div class="src-item__head">
+                <a class="src-item__name" href="{{ $s['url'] }}" rel="noopener" lang="en">{{ $s['name'] }}</a>
+                <span class="src-item__tags">
+                    <span class="src-tag">{{ __('pages.licences.uses.'.$s['use']) }}</span>
+                    <span class="src-tag src-tag--status">{{ __('pages.licences.statuses.'.$s['status']) }}</span>
                     @if (empty($s['verified']) && $s['status'] !== 'software')
-                        <br><span class="badge">{{ __('pages.licences.unverified') }}</span>
+                        <span class="badge">{{ __('pages.licences.unverified') }}</span>
                     @endif
-                </td>
-            </tr>
-        @endforeach
-    </tbody>
-</table>
-</div>
+                </span>
+            </div>
+            <dl class="src-item__body">
+                <div><dt>{{ __('pages.licences.licence') }}</dt><dd><code lang="en">{{ $s['licence'] }}</code></dd></div>
+                <div><dt>{{ __('pages.licences.attribution') }}</dt><dd lang="en">{{ $s['attribution'] }}</dd></div>
+            </dl>
+        </li>
+    @endforeach
+</ul>

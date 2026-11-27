@@ -22,12 +22,12 @@
                     <h2 id="top-title" class="h3">{{ __('countries.top_title') }}</h2>
                     <p class="small muted">{{ __('countries.top_note') }}@if ($firesUpdated) · {{ __('countries.updated', ['date' => format_datetime($firesUpdated)]) }}@endif</p>
                     <div class="table-scroll">
-                        <table class="table">
+                        <table class="table table--top">
                             <thead><tr>
                                 <th scope="col">{{ __('countries.country') }}</th>
                                 <th scope="col" class="num">{{ __('countries.fires_24h') }}</th>
                                 <th scope="col" class="num">{{ __('countries.fires_7d') }}</th>
-                                <th scope="col"><span class="visually-hidden">{{ __('countries.open') }}</span></th>
+                                <th scope="col" class="col-map"><span class="visually-hidden">{{ __('countries.open') }}</span></th>
                             </tr></thead>
                             <tbody>
                                 @foreach ($top as $iso => $s)
@@ -37,7 +37,7 @@
                                         <th scope="row"><a href="{{ lroute('countries.show', ['iso' => strtolower($iso)]) }}">{{ World::name($tc) }}</a></th>
                                         <td class="num">{{ format_number($s['n24']) }}</td>
                                         <td class="num">{{ format_number($s['n7']) }}</td>
-                                        <td><a class="link-arrow" href="{{ \App\Support\MapTools::url('fires', null, ['pais' => strtolower($iso)]) }}">{{ __('countries.see_map') }}</a></td>
+                                        <td class="col-map"><a class="link-arrow" href="{{ \App\Support\MapTools::url('fires', null, ['pais' => strtolower($iso)]) }}">{{ __('countries.see_map') }}</a></td>
                                     </tr>
                                 @endforeach
                             </tbody>

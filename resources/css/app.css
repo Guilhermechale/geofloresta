@@ -357,7 +357,8 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 .table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
 .table th, .table td { text-align: left; padding: .625rem .5rem; border-bottom: 1px solid var(--c-rule); vertical-align: top; }
 .table th { font-family: var(--f-mono); font-weight: 400; font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); border-bottom-color: var(--c-rule-strong); }
-.table td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.table td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.table .nowrap { white-space: nowrap; }
 .table-scroll { overflow-x: auto; }
 
 /* Indicador de monitor (fogo) */
@@ -445,7 +446,7 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 
 .notice { border: 1px solid var(--c-rule-strong); background: var(--c-surface); padding: var(--s-2) var(--s-3); font-size: var(--fs-sm); }
 .notice--warn { border-left: 3px solid var(--c-accent); }
-.badge { display: inline-block; font-family: var(--f-mono); font-size: .6875rem; letter-spacing: .05em; text-transform: uppercase; border: 1px solid currentColor; padding: .125rem .375rem; color: var(--c-muted); }
+.badge { display: inline-block; font-family: var(--f-mono); font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; border: 1px solid currentColor; padding: .125rem .375rem; color: var(--c-muted); }
 .badge--live { color: var(--c-accent-ink); }
 
 /* ---------- Rodapé ---------- */
@@ -872,3 +873,27 @@ details.howto[open] > summary::after { transform: rotate(-135deg); }
 .aoi-lulc .lulc-matrix--compact th, .aoi-lulc .lulc-matrix--compact td { padding: .3rem .1rem; text-align: center; border: 1px solid var(--c-rule); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: clip; }
 .aoi-lulc .lulc-matrix--compact .lulc-swatch { margin: 0; width: .95em; height: .95em; }
 .panel-step { margin-top: var(--s-2); }
+
+/* Lista de fontes e licenças (fichas) */
+.src-list { list-style: none; margin: var(--s-3) 0; padding: 0; display: grid; gap: var(--s-2); max-width: none; }
+.prose .src-list { padding-left: 0; max-width: 78ch; }
+.prose .src-list li { margin: 0; }
+.src-item { border: 1px solid var(--c-rule); background: var(--c-surface); padding: var(--s-2) var(--s-3); }
+.src-item__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .4rem 1rem; }
+.src-item__name { font-weight: 600; }
+.src-item__tags { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+.src-tag { font-size: var(--fs-xs); padding: .1rem .5rem; border-radius: 999px; background: var(--c-code-bg); color: var(--c-ink); white-space: nowrap; }
+.src-tag--status { background: transparent; border: 1px solid var(--c-rule-strong); color: var(--c-muted); }
+.src-item__body { margin: .6rem 0 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: .4rem 1.25rem; font-size: var(--fs-sm); }
+.src-item__body dt { font-family: var(--f-mono); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: .15rem; }
+.src-item__body dd { margin: 0; overflow-wrap: anywhere; }
+.src-item__body dd:not(:has(code)) { color: var(--c-muted); line-height: 1.5; }
+@media (max-width: 640px) { .src-item__body { grid-template-columns: 1fr; } }
+.src-item__body code, .prose .src-item__body code { background: none; padding: 0; font-size: .85em; line-height: 1.5; }
+.table--top th.num { white-space: nowrap; }
+.table--top .col-map { white-space: nowrap; }
+@media (max-width: 560px) {
+  .table--top .col-map { display: none; }
+  .table--top th { letter-spacing: .02em; }
+  .table--top th.num { white-space: normal; min-width: 4.5rem; }
+}
