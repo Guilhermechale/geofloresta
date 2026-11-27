@@ -93,6 +93,17 @@ class ArticleBodyTest extends TestCase
         $this->assertStringContainsString('<div class="cite-box">', $html);
     }
 
+    public function test_eudr_charts_render_from_bundled_data_in_each_language(): void
+    {
+        foreach (['pt' => 'Moçambique', 'en' => 'Mozambique', 'fr' => 'Mozambique'] as $locale => $name) {
+            app()->setLocale($locale);
+            $html = \App\Support\ArticleBody::render('<p>[grafico:eudr-paises-2021-2024]</p><p>Figura 3. Países.</p><p>[grafico:eudr-mundo-causas]</p><p>[grafico:eudr-regioes-agricultura]</p>');
+            $this->assertSame(3, substr_count($html, 'figure--chart'));
+            $this->assertStringContainsString($name, $html);
+            $this->assertStringContainsString('Our World in Data', $html);
+        }
+    }
+
     public function test_toc_drops_numbers_already_in_headings(): void
     {
         $toc = \App\Support\ArticleBody::toc('<h2 id="a">1. O que são curvas de nível</h2><h2 id="b">Exercício prático</h2><h2 id="c">10) Conclusão</h2>');

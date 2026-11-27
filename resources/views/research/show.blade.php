@@ -42,7 +42,7 @@
 
     <div class="section section--tight">
         <div class="wrap doc">
-            <article class="doc__main prose article article--paper" @if ($fallback) lang="{{ $locale }}" @endif>
+            <article class="doc__main prose article article--paper" @if ($fallback) lang="{{ $locale }}" @endif data-copy-label="{{ __('content.research.copy') }}" data-copied-label="{{ __('content.research.copied') }}">
                 @if ($fallback)
                     <p class="notice">{{ __('site.lang.only_in', ['language' => __('site.lang.names.'.$locale)]) }}</p>
                 @endif
