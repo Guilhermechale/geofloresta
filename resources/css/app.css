@@ -762,9 +762,11 @@ html:not([data-theme-choice]) [data-theme-icon="auto"] { display: block; }
 /* Guia «Como usar» das ferramentas de mapas */
 .howto { background: var(--c-moss-soft); border-radius: 12px; padding: var(--s-2) var(--s-2) .75rem; margin-bottom: var(--s-3); }
 .howto__title { font-weight: 700; margin: 0 0 .5rem; color: var(--c-moss-ink); }
-.howto ol { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: .55rem; }
-.howto li { counter-increment: step; display: grid; grid-template-columns: 1.6rem 1fr; gap: .5rem; font-size: var(--fs-sm); line-height: 1.4; }
-.howto li::before { content: counter(step); display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--c-moss); color: var(--c-on-moss); font-weight: 700; font-size: .8rem; }
+.howto ol, ol.howto { list-style: none; counter-reset: step; margin: 0; display: grid; gap: .55rem; }
+.howto ol { padding: 0; }
+/* O número fica à esquerda e o texto do passo flui junto (com ligações ou não), sem se partir em colunas */
+.howto li { counter-increment: step; position: relative; display: block; padding-left: 2.15rem; min-height: 1.6rem; margin: 0; font-size: var(--fs-sm); line-height: 1.45; }
+.howto li::before { position: absolute; left: 0; top: -.05rem; content: counter(step); display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--c-moss); color: var(--c-on-moss); font-weight: 700; font-size: .8rem; }
 
 /* Estado da área e resultado da classificação */
 .lulc-area { font-size: var(--fs-sm); padding: .55rem .8rem; border-radius: 10px; background: var(--c-surface-2); margin: var(--s-1) 0; }
