@@ -29,13 +29,18 @@
         @endif
 
         @if ($examples)
-            <h2 class="portal-label">{{ $P['examples'] }}</h2>
+            <h2 class="portal-title">{{ $P['examples'] }}</h2>
             <ul class="portal-examples">
                 @foreach ($examples as $ex)
+                    @php [$name, $region] = $P['ex'][$ex['key']]; @endphp
                     <li>
                         <a class="portal-ex" href="{{ $toolUrl }}?bbox={{ $ex['bbox'] }}">
-                            <img src="{{ asset($ex['image']) }}" width="640" height="400" alt="" loading="lazy" decoding="async">
-                            <span class="portal-ex__cap"><span class="portal-ex__name">{{ $P['ex'][$ex['key']] }}</span><span class="portal-ex__coord">{{ $deg($ex['bbox']) }}</span></span>
+                            <span class="portal-ex__media"><img src="{{ asset($ex['image']) }}" width="640" height="400" alt="" loading="lazy" decoding="async"></span>
+                            <span class="portal-ex__body">
+                                <span class="portal-ex__name">{{ $name }}</span>
+                                <span class="portal-ex__meta">{{ $region }}</span>
+                                <span class="portal-ex__coord">{{ $deg($ex['bbox']) }}</span>
+                            </span>
                         </a>
                     </li>
                 @endforeach
@@ -43,14 +48,14 @@
         @endif
 
         <div class="portal-cols">
-            <div>
-                <h2 class="portal-label">{{ $P['specs'] }}</h2>
+            <div class="portal-card">
+                <h2 class="portal-title">{{ $P['specs'] }}</h2>
                 <dl class="portal-specs">
                     @foreach ($P['spec'][$tool] as [$k, $v])<div><dt>{{ $k }}</dt><dd>{{ $v }}</dd></div>@endforeach
                 </dl>
             </div>
-            <div>
-                <h2 class="portal-label">{{ $P['data'] }}</h2>
+            <div class="portal-card">
+                <h2 class="portal-title">{{ $P['data'] }}</h2>
                 <dl class="portal-specs">
                     @if ($formats)<div><dt>{{ $P['formats'] }}</dt><dd>{{ $formats }}</dd></div>@endif
                     <div class="portal-specs__wide"><dt>{{ $P['cite'] }}</dt><dd>

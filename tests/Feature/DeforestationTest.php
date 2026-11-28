@@ -47,6 +47,10 @@ class DeforestationTest extends TestCase
         $this->assertStringContainsString('16.52° S · 36.52° E', $html);
         $this->assertStringContainsString('GF-DIST 1.0', $html);
         $this->assertStringContainsString('data-cite-copy', $html);
+        // exemplos inclusivos: vários continentes (América Central, Ásia...)
+        $this->assertStringContainsString('Petén', $html);
+        $this->assertStringContainsString('/mapas/desmatamento?bbox=-90.58,17.22,-90.52,17.28', $html);
+        $this->assertStringContainsString('Everest', $this->get('/en/maps/terrain')->getContent());
 
         // com a vigilância diária: datas reais (AAAA-MM-DD, UTC)
         Storage::disk('local')->put('fontes/vigilancia.json', json_encode([

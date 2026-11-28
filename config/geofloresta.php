@@ -50,43 +50,43 @@ return [
         'max_bytes' => 16 * 1024 * 1024,
     ],
 
-    // Exemplos por baixo do mapa (abrem a ferramenta já com a área: ?bbox=oeste,sul,leste,norte); imagens Sentinel-2 reais
+    // Exemplos por baixo do mapa, em vários continentes (abrem a ferramenta já com a área: ?bbox=oeste,sul,leste,norte); imagens Sentinel-2 reais
     'map_examples' => [
         'deforestation' => [
             ['key' => 'zambezia', 'bbox' => '36.495,-16.555,36.555,-16.495', 'image' => 'img/examples/zambezia.webp'],
-            ['key' => 'chaco', 'bbox' => '-60.34,-20.78,-60.28,-20.72', 'image' => 'img/examples/chaco.webp'],
             ['key' => 'para', 'bbox' => '-54.12,-8.22,-54.06,-8.16', 'image' => 'img/examples/para.webp'],
+            ['key' => 'peten', 'bbox' => '-90.58,17.22,-90.52,17.28', 'image' => 'img/examples/peten.webp'],
             ['key' => 'papua', 'bbox' => '140.66,-8.28,140.72,-8.22', 'image' => 'img/examples/papua.webp'],
         ],
         'lulc' => [
             ['key' => 'urema', 'bbox' => '34.34,-18.96,34.60,-18.80', 'image' => 'img/examples/urema.webp'],
-            ['key' => 'chimoio', 'bbox' => '33.42,-19.155,33.546,-19.077', 'image' => 'img/examples/chimoio.webp'],
-            ['key' => 'quelimane', 'bbox' => '36.825,-17.917,36.951,-17.839', 'image' => 'img/examples/quelimane.webp'],
-            ['key' => 'beira', 'bbox' => '34.787,-19.869,34.913,-19.791', 'image' => 'img/examples/beira.webp'],
+            ['key' => 'tejo', 'bbox' => '-9.20,38.66,-8.95,38.82', 'image' => 'img/examples/tejo.webp'],
+            ['key' => 'mekong', 'bbox' => '105.65,9.98,105.85,10.12', 'image' => 'img/examples/mekong.webp'],
+            ['key' => 'california', 'bbox' => '-119.95,36.65,-119.70,36.85', 'image' => 'img/examples/california.webp'],
         ],
         'fires' => [
             ['key' => 'niassa', 'bbox' => '37.30,-12.45,37.80,-11.95', 'image' => 'img/examples/niassa.webp'],
-            ['key' => 'quirimbas', 'bbox' => '39.60,-12.60,40.10,-12.10', 'image' => 'img/examples/quirimbas.webp'],
-            ['key' => 'gile', 'bbox' => '38.05,-16.45,38.55,-15.95', 'image' => 'img/examples/gile.webp'],
-            ['key' => 'marromeu', 'bbox' => '35.55,-18.50,36.05,-18.00', 'image' => 'img/examples/marromeu.webp'],
+            ['key' => 'pantanal', 'bbox' => '-57.70,-18.10,-57.10,-17.50', 'image' => 'img/examples/pantanal.webp'],
+            ['key' => 'kalteng', 'bbox' => '113.70,-2.55,114.20,-2.05', 'image' => 'img/examples/kalteng.webp'],
+            ['key' => 'sierra', 'bbox' => '-119.60,37.05,-119.00,37.55', 'image' => 'img/examples/sierra.webp'],
         ],
         'ndvi' => [
-            ['key' => 'lichinga', 'bbox' => '35.00,-13.55,35.50,-13.05', 'image' => 'img/examples/lichinga.webp'],
-            ['key' => 'mocuba', 'bbox' => '36.75,-17.10,37.25,-16.60', 'image' => 'img/examples/mocuba.webp'],
-            ['key' => 'catandica', 'bbox' => '32.95,-18.30,33.45,-17.85', 'image' => 'img/examples/catandica.webp'],
-            ['key' => 'chokwe', 'bbox' => '32.65,-24.85,33.15,-24.35', 'image' => 'img/examples/chokwe.webp'],
+            ['key' => 'nilo', 'bbox' => '30.80,30.50,31.60,31.20', 'image' => 'img/examples/nilo.webp'],
+            ['key' => 'punjab', 'bbox' => '75.40,30.60,76.20,31.20', 'image' => 'img/examples/punjab.webp'],
+            ['key' => 'hungria', 'bbox' => '19.60,46.30,20.40,46.90', 'image' => 'img/examples/hungria.webp'],
+            ['key' => 'kansas', 'bbox' => '-101.30,37.70,-100.50,38.30', 'image' => 'img/examples/kansas.webp'],
         ],
         'relief' => [
-            ['key' => 'chimanimani', 'bbox' => '32.95,-19.95,33.25,-19.70', 'image' => 'img/examples/chimanimani.webp'],
-            ['key' => 'serra_gorongosa', 'bbox' => '33.95,-18.55,34.25,-18.30', 'image' => 'img/examples/serra_gorongosa.webp'],
-            ['key' => 'namuli', 'bbox' => '36.90,-15.50,37.20,-15.25', 'image' => 'img/examples/namuli.webp'],
-            ['key' => 'mabu', 'bbox' => '36.25,-16.42,36.55,-16.17', 'image' => 'img/examples/mabu.webp'],
+            ['key' => 'kilimanjaro', 'bbox' => '37.20,-3.20,37.50,-2.95', 'image' => 'img/examples/kilimanjaro.webp'],
+            ['key' => 'montblanc', 'bbox' => '6.75,45.75,6.98,45.92', 'image' => 'img/examples/montblanc.webp'],
+            ['key' => 'everest', 'bbox' => '86.80,27.88,87.05,28.08', 'image' => 'img/examples/everest.webp'],
+            ['key' => 'grandcanyon', 'bbox' => '-112.30,35.95,-111.95,36.20', 'image' => 'img/examples/grandcanyon.webp'],
         ],
         'satellite' => [
             ['key' => 'ilha', 'bbox' => '40.66,-15.10,40.81,-14.97', 'image' => 'img/examples/ilha.webp'],
-            ['key' => 'bazaruto', 'bbox' => '35.30,-21.85,35.60,-21.45', 'image' => 'img/examples/bazaruto.webp'],
-            ['key' => 'delta', 'bbox' => '36.05,-19.05,36.55,-18.55', 'image' => 'img/examples/delta.webp'],
-            ['key' => 'maputo', 'bbox' => '32.48,-26.02,32.68,-25.88', 'image' => 'img/examples/maputo.webp'],
+            ['key' => 'veneza', 'bbox' => '12.25,45.38,12.42,45.48', 'image' => 'img/examples/veneza.webp'],
+            ['key' => 'dubai', 'bbox' => '55.05,25.05,55.25,25.17', 'image' => 'img/examples/dubai.webp'],
+            ['key' => 'panama', 'bbox' => '-79.65,8.90,-79.50,9.05', 'image' => 'img/examples/panama.webp'],
         ],
     ],
 ];
