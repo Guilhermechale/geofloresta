@@ -4,10 +4,11 @@
  *  - referência para as amostras: mapa anual Sentinel-2 10 m Land Use/Land Cover (Impact Observatory, Microsoft, Esri; CC BY 4.0);
  *  - relevo: Terrain Tiles (AWS Open Data), as mesmas da ferramenta de relevo do site.
  */
-import { fromUrl, fromArrayBuffer } from 'geotiff';
+import { fromArrayBuffer } from 'geotiff';
+import { utmMapper, readToGrid } from './cog-read.js';
 import {
     allowSparseTiles,
-    planGrid, toUtm, medianStack, slotStack, slotAdd, slotMedians, indices, slope, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas,
+    planGrid, medianStack, slotStack, slotAdd, slotMedians, indices, slope, binEdges, binOf, sample, split, trainForest, predict, accuracy, areas,
     geotiffClasses, polygonMask, FEATURES, rng,
 } from './lulc-core.js';
 import { TILE_URL, planTiles, decodeTerrarium, buildGrid } from './dem-core.js';
@@ -73,84 +74,6 @@ async function findScenes(area, start, end, maxCloud = 30, exclude = null) {
     const out = [];
     for (let k = 0; k < perTile; k++) for (const list of (k === 0 ? picked : partialFirst)) if (list[k]) out.push(list[k]);
     return out.slice(0, MAX_ITEMS);
-}
-
-// ---------- mapeamento píxel -> UTM (grelha grossa interpolada: rápido e preciso) ----------
-function utmMapper(grid, epsg, step = 16) {
-    const { width: W, height: H, dx, dy, west, north } = grid;
-    const cw = Math.ceil(W / step) + 1, ch = Math.ceil(H / step) + 1;
-    const gx = new Float64Array(cw * ch), gy = new Float64Array(cw * ch);
-    for (let b = 0; b < ch; b++) {
-        for (let a = 0; a < cw; a++) {
-            const [x, y] = toUtm(west + (a * step + 0.5) * dx, north - (b * step + 0.5) * dy, epsg);
-            gx[b * cw + a] = x; gy[b * cw + a] = y;
-        }
-    }
-    return (i, j, out) => {
-        const a = Math.min(cw - 2, Math.floor(i / step)), b = Math.min(ch - 2, Math.floor(j / step));
-        const fa = i / step - a, fb = j / step - b;
-        const k = b * cw + a;
-        out[0] = (gx[k] * (1 - fa) + gx[k + 1] * fa) * (1 - fb) + (gx[k + cw] * (1 - fa) + gx[k + cw + 1] * fa) * fb;
-        out[1] = (gy[k] * (1 - fa) + gy[k + 1] * fa) * (1 - fb) + (gy[k + cw] * (1 - fa) + gy[k + cw + 1] * fa) * fb;
-    };
-}
-
-/** Lê a banda de um COG para a grelha (vizinho mais próximo), usando a visão geral com resolução mais adequada. */
-async function readToGrid(href, grid, map, nodataTo = NaN) {
-    // Falhas passageiras de rede (ou o servidor a pedir para abrandar) deixam blocos em falta e a geotiff.js
-    // não repete: repetimos a leitura inteira até 3 vezes, com pausa crescente.
-    let err;
-    for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-            return await readToGridOnce(href, grid, map, nodataTo);
-        } catch (e) {
-            err = e;
-            await new Promise((r) => setTimeout(r, 600 * (attempt + 1) ** 2));
-        }
-    }
-    throw err;
-}
-
-async function readToGridOnce(href, grid, map, nodataTo = NaN) {
-    const tiff = await fromUrl(href, { allowFullFile: false, cacheSize: 2000 });
-    const n = await tiff.getImageCount();
-    let img = allowSparseTiles(await tiff.getImage(0));
-    const base = img;
-    for (let k = 1; k < n; k++) {
-        const cand = allowSparseTiles(await tiff.getImage(k));
-        const res = base.getWidth() / cand.getWidth() * base.getResolution()[0];
-        if (res <= grid.res + 0.1) img = cand; else break;
-    }
-    const [ox, oy] = base.getOrigin();
-    const [bx] = base.getResolution();
-    const f = base.getWidth() / img.getWidth();
-    const rx = bx * f, ry = -base.getResolution()[1] * f;
-    const IW = img.getWidth(), IH = img.getHeight();
-    // janela de leitura: os cantos e os bordos da grelha
-    const { width: W, height: H } = grid;
-    const p = [0, 0];
-    let c0 = Infinity, c1 = -Infinity, r0 = Infinity, r1 = -Infinity;
-    for (const [i, j] of [[0, 0], [W - 1, 0], [0, H - 1], [W - 1, H - 1], [W >> 1, 0], [W >> 1, H - 1], [0, H >> 1], [W - 1, H >> 1]]) {
-        map(i, j, p);
-        const c = (p[0] - ox) / rx, r = (oy - p[1]) / ry;
-        c0 = Math.min(c0, c); c1 = Math.max(c1, c); r0 = Math.min(r0, r); r1 = Math.max(r1, r);
-    }
-    c0 = Math.max(0, Math.floor(c0) - 1); r0 = Math.max(0, Math.floor(r0) - 1);
-    c1 = Math.min(IW, Math.ceil(c1) + 2); r1 = Math.min(IH, Math.ceil(r1) + 2);
-    const out = new Float32Array(W * H).fill(nodataTo);
-    if (c1 <= c0 || r1 <= r0) return out;
-    const [data] = await img.readRasters({ window: [c0, r0, c1, r1] });
-    const ww = c1 - c0;
-    for (let j = 0; j < H; j++) {
-        for (let i = 0; i < W; i++) {
-            map(i, j, p);
-            const c = Math.floor((p[0] - ox) / rx) - c0, r = Math.floor((oy - p[1]) / ry) - r0;
-            if (c < 0 || r < 0 || c >= ww || r >= r1 - r0) continue;
-            const v = data[r * ww + c];
-            if (v !== 0) out[j * W + i] = v;
-        }
-    }
-    return out;
 }
 
 // ---------- relevo (Terrain Tiles) ----------

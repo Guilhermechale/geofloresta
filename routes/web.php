@@ -14,6 +14,7 @@ use App\Http\Controllers\TutorialController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\HansenProxyController;
 use App\Http\Controllers\WellKnownController;
 use App\Support\Locales;
 use Illuminate\Support\Facades\Route;
@@ -69,6 +70,9 @@ Route::get('/sitemap.xml', [SitemapController::class, 'xml'])->name('sitemap.xml
 Route::get('/robots.txt', [WellKnownController::class, 'robots']);
 Route::get('/llms.txt', [WellKnownController::class, 'llms']);
 Route::get('/ads.txt', [WellKnownController::class, 'ads']);
+// Ponte de leitura parcial para a perda de cobertura arbórea Hansen/UMD (o Google não autoriza a leitura directa no navegador)
+Route::get('/dados-abertos/hansen/{tile}', HansenProxyController::class)->name('hansen.proxy')
+    ->where('tile', '[0-9]{2}[NS]_[0-9]{3}[EW]')->middleware('throttle:600,1');
 Route::get('/.well-known/security.txt', [WellKnownController::class, 'security']);
 Route::post('/consent', ConsentController::class)->name('consent')->middleware('throttle:30,1');
 

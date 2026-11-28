@@ -41,6 +41,8 @@ class SecurityHeaders
         $tiles = 'https://tiles.openfreemap.org https://gibs.earthdata.nasa.gov https://elevation-tiles-prod.s3.amazonaws.com';
         // Classificação de uso do solo no navegador: catálogo e imagens Sentinel-2 (AWS) e mapa de referência LULC (Esri)
         $lulc = 'https://earth-search.aws.element84.com https://sentinel-cogs.s3.us-west-2.amazonaws.com https://ic.imagery1.arcgis.com';
+        // Monitor de desmatamento: radar Sentinel-1 RTC (Microsoft Planetary Computer: catálogo, chave gratuita e imagens)
+        $lulc .= ' https://planetarycomputer.microsoft.com https://sentinel1euwestrtc.blob.core.windows.net';
 
         return implode('; ', [
             "default-src 'self'",

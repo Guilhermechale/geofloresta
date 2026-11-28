@@ -62,7 +62,8 @@
 
         <aside class="map-panel" id="map-panel" aria-label="{{ __('map.layers') }}">
             @if ($tool === 'lulc')<p class="panel-intro">{{ __('map.panel.lulc_intro') }}</p>@endif
-            <details class="howto" @if ($tool !== 'lulc') open @endif>
+            @if ($tool === 'deforestation')<p class="panel-intro">{{ __('map.dist.intro') }}</p>@endif
+            <details class="howto" @unless (in_array($tool, ['lulc', 'deforestation'], true)) open @endunless>
                 <summary class="howto__title">{{ __('map.howto_title') }}</summary>
                 <ol>
                     @foreach (__('map.howto.'.$tool) as $step)<li>{{ $step }}</li>@endforeach
@@ -84,7 +85,7 @@
                 </form>
             @endif
             <form class="map-form" data-map-layers>
-                @if ($tool === 'lulc')<details class="panel-fold"><summary>{{ __('map.panel.layers_fold') }}</summary>@endif
+                @if (in_array($tool, ['lulc', 'deforestation'], true))<details class="panel-fold"><summary>{{ __('map.panel.layers_fold') }}</summary>@endif
                 <fieldset>
                     <legend class="meta">{{ __('map.layers') }}</legend>
                     @php
@@ -117,18 +118,18 @@
                         </details>
                     @endif
                 </fieldset>
-                @if ($tool === 'lulc')</details>@endif
+                @if (in_array($tool, ['lulc', 'deforestation'], true))</details>@endif
             </form>
 
-            <form class="map-form" data-aoi data-only="fires lulc relief">
-                <fieldset class="@if ($tool === 'lulc') panel-step @endif">
-                    @if ($tool === 'lulc')
+            <form class="map-form" data-aoi data-only="fires lulc relief deforestation">
+                <fieldset class="@if (in_array($tool, ['lulc', 'deforestation'], true)) panel-step @endif">
+                    @if (in_array($tool, ['lulc', 'deforestation'], true))
                         <legend class="panel-step__title"><span class="panel-step__n">1</span>{{ __('map.panel.step_area') }}</legend>
                     @else
                         <legend class="meta">{{ __('map.aoi') }}</legend>
                     @endif
                     @if ($isMoz)
-                        <p class="small muted">{{ $tool === 'lulc' ? __('map.panel.aoi_hint_lulc') : __('map.aoi_help') }}</p>
+                        <p class="small muted">{{ in_array($tool, ['lulc', 'deforestation'], true) ? __('map.panel.aoi_hint_lulc') : __('map.aoi_help') }}</p>
                         <div class="aoi-selects">
                         <div class="field">
                             <label for="aoi-prov">{{ __('map.aoi_province') }}</label>
@@ -246,6 +247,81 @@
                     <details class="panel-fold panel-fold--small">
                         <summary>{{ __('map.panel.lulc_sources') }}</summary>
                         <p class="small muted">{{ __('map.lulc_note') }}</p>
+                    </details>
+                </div>
+                <div class="aoi-lulc" data-only="deforestation" data-dist>
+                    <p class="lulc-area" data-dist-area role="status" aria-live="polite">{{ __('map.area_none') }}</p>
+
+                    <fieldset class="panel-step">
+                        <legend class="panel-step__title"><span class="panel-step__n">2</span>{{ __('map.dist.step_params') }}</legend>
+                        <div class="lulc-fields">
+                            <div class="field">
+                                <label for="dist-period">{{ __('map.dist.period') }}</label>
+                                <select id="dist-period" name="dist_period">
+                                    <option value="30">{{ __('map.dist.last30') }}</option>
+                                    <option value="90" selected>{{ __('map.dist.last90') }}</option>
+                                    <option value="180">{{ __('map.dist.last180') }}</option>
+                                    <option value="year">{{ __('map.dist.year') }}</option>
+                                </select>
+                            </div>
+                            <div class="field" data-dist-year hidden>
+                                <label for="dist-year">{{ __('map.dist.year_label') }}</label>
+                                <select id="dist-year" name="dist_year">
+                                    @for ($y = (int) now()->year; $y >= 2019; $y--)<option value="{{ $y }}" @selected($y === (int) now()->year - 1)>{{ $y }}</option>@endfor
+                                </select>
+                            </div>
+                        </div>
+                        <fieldset class="dist-choice">
+                            <legend class="small">{{ __('map.dist.level') }}</legend>
+                            <label class="check"><input type="radio" name="dist_level" value="conf" checked> <span>{{ __('map.dist.level_conf') }}</span></label>
+                            <label class="check"><input type="radio" name="dist_level" value="all"> <span>{{ __('map.dist.level_all') }}</span></label>
+                        </fieldset>
+                        <fieldset class="dist-choice">
+                            <legend class="small">{{ __('map.dist.sources') }}</legend>
+                            <label class="check"><input type="checkbox" name="dist_optical" checked> <span>{{ __('map.dist.optical') }}</span></label>
+                            <label class="check"><input type="checkbox" name="dist_radar" checked> <span>{{ __('map.dist.radar') }}</span></label>
+                        </fieldset>
+                    </fieldset>
+
+                    <div class="panel-step panel-step--run">
+                        <button type="button" class="btn btn--primary btn--block" data-dist-run disabled>{{ __('map.dist.run') }}</button>
+                        <details class="lulc-warning" role="note">
+                            <summary><strong>{{ __('map.dist.warning') }}</strong> <span class="lulc-warning__more">{{ __('map.dist.why') }}</span></summary>
+                            <p>{{ __('map.dist.warning_text') }}</p>
+                        </details>
+                        <div class="small" data-dist-status role="status" aria-live="polite"></div>
+                        <progress data-dist-progress max="1" value="0" hidden></progress>
+                    </div>
+
+                    <section class="lulc-card" data-dist-card hidden aria-labelledby="dist-result-title">
+                        <h3 class="panel-step__title" id="dist-result-title"><span class="panel-step__n panel-step__n--ok">✓</span>{{ __('map.panel.step_result') }}</h3>
+                        <div data-dist-result></div>
+                        <ul class="dist-legend small" aria-hidden="true"><li><span class="sw sw--conf"></span>{{ __('map.dist.legend_conf') }}</li><li><span class="sw sw--prov"></span>{{ __('map.dist.legend_prov') }}</li><li data-dist-hansen-legend hidden><span class="sw sw--hansen"></span>Hansen 2021-2025</li></ul>
+                        <label class="lulc-toggle"><input type="checkbox" data-dist-show checked> <span>{{ __('map.dist.show') }}</span></label>
+                        <div class="dist-btns">
+                            <button type="button" class="btn btn--go btn--block" data-dist-zip>{{ __('map.dist.package') }}</button>
+                            <button type="button" class="btn btn--small btn--block" data-dist-geojson>{{ __('map.dist.geojson') }}</button>
+                        </div>
+                        <p class="small muted">{{ __('map.dist.package_hint') }}</p>
+                        <div class="dist-hansen" data-dist-hansen>
+                            <button type="button" class="btn btn--small" data-dist-hansen-run>{{ __('map.dist.hansen_btn') }}</button>
+                            <div data-dist-hansen-result></div>
+                            <label class="lulc-toggle" data-dist-hansen-toggle hidden><input type="checkbox" data-dist-hansen-show checked> <span>{{ __('map.dist.hansen_show') }}</span></label>
+                        </div>
+                        <div data-dist-extra></div>
+                    </section>
+
+                    <nav class="panel-cards" aria-label="{{ __('map.panel.more_title') }}">
+                        <a class="panel-card panel-card--accent" href="{{ lroute('contact') }}?assunto=proposal"><span class="panel-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span><strong>{{ __('map.panel.more_title') }}</strong><span class="small muted">{{ __('map.panel.more_sub') }}</span></span></a>
+                    </nav>
+
+                    <details class="panel-fold panel-fold--small">
+                        <summary>{{ __('map.dist.method') }}</summary>
+                        <p class="small muted">{{ __('map.dist.method_text') }}</p>
+                    </details>
+                    <details class="panel-fold panel-fold--small">
+                        <summary>{{ __('map.dist.sources_fold') }}</summary>
+                        <p class="small muted">{{ __('map.dist.sources_text') }}</p>
                     </details>
                 </div>
             </form>

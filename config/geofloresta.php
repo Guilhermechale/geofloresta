@@ -40,4 +40,13 @@ return [
 
     // Versão do texto de consentimento de cookies: ao mudar, o banner volta a aparecer.
     'consent_version' => env('CONSENT_VERSION', '2026-11-13'),
+
+    // Perda de cobertura arbórea Hansen/UMD (Global Forest Change), lida aos bocados pela ponte /dados-abertos/hansen/{bloco}.
+    // Nova versão anual: a vigilância diária (geofloresta:check-sources) avisa quando GFC-<ano+1> fica disponível.
+    'hansen' => [
+        'version' => env('HANSEN_VERSION', 'v1.13'),
+        'last_year' => (int) env('HANSEN_LAST_YEAR', 2025),
+        'url' => env('HANSEN_URL', 'https://storage.googleapis.com/earthenginepartners-hansen/GFC-2025-v1.13/Hansen_GFC-2025-v1.13_lossyear_{tile}.tif'),
+        'max_bytes' => 16 * 1024 * 1024,
+    ],
 ];

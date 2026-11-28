@@ -11,6 +11,7 @@ class MapTools
     /** chave => [slugs por língua, imagem do cartão, camadas ligadas por defeito, painéis visíveis] */
     public const TOOLS = [
         'lulc' => ['slug' => ['pt' => 'uso-do-solo', 'fr' => 'occupation-du-sol', 'en' => 'land-cover'], 'image' => 'img/cards/uso-do-solo.webp', 'layers' => ['boundaries']],
+        'deforestation' => ['slug' => ['pt' => 'desmatamento', 'fr' => 'deforestation', 'en' => 'deforestation'], 'image' => 'img/cards/desmatamento.webp', 'layers' => ['boundaries']],
         'fires' => ['slug' => ['pt' => 'incendios', 'fr' => 'incendies', 'en' => 'fires'], 'image' => 'img/cards/incendios.webp', 'layers' => ['fires', 'boundaries']],
         'ndvi' => ['slug' => ['pt' => 'vegetacao-ndvi', 'fr' => 'vegetation-ndvi', 'en' => 'vegetation-ndvi'], 'image' => 'img/cards/ndvi.webp', 'layers' => ['ndvi', 'boundaries']],
         'relief' => ['slug' => ['pt' => 'relevo', 'fr' => 'relief', 'en' => 'terrain'], 'image' => 'img/cards/relevo.webp', 'layers' => ['hillshade', 'relief', 'boundaries']],

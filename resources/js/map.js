@@ -6,6 +6,7 @@ import maplibregl from 'maplibre-gl';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import area from '@turf/area';
 import { planGrid, MAX_AREA_KM2, REGIONAL_KM2 } from './lulc-core.js';
+import { planDistGrid, MAX_AREA_KM2 as DIST_MAX_KM2, VERSION as DIST_VERSION, PARAMS as DIST_PARAMS } from './dist-core.js';
 import { setupResizer } from './map-resizer.js';
 
 const cfg = JSON.parse(document.getElementById('map-config')?.textContent || '{}');
@@ -237,12 +238,14 @@ function setupAoi(map) {
     aoiForm.addEventListener('submit', (e) => e.preventDefault());
     const dem = setupDem(q, () => aoi);
     const lulc = setupLulc(q, () => aoi, map);
+    const dist = setupDist(q, () => aoi, map);
     const clearSelects = () => { if (provSel) provSel.value = ''; if (distSel) { distSel.value = ''; distSel.disabled = true; } };
 
     const setAoi = (feature) => {
         aoi = feature;
         dem.reset();
         lulc.reset();
+        dist.reset();
         map.getSource('aoi')?.setData(aoi ? { type: 'FeatureCollection', features: [aoi] } : empty());
         btnClear.hidden = !aoi;
         if (aoi) {
@@ -269,6 +272,14 @@ function setupAoi(map) {
     };
 
     // País inteiro (fora de Moçambique, onde não há províncias/distritos)
+    // Área partilhada por ligação: ?bbox=oeste,sul,leste,norte (graus WGS 84)
+    const shared = new URLSearchParams(location.search).get('bbox')?.split(',').map(Number);
+    if (shared?.length === 4 && shared.every(Number.isFinite) && shared[0] < shared[2] && shared[1] < shared[3]
+        && shared[0] >= -180 && shared[2] <= 180 && shared[1] >= -90 && shared[3] <= 90) {
+        const [w, s0, e, n] = shared;
+        setAoi({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[w, s0], [e, s0], [e, n], [w, n], [w, s0]]] } });
+    }
+
     q('[data-aoi-country]')?.addEventListener('click', () => {
         const f = outline?.features?.[0];
         if (f) setAoi({ type: 'Feature', properties: { nome: cfg.countryName }, geometry: f.geometry });
@@ -639,6 +650,248 @@ function setupLulc(q, getAoi, map) {
             removeLayer();
         },
     };
+}
+
+/* ---------------- Monitor de desmatamento (GF-DIST) ---------------- */
+function setupDist(q, getAoi, map) {
+    const box = q('[data-dist]');
+    if (!box) return { reset() {} };
+    const D = T.dist || {};
+    const btnRun = q('[data-dist-run]'), status = q('[data-dist-status]'), bar = q('[data-dist-progress]');
+    const card = q('[data-dist-card]'), result = q('[data-dist-result]'), show = q('[data-dist-show]'), areaEl = q('[data-dist-area]');
+    const period = q('select[name="dist_period"]'), yearBox = q('[data-dist-year]'), yearSel = q('select[name="dist_year"]');
+    const optical = q('input[name="dist_optical"]'), radar = q('input[name="dist_radar"]');
+    const hRun = q('[data-dist-hansen-run]'), hRes = q('[data-dist-hansen-result]'), hToggle = q('[data-dist-hansen-toggle]'), hShow = q('[data-dist-hansen-show]'), hLegend = q('[data-dist-hansen-legend]');
+    let worker = null, seq = 0, last = null, run = 0, hansen = null;
+    const pending = new Map();
+    const num = (v, d = 0) => Number(v).toLocaleString(cfg.locale, { maximumFractionDigits: d, minimumFractionDigits: d });
+    const haTxt = (v) => (v >= 100 ? num(v) : num(v, v >= 10 ? 1 : 2));
+    const say = (t) => { status.textContent = t; };
+    const level = () => q('input[name="dist_level"]:checked')?.value || 'conf';
+    const call = (msg) => new Promise((resolve) => {
+        if (!worker) {
+            worker = new Worker(new URL('./dist-worker.js', import.meta.url), { type: 'module' });
+            worker.onmessage = ({ data }) => {
+                if (data.progress) {
+                    say((D[`step_${data.progress}`] || D.running || '').replace(':n', data.n ?? ''));
+                    bar.hidden = false;
+                    if (data.progress !== 'search') bar.value = Math.min(1, data.frac || 0);
+                    return;
+                }
+                pending.get(data.id)?.(data);
+                pending.delete(data.id);
+            };
+            worker.onerror = () => { for (const r of pending.values()) r({ error: 'failed' }); pending.clear(); worker = null; };
+        }
+        const id = ++seq;
+        pending.set(id, resolve);
+        worker.postMessage({ ...msg, id });
+    });
+
+    const dates = () => {
+        const today = new Date().toISOString().slice(0, 10);
+        if (period.value === 'year') {
+            const y = Number(yearSel.value);
+            const end = `${y}-12-31`;
+            return { start: `${y}-01-01`, end: end > today ? today : end };
+        }
+        return { start: new Date(Date.now() - Number(period.value) * 864e5).toISOString().slice(0, 10), end: today };
+    };
+    period.addEventListener('change', () => { yearBox.hidden = period.value !== 'year'; });
+
+    const checkArea = () => {
+        const a = getAoi();
+        areaEl.classList.remove('is-ok', 'is-bad', 'is-warn');
+        const okSrc = optical.checked || radar.checked;
+        if (!a) { areaEl.textContent = (T.lulc || {}).area_none || ''; btnRun.disabled = true; return false; }
+        const sq = area(a) / 1e6;
+        const km2 = (sq < 10 ? Math.round(sq * 100) / 100 : Math.round(sq)).toLocaleString(cfg.locale);
+        if (sq < 0.05) { areaEl.textContent = D.area_small.replace(':km2', km2); areaEl.classList.add('is-bad'); btnRun.disabled = true; return false; }
+        const plan = sq <= DIST_MAX_KM2 ? planDistGrid(bboxOf(a)) : null;
+        if (!plan) { areaEl.textContent = D.area_big.replace(':km2', km2); areaEl.classList.add('is-bad'); btnRun.disabled = true; return false; }
+        areaEl.textContent = D.area_ok.replace(':km2', km2).replace(':res', plan.res);
+        areaEl.classList.add('is-ok');
+        btnRun.disabled = !okSrc;
+        return true;
+    };
+    optical.addEventListener('change', checkArea);
+    radar.addEventListener('change', checkArea);
+
+    const removeLayer = (id) => { if (map.getLayer(id)) map.removeLayer(id); if (map.getSource(id)) map.removeSource(id); };
+    const canvasLayer = (id, grid, paint) => {
+        const { width: W, height: H, west, north, east, south } = grid;
+        const cv = document.createElement('canvas');
+        cv.width = W; cv.height = H;
+        const ctx = cv.getContext('2d'), img = ctx.createImageData(W, H);
+        for (let p = 0; p < W * H; p++) {
+            const c = paint(p);
+            if (!c) continue;
+            img.data[p * 4] = c[0]; img.data[p * 4 + 1] = c[1]; img.data[p * 4 + 2] = c[2]; img.data[p * 4 + 3] = c[3] ?? 235;
+        }
+        ctx.putImageData(img, 0, 0);
+        removeLayer(id);
+        map.addSource(id, { type: 'canvas', canvas: cv, animate: false, coordinates: [[west, north], [east, north], [east, south], [west, south]] });
+        map.addLayer({ id, type: 'raster', source: id, paint: { 'raster-opacity': 0.9, 'raster-resampling': 'nearest' } }, map.getLayer('aoi-line') ? 'aoi-line' : undefined);
+    };
+    const CONF = [220, 38, 38], PROV = [245, 158, 11], HANSEN = [124, 58, 237, 170];
+    const draw = () => {
+        if (!last) return;
+        const all = level() === 'all';
+        canvasLayer('dist', last.grid, (p) => (last.status[p] === 2 ? CONF : all && last.status[p] === 1 ? PROV : null));
+        map.setLayoutProperty('dist', 'visibility', show.checked ? 'visible' : 'none');
+    };
+
+    const report = () => {
+        const r = last, all = level() === 'all';
+        const src = (k) => D[`src_${k}`] || '';
+        const kpi = (v, label) => `<div><span class="lulc-kpi">${haTxt(v)} ha</span><span class="small">${esc(label)} · ${num(v / 100, 2)} ${esc(D.km2)}</span></div>`;
+        let h = `<div class="lulc-kpis">${kpi(r.confHa, D.kpi_conf)}${all ? kpi(r.provHa, D.kpi_prov) : ''}</div>`;
+        const shown = r.patches.filter((p) => all || p.status === 2);
+        h += `<p class="lulc-meta small muted">${esc(D.patches_n.replace(':n', num(all ? r.nPatches : shown.length)))} · ${esc(D.meta.replace(':res', r.grid.res).replace(':start', r.start).replace(':end', r.end).replace(':s', num(r.seconds)))}</p>`;
+        for (const w of r.warnings || []) if (D[`w_${w}`]) h += `<p class="small is-warn-text">${esc(D[`w_${w}`])}</p>`;
+        if (!r.confHa && !(all && r.provHa)) h += `<p class="small">${esc(D.none)}</p>`;
+        const used = [r.used.optical ? `${src(1)} (${r.counts.optMon})` : '', r.used.radar ? `${src(2)} (${r.counts.radMon})` : ''].filter(Boolean).join(' + ');
+        h += `<dl class="dist-facts small"><dt>${esc(D.forest)}</dt><dd>${haTxt(r.forestHa)} ha</dd><dt>${esc(D.coverage)}</dt><dd>${num(r.coverage * 100)} %</dd><dt>${esc(D.used)}</dt><dd>${esc(used)}</dd></dl>`;
+        const months = Object.keys(r.byMonth).sort();
+        const val = (m) => r.byMonth[m].conf + (all ? r.byMonth[m].prov : 0);
+        const max = Math.max(...months.map(val), 1e-9);
+        if (months.some((m) => val(m) > 0)) {
+            h += `<h4 class="lulc-sub">${esc(D.by_month)}</h4><ul class="lulc-bars">` + months.filter((m) => val(m) > 0).map((m) => `<li><span class="lulc-bars__name">${esc(m)}</span><span class="lulc-bars__val">${haTxt(val(m))} ha</span>`
+                + `<span class="lulc-bars__bar"><span style="width:${(100 * val(m) / max).toFixed(1)}%;background:#dc2626"></span></span></li>`).join('') + '</ul>';
+        }
+        if (shown.length) {
+            h += `<h4 class="lulc-sub">${esc(D.top)}</h4><table class="dist-patches small"><tbody>` + shown.slice(0, 8).map((p, k) => `<tr><td class="num">${haTxt(p.ha)} ha</td><td>${esc(p.first)}</td>`
+                + `<td><span class="sw ${p.status === 2 ? 'sw--conf' : 'sw--prov'}" title="${esc(p.status === 2 ? D.legend_conf : D.legend_prov)}"></span> ${esc(src(p.source))}</td>`
+                + `<td><button type="button" class="link-btn" data-zoom="${k}" aria-label="${esc(D.zoom)}: ${haTxt(p.ha)} ha">${esc(D.zoom)}</button></td></tr>`).join('') + '</tbody></table>';
+        }
+        result.innerHTML = h;
+        result.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', () => {
+            const p = shown[Number(b.dataset.zoom)];
+            map.fitBounds([[p.bbox[0], p.bbox[1]], [p.bbox[2], p.bbox[3]]], { padding: 80, maxZoom: 15 });
+        }));
+    };
+
+    btnRun.addEventListener('click', async () => {
+        const a = getAoi();
+        if (!a || !checkArea()) return;
+        const id = ++run;
+        btnRun.disabled = true; box.setAttribute('aria-busy', 'true');
+        card.hidden = true; last = null; hansen = null; removeLayer('dist'); removeLayer('dist-hansen');
+        bar.value = 0; bar.hidden = false;
+        say(D.running);
+        const { start, end } = dates();
+        const r = await call({ cmd: 'run', bbox: bboxOf(a), geometry: a.geometry, start, end, sources: { optical: optical.checked, radar: radar.checked } });
+        checkArea(); box.setAttribute('aria-busy', 'false'); bar.hidden = true;
+        if (id !== run || getAoi() !== a) return;
+        if (r.error) {
+            const c = r.counts || {};
+            say((D[r.error] || D.failed).replace(':opt', c.optMon ?? 0).replace(':rad', c.radMon ?? 0));
+            return;
+        }
+        last = r; say('');
+        hRes.innerHTML = ''; hToggle.hidden = true; hLegend.hidden = true; hRun.hidden = false; hRun.disabled = false;
+        draw(); report();
+        show.checked = true; card.hidden = false;
+        { const b = bboxOf(a); map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: 40, maxZoom: 14, duration: 0 }); }
+        card.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        window.gtag?.('event', 'deforestation_detect', { pixel_m: r.grid.res, confirmed_ha: Math.round(r.confHa), optical: r.used.optical, radar: r.used.radar });
+    });
+    box.addEventListener('change', (e) => { if (e.target.name === 'dist_level' && last) { draw(); report(); } });
+    show.addEventListener('change', () => { if (map.getLayer('dist')) map.setLayoutProperty('dist', 'visibility', show.checked ? 'visible' : 'none'); });
+    hShow.addEventListener('change', () => { if (map.getLayer('dist-hansen')) map.setLayoutProperty('dist-hansen', 'visibility', hShow.checked ? 'visible' : 'none'); });
+
+    hRun.addEventListener('click', async () => {
+        if (!last) return;
+        hRun.disabled = true; say(D.step_hansen);
+        const r = await call({ cmd: 'hansen', base: D.hansenBase });
+        say('');
+        if (r.error || !r.perYear) { hRes.innerHTML = `<p class="small">${esc(D.hansen_failed)}</p>`; hRun.disabled = false; return; }
+        hansen = r;
+        hRun.hidden = true;
+        const years = Object.keys(r.perYear).map(Number).sort();
+        if (!years.length) { hRes.innerHTML = `<p class="small">${esc(D.hansen_none)}</p>`; return; }
+        const since = years.filter((y) => y >= 2021).reduce((s, y) => s + r.perYear[y], 0);
+        const max = Math.max(...years.map((y) => r.perYear[y]));
+        hRes.innerHTML = `<h4 class="lulc-sub">${esc(D.hansen_title)}</h4><p class="small"><strong>${esc(D.hansen_since)}: ${haTxt(since)} ha (${num(since / 100, 2)} ${esc(D.km2)})</strong></p>`
+            + `<ul class="lulc-bars">${years.filter((y) => y >= 2016).map((y) => `<li><span class="lulc-bars__name">${y}</span><span class="lulc-bars__val">${haTxt(r.perYear[y])} ha</span><span class="lulc-bars__bar"><span style="width:${(100 * r.perYear[y] / max).toFixed(1)}%;background:${y >= 2021 ? '#7c3aed' : '#a8a29e'}"></span></span></li>`).join('')}</ul>`;
+        canvasLayer('dist-hansen', last.grid, (p) => (r.lossyear[p] >= 21 ? HANSEN : null));
+        if (map.getLayer('dist')) map.moveLayer('dist');
+        hToggle.hidden = false; hLegend.hidden = false; hShow.checked = true;
+    });
+
+    const readme = () => {
+        const r = last, P = DIST_PARAMS, b = bboxOf(getAoi());
+        return [
+            `GEOFLORESTA ${DIST_VERSION} - deforestation alerts (optical Sentinel-2 + radar Sentinel-1)`,
+            `Generated: ${new Date().toISOString()} at https://geofloresta.com`,
+            `Period monitored: ${r.start} to ${r.end}. Area bbox (WGS 84): ${b.map((v) => v.toFixed(5)).join(', ')}. Pixel: ${r.grid.res} m (EPSG:4326 grid).`,
+            '',
+            'RESULTS',
+            `Confirmed: ${r.confHa.toFixed(2)} ha (${(r.confHa / 100).toFixed(4)} km2). Provisional: ${r.provHa.toFixed(2)} ha. Patches: ${r.nPatches}.`,
+            `Baseline forest: ${r.forestHa.toFixed(2)} ha. Forest observed at least once in the period: ${(r.coverage * 100).toFixed(1)} %.`,
+            `Dates used - optical baseline: ${r.counts.optBase}, optical monitoring: ${r.counts.optMon}, radar baseline: ${r.counts.radBase}, radar monitoring: ${r.counts.radMon}.`,
+            r.warnings?.length ? `Warnings: ${r.warnings.join(', ')}` : '',
+            '',
+            'FILES',
+            'alerts.tif - GeoTIFF, UInt16, EPSG:4326, bands: 1 alert_status (0 none, 1 provisional, 2 confirmed); 2 first_detection (YYDDD = (year-2000)*1000 + day of year);',
+            '  3 source (1 optical, 2 radar, 3 both); 4 nbr_drop_x1000; 5 forest_baseline (1 forest, 0 non-forest, 255 outside area); 6 optical_clear_observations; 7 radar_observations;',
+            '  8 hansen_gfc_v1.13_lossyear (only if the Hansen comparison was run; 1-25 = 2001-2025).',
+            'alert_patches.geojson - one polygon per patch (>= 0.5 ha) with area, status, first detection and source.',
+            'summary.csv - totals, area by month and (if run) Hansen annual loss in the area.',
+            'patches.csv - patch list with centroid coordinates.',
+            'validation_points.csv - stratified random sample (alert / forest without alert) to assess accuracy in your area; fill in "verified_as" with high-resolution imagery or field visits and use the stratum areas to compute area-adjusted accuracy (Olofsson et al., 2014, Remote Sensing of Environment 148: 42-57).',
+            'scenes.csv - every satellite item used (baseline and monitoring).',
+            '',
+            'METHOD (GF-DIST, adapted from DIST-ALERT - Hansen, Pickens, Song, UMD-GLAD / NASA OPERA - and RADD - Reiche et al., Wageningen University)',
+            `Optical: NBR = (B8 - B12)/(B8 + B12) from Sentinel-2 L2A (SCL classes 4/5, ${P.optical.cloudBufferM} m buffer around clouds and shadows, haze if B2 >= ${P.optical.hazeBlue / 10000}). Baseline = minimum NBR in the same season (month +/- 1) over the ${P.baselineYears} previous years. Anomaly: NBR below that minimum by more than ${P.optical.drop} and SWIR B11 above ${P.optical.swirRatio} x its baseline mean (excludes cloud shadows).`,
+            `Radar: Sentinel-1 RTC VH (gamma0, dB) with a spatial mean filter. Baseline = mean and standard deviation in the same season over the ${P.baselineYears} previous years. Anomaly: drop >= ${P.radar.dropDb} dB and z <= -${P.radar.z}.`,
+            'Per sensor: 1 anomaly = provisional; 2 consecutive anomalies without a normal observation in between = confirmed.',
+            'Fusion: confirmed = optical confirmed OR radar confirmed OR (optical provisional AND radar provisional).',
+            `Forest only (baseline mean NBR >= ${P.optical.forestNbr}; without optical data, mean VH >= ${P.radar.forestVhDb} dB). Minimum mapping unit ${P.mmuHa} ha (FAO/EUDR forest definition).`,
+            '',
+            'KNOWN ACCURACY (2024, against Hansen GFC v1.13 loss, 20 m tolerance): Mozambique miombo P 0.92 R 0.98; Cote d\'Ivoire P 0.95 R 0.81; Indonesia (Papua) P 0.93 R 0.96 with optical+radar.',
+            'Optical only: Brazil Amazon P 0.95 R 0.88; Paraguay Chaco P 1.00 R 0.78; Indonesia (Kalimantan) P 0.84 R 0.77.',
+            'LIMITATIONS: alerts are signals to verify, not legal proof. Persistent clouds reduce optical detections (radar compensates). In dry forests, dry-season clearings may only be detected at green-up. Tree cover loss is not always deforestation (e.g., fire with regrowth, plantation harvest).',
+            '',
+            'DATA AND LICENCES: Copernicus Sentinel-2 L2A (ESA) via Earth Search (Element 84, AWS Open Data); Copernicus Sentinel-1 RTC (ESA) via Microsoft Planetary Computer (CC BY 4.0); Hansen/UMD/Google/USGS/NASA Global Forest Change v1.13 (CC BY 4.0). Results: CC BY 4.0, GEOFLORESTA.',
+        ].filter((x) => x !== null).join('\n');
+    };
+    const citation = () => `GEOFLORESTA (${new Date().getFullYear()}). ${DIST_VERSION} deforestation alerts, ${last.start} to ${last.end} [dataset]. Sentinel-2 and Sentinel-1 (Copernicus/ESA). https://geofloresta.com. Licence CC BY 4.0.\n`;
+    q('[data-dist-zip]').addEventListener('click', async () => {
+        if (!last) return;
+        say(D.step_package);
+        const r = await call({ cmd: 'package', readme: readme(), citation: citation(), place: '' });
+        say('');
+        if (r.error) { say(D.failed); return; }
+        download(r.name, r.blob);
+        window.gtag?.('event', 'file_download', { file_name: r.name, link_text: 'deforestation_zip' });
+    });
+    q('[data-dist-geojson]').addEventListener('click', async () => {
+        if (!last) return;
+        const r = await call({ cmd: 'geojson' });
+        if (r.error) { say(D.failed); return; }
+        const name = `geofloresta_gfdist_${last.start}_${last.end}.geojson`;
+        download(name, new Blob([r.text], { type: 'application/geo+json' }));
+        window.gtag?.('event', 'file_download', { file_name: name, link_text: 'deforestation_geojson' });
+    });
+
+    return {
+        reset() {
+            run++;
+            card.hidden = true; bar.hidden = true; last = null; hansen = null;
+            checkArea(); say('');
+            removeLayer('dist'); removeLayer('dist-hansen');
+        },
+    };
+}
+
+function download(filename, blob) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.append(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
 
 function bboxOf(feature) {
