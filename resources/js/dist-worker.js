@@ -10,6 +10,8 @@ import { polygonMask, allowSparseTiles } from './lulc-core.js';
 import { utmMapper, readToGrid } from './cog-read.js';
 import * as C from './dist-core.js';
 
+const { epsgOf } = C;
+
 export const S2_STAC = 'https://earth-search.aws.element84.com/v1/search';
 export const S1_STAC = 'https://planetarycomputer.microsoft.com/api/stac/v1/search';
 export const S1_TOKEN = 'https://planetarycomputer.microsoft.com/api/sas/v1/token/sentinel-1-rtc';
@@ -19,6 +21,7 @@ const progress = (step, frac = 0, extra = {}) => postMessage({ progress: step, f
 const DAY = 864e5;
 const iso = (t) => new Date(t).toISOString().slice(0, 10);
 const monthOf = (d) => Number(d.slice(5, 7)) - 1;
+
 
 // ---------- catálogos ----------
 async function stacAll(url, body, maxPages = 12) {
@@ -49,22 +52,27 @@ function choose(items, { start, end, months, k, cap, cloud }) {
     for (const it of items) {
         const d = it.properties.datetime.slice(0, 10);
         if (d > end) continue;
-        if (d < start && !months.includes(monthOf(d))) continue;
         if (!dates.has(d)) dates.set(d, []);
         dates.get(d).push(it);
     }
     const score = (list) => (cloud ? list.reduce((a, it) => a + cloud(it), 0) / list.length : 0);
-    const base = new Map(), mon = [];
+    const best = (groups, n) => [...groups.values()].flatMap((l) => l.sort((x, y) => score(x[1]) - score(y[1])).slice(0, n));
+    const base = new Map(), year = new Map(), mon = [];
+    const yearStart = iso(Date.parse(start) - 365 * DAY);
     for (const [d, list] of dates) {
         if (d >= start) { mon.push([d, list]); continue; }
+        if (d >= yearStart) { const g = d.slice(0, 7); if (!year.has(g)) year.set(g, []); year.get(g).push([d, list]); }
+        if (!months.includes(monthOf(d))) continue;
         const g = d.slice(0, 7);
         if (!base.has(g)) base.set(g, []);
         base.get(g).push([d, list]);
     }
-    const b = [...base.values()].flatMap((l) => l.sort((x, y) => score(x[1]) - score(y[1])).slice(0, k));
-    const m = mon.sort((x, y) => score(x[1]) - score(y[1])).slice(0, cap);
+    // ano anterior: a melhor data de cada mês (floresta de referência equilibrada entre épocas)
+    const annual = best(year, 1);
+    const annualSet = new Set(annual.map(([d]) => d));
+    const b = new Map([...best(base, k), ...annual].map((x) => [x[0], x]));
     const byD = (a, c) => (a[0] < c[0] ? -1 : 1);
-    return { base: b.sort(byD), mon: m.sort(byD) };
+    return { base: [...b.values()].sort(byD), annual: annualSet, mon: mon.sort((x, y) => score(x[1]) - score(y[1])).slice(0, cap).sort(byD) };
 }
 
 /** Lê várias datas em paralelo (n de cada vez) e entrega os resultados pela ordem original. */
@@ -89,7 +97,7 @@ async function readOpticalDate(scenes, grid, inside) {
     const buf = Math.max(1, Math.round(C.PARAMS.optical.cloudBufferM / grid.res));
     let any = false;
     for (const it of scenes) {
-        const a = it.assets, map = utmMapper(grid, it.properties['proj:epsg']);
+        const a = it.assets, map = utmMapper(grid, epsgOf(it, a.nir));
         try {
             const scl = await readToGrid(a.scl.href, grid, map, 0);
             let cand = false;
@@ -128,7 +136,7 @@ async function readRadarDate(scenes, grid, inside) {
         const asset = it.assets.vh || it.assets.hv;
         if (!asset) continue;
         try {
-            const v = await readToGrid(`${asset.href}?${await s1Token()}`, grid, utmMapper(grid, it.properties['proj:epsg']), NaN, opts);
+            const v = await readToGrid(`${asset.href}?${await s1Token()}`, grid, utmMapper(grid, epsgOf(it, asset)), NaN, opts);
             if (!lin) lin = v; else for (let p = 0; p < N; p++) if (!(lin[p] === lin[p]) && v[p] === v[p]) lin[p] = v[p];
         } catch { /* segue-se */ }
     }
@@ -162,13 +170,13 @@ async function run({ bbox, geometry, start, end, sources = { optical: true, rada
     if (sources.optical) {
         try {
             s2 = await stacAll(S2_STAC, { collections: ['sentinel-2-l2a'], intersects: area, datetime: `${bStart}T00:00:00Z/${end}T23:59:59Z`, limit: 100, query: { 'eo:cloud_cover': { lt: 70 } } }, 40);
-            s2 = s2.filter((it) => it.properties?.['proj:epsg'] && ['scl', 'blue', 'nir', 'swir16', 'swir22'].every((k) => it.assets?.[k]?.href));
+            s2 = s2.filter((it) => epsgOf(it, it.assets?.nir) && ['scl', 'blue', 'nir', 'swir16', 'swir22'].every((k) => it.assets?.[k]?.href));
         } catch { warnings.push('optical_unavailable'); }
     }
     if (sources.radar) {
         try {
             s1 = await stacAll(S1_STAC, { collections: ['sentinel-1-rtc'], intersects: area, datetime: `${bStart}T00:00:00Z/${end}T23:59:59Z`, limit: 250 }, 20);
-            s1 = s1.filter((it) => it.properties?.['proj:epsg'] && (it.assets?.vh || it.assets?.hv));
+            s1 = s1.filter((it) => epsgOf(it, it.assets?.vh || it.assets?.hv) && (it.assets?.vh || it.assets?.hv));
             if (s1.length) await s1Token();
         } catch { warnings.push('radar_unavailable'); s1 = []; }
     }
@@ -185,7 +193,7 @@ async function run({ bbox, geometry, start, end, sources = { optical: true, rada
 
     if (ob) for await (const [[d, sc], o] of inOrder(optBaseDates, ([, sc]) => readOpticalDate(sc, grid, inside))) {
         tick('opt_base', { n: optBaseDates.length });
-        if (o && C.opticalBaseAdd(ob, monthOf(d), o.nbr, o.s16)) { counts.optBase++; scenesUsed.optical.push(...sc.map((it) => ({ id: it.id, date: d, role: 'baseline' }))); }
+        if (o && C.opticalBaseAdd(ob, monthOf(d), o.nbr, o.s16, optSel.annual.has(d))) { counts.optBase++; scenesUsed.optical.push(...sc.map((it) => ({ id: it.id, date: d, role: 'baseline' }))); }
     }
     if (rb) for await (const [[d, sc], db] of inOrder(radBaseDates, ([, sc]) => readRadarDate(sc, grid, inside))) {
         tick('rad_base', { n: radBaseDates.length });

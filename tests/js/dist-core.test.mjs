@@ -139,3 +139,10 @@ test('amostra de validação estratificada', () => {
     assert.equal(v.points.filter((p) => p.stratum === 'forest_no_alert').length, 5);
     assert.ok(Math.abs(v.strataHa.alert - 0.1) < 1e-9);
 });
+
+test('projecção das imagens: proj:epsg (STAC v1) ou proj:code (v2), no item ou no recurso', () => {
+    assert.equal(C.epsgOf({ properties: { 'proj:epsg': 32736 } }), 32736);
+    assert.equal(C.epsgOf({ properties: { 'proj:code': 'EPSG:32737' } }), 32737);
+    assert.equal(C.epsgOf({ properties: {} }, { 'proj:code': 'EPSG:32633' }), 32633);
+    assert.equal(C.epsgOf({ properties: {} }), null);
+});

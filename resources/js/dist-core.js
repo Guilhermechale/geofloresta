@@ -9,7 +9,8 @@
  *   nos 3 anos anteriores; anomalia = queda >= 3 dB e z <= -2.
  *  Cada sensor: 1 anomalia = provisório; 2 seguidas (sem observação normal entre elas) = confirmado.
  *  Fusão: confirmado = óptico confirmado OU radar confirmado OU (óptico provisório E radar provisório).
- *  Só em floresta (NBR médio da linha de base >= 0,35; sem dados ópticos, VH médio >= -16 dB) e manchas >= 0,5 ha.
+ *  Só em floresta (NBR médio de uma imagem por mês no ano anterior >= 0,35; sem dados ópticos, VH médio >= -16 dB)
+ *  e manchas >= 0,5 ha.
  */
 export const VERSION = 'GF-DIST 1.0';
 export const PARAMS = {
@@ -38,6 +39,17 @@ export function planDistGrid(bbox, maxPixels = MAX_PIXELS) {
 
 /** Número mínimo de píxeis de uma mancha (0,5 ha). */
 export const mmuPixels = (res) => Math.max(1, Math.ceil(PARAMS.mmuHa * 1e4 / (res * res)));
+
+/** Código EPSG da imagem: «proj:epsg» (STAC projection v1) ou «proj:code» = 'EPSG:xxxx' (v2), no item ou no recurso. */
+export function epsgOf(it, asset = null) {
+    for (const o of [asset, it?.properties]) {
+        if (!o) continue;
+        if (Number.isFinite(o['proj:epsg'])) return o['proj:epsg'];
+        const m = /^EPSG:(\d+)$/i.exec(o['proj:code'] || '');
+        if (m) return Number(m[1]);
+    }
+    return null;
+}
 
 // ---------- datas ----------
 /** Código de data compacto e legível: (ano - 2000) * 1000 + dia do ano (ex.: 24305 = 31/10/2024). Cabe em Uint16. */
@@ -136,11 +148,14 @@ export function boxMean(a, W, H, k) {
 export function opticalBaseline(N, months) {
     const bins = {};
     for (const m of months) bins[m] = { min: new Float32Array(N).fill(Infinity), n: new Uint8Array(N) };
-    return { N, bins, nbrSum: new Float32Array(N), nbrN: new Uint16Array(N), s16Sum: new Float32Array(N), s16N: new Uint16Array(N), scenes: 0 };
+    return { N, bins, nbrSum: new Float32Array(N), nbrN: new Uint16Array(N), s16Sum: new Float32Array(N), s16N: new Uint16Array(N), annSum: new Float32Array(N), annN: new Uint8Array(N), scenes: 0 };
 }
 
-/** Junta uma data de observação (camadas já combinadas por data) à linha de base. */
-export function opticalBaseAdd(b, month, nbr, s16) {
+/**
+ * Junta uma data de observação (camadas já combinadas por data) à linha de base. «annual» marca as datas do
+ * ano anterior ao período (uma por mês): a floresta de referência usa a média delas, equilibrada entre épocas.
+ */
+export function opticalBaseAdd(b, month, nbr, s16, annual = false) {
     const targets = [month, (month + 11) % 12, (month + 1) % 12].map((m) => b.bins[m]).filter(Boolean);
     let any = false;
     for (let p = 0; p < b.N; p++) {
@@ -148,6 +163,7 @@ export function opticalBaseAdd(b, month, nbr, s16) {
         if (!(v === v)) continue;
         any = true;
         b.nbrSum[p] += v; b.nbrN[p]++;
+        if (annual && b.annN[p] < 255) { b.annSum[p] += v; b.annN[p]++; }
         const s = s16[p];
         if (s === s) { b.s16Sum[p] += s; b.s16N[p]++; }
         for (const t of targets) { if (v < t.min[p]) t.min[p] = v; if (t.n[p] < 255) t.n[p]++; }
@@ -243,7 +259,8 @@ export function forestMask(ob, rb, inside) {
     const N = inside.length, f = new Uint8Array(N);
     for (let p = 0; p < N; p++) {
         if (!inside[p]) continue;
-        if (ob && ob.nbrN[p] >= 3) f[p] = ob.nbrSum[p] / ob.nbrN[p] >= PARAMS.optical.forestNbr ? 1 : 0;
+        if (ob && ob.annN[p] >= 4) f[p] = ob.annSum[p] / ob.annN[p] >= PARAMS.optical.forestNbr ? 1 : 0;
+        else if (ob && ob.nbrN[p] >= 3) f[p] = ob.nbrSum[p] / ob.nbrN[p] >= PARAMS.optical.forestNbr ? 1 : 0;
         else if (rb && rb.n[p] >= 3) f[p] = rb.sum[p] / rb.n[p] >= PARAMS.radar.forestVhDb ? 1 : 0;
     }
     return f;
