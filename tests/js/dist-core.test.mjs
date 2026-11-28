@@ -22,9 +22,10 @@ test('grelha: 10 m em áreas pequenas, maior em áreas grandes, recusa acima do 
 
 test('máscara de nuvens: SCL, margem à volta das nuvens e névoa', () => {
     const W = 10, H = 1;
-    const scl = Uint8Array.from([4, 4, 4, 9, 4, 4, 4, 5, 5, 4]);
-    const blue = Float32Array.from([300, 300, 300, 3000, 300, 300, 300, 300, 900, 300]);
+    const scl = Uint8Array.from([4, 4, 4, 9, 4, 4, 4, 5, 4, 5]);
+    const blue = Float32Array.from([300, 300, 300, 3000, 300, 300, 300, 300, 900, 1500]);
     const ok = C.clearMask(scl, blue, W, H, 2);
+    // névoa sobre vegetação (píxel 8) é apagada; solo nu claro de uma clareira (píxel 9) fica
     assert.deepEqual([...ok], [1, 0, 0, 0, 0, 0, 1, 1, 0, 1]);
 });
 

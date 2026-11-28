@@ -4,7 +4,7 @@
  * Método (adaptado do DIST-ALERT, Hansen/Pickens/Song, UMD-GLAD e NASA OPERA; radar inspirado no RADD, Reiche et al.):
  *  Óptico (Sentinel-2 L2A): NBR por observação limpa; linha de base = MÍNIMO do NBR da mesma época (mês ± 1)
  *   nos 3 anos anteriores; anomalia = NBR abaixo desse mínimo menos 0,20 e SWIR 1,6 µm acima de 1,1 x a média
- *   (separa clareiras de sombras de nuvens). Máscara de nuvens SCL + margem de 50 m + névoa (azul >= 0,08).
+ *   (separa clareiras de sombras de nuvens). Máscara de nuvens SCL + margem de 50 m + névoa (azul >= 0,08 em vegetação).
  *  Radar (Sentinel-1 RTC): VH em dB com filtro espacial; linha de base = média e desvio-padrão da mesma época
  *   nos 3 anos anteriores; anomalia = queda >= 3 dB e z <= -2.
  *  Cada sensor: 1 anomalia = provisório; 2 seguidas (sem observação normal entre elas) = confirmado.
@@ -78,7 +78,9 @@ export function clearMask(scl, blue, W, H, buf) {
         const near = dilate(bad, W, H, buf);
         for (let p = 0; p < N; p++) if (near[p]) ok[p] = 0;
     }
-    if (blue) for (let p = 0; p < N; p++) if (ok[p] && !(blue[p] < PARAMS.optical.hazeBlue)) ok[p] = 0;
+    // névoa: só em píxeis de vegetação (SCL 4), onde o azul é normalmente baixo; o solo nu das clareiras (SCL 5)
+    // é claro por natureza e não pode ser apagado (no Chaco, por exemplo, apagava as próprias clareiras)
+    if (blue) for (let p = 0; p < N; p++) if (ok[p] && scl[p] === 4 && !(blue[p] < PARAMS.optical.hazeBlue)) ok[p] = 0;
     return ok;
 }
 export const isBadScl = (s) => BAD.has(s);
