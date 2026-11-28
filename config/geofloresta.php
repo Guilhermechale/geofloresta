@@ -49,4 +49,20 @@ return [
         'url' => env('HANSEN_URL', 'https://storage.googleapis.com/earthenginepartners-hansen/GFC-2025-v1.13/Hansen_GFC-2025-v1.13_lossyear_{tile}.tif'),
         'max_bytes' => 16 * 1024 * 1024,
     ],
+
+    // Exemplos prontos por baixo do mapa (abrem a ferramenta já com a área: ?bbox=oeste,sul,leste,norte)
+    'map_examples' => [
+        'deforestation' => [
+            ['key' => 'zambezia', 'bbox' => '36.495,-16.555,36.555,-16.495', 'image' => 'img/examples/zambezia.webp'],
+            ['key' => 'chaco', 'bbox' => '-60.34,-20.78,-60.28,-20.72', 'image' => 'img/examples/chaco.webp'],
+            ['key' => 'para', 'bbox' => '-54.12,-8.22,-54.06,-8.16', 'image' => 'img/examples/para.webp'],
+            ['key' => 'papua', 'bbox' => '140.66,-8.28,140.72,-8.22', 'image' => 'img/examples/papua.webp'],
+        ],
+        'lulc' => [
+            ['key' => 'urema', 'bbox' => '34.34,-18.96,34.60,-18.80', 'image' => 'img/examples/urema.webp'],
+            ['key' => 'chimoio', 'bbox' => '33.42,-19.155,33.546,-19.077', 'image' => 'img/examples/chimoio.webp'],
+            ['key' => 'quelimane', 'bbox' => '36.825,-17.917,36.951,-17.839', 'image' => 'img/examples/quelimane.webp'],
+            ['key' => 'beira', 'bbox' => '34.787,-19.869,34.913,-19.791', 'image' => 'img/examples/beira.webp'],
+        ],
+    ],
 ];

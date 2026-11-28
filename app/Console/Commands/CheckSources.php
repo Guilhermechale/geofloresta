@@ -22,6 +22,14 @@ class CheckSources extends Command
 
     public const PATH = 'fontes/vigilancia.json';
 
+    /** Estado guardado pela última verificação (para a faixa «Estado dos dados» das ferramentas), ou null. */
+    public static function read(): ?array
+    {
+        $disk = Storage::disk('local');
+
+        return $disk->exists(self::PATH) ? json_decode($disk->get(self::PATH), true) : null;
+    }
+
     protected const S2 = 'https://earth-search.aws.element84.com/v1/search';
 
     protected const S1 = 'https://planetarycomputer.microsoft.com/api/stac/v1/search';
@@ -101,6 +109,9 @@ class CheckSources extends Command
         $prev = Storage::disk('local')->exists(self::PATH) ? json_decode(Storage::disk('local')->get(self::PATH), true) : [];
         $state = [
             'checked_at' => now()->toIso8601String(), 'ok' => ! $failed, 'failed' => $failed, 'checks' => $checks,
+            's2_latest' => $s2['properties']['datetime'] ?? ($prev['s2_latest'] ?? null),
+            's1_latest' => $s1['properties']['datetime'] ?? ($prev['s1_latest'] ?? null),
+            'hansen' => ['version' => $hansen['version'], 'last_year' => $hansen['last_year']],
             'new_hansen' => $newHansen, 'mailed_at' => $prev['mailed_at'] ?? null, 'hansen_mailed' => $prev['hansen_mailed'] ?? null,
         ];
 

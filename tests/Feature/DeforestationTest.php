@@ -36,6 +36,41 @@ class DeforestationTest extends TestCase
         $this->assertStringContainsString('data-only="deforestation" data-dist', $this->get('/mapas/uso-do-solo')->getContent());
     }
 
+    public function test_below_the_map_data_status_examples_steps_and_research_box(): void
+    {
+        Storage::fake('public');
+        Storage::fake('local');
+        // sem verificação guardada: não mostra a faixa de estado (nada inventado)
+        $html = $this->get('/mapas/desmatamento')->assertOk()->getContent();
+        $this->assertStringNotContainsString('data-status', $html);
+        $this->assertStringContainsString('Experimente com um exemplo', $html);
+        $this->assertStringContainsString('/mapas/desmatamento?bbox=36.495,-16.555,36.555,-16.495', $html);
+        $this->assertStringContainsString('img/examples/chaco.webp', $html);
+        $this->assertStringContainsString('Para investigadores', $html);
+        $this->assertStringContainsString('GF-DIST 1.0', $html);
+
+        // com a vigilância diária: estado real das fontes
+        Storage::disk('local')->put('fontes/vigilancia.json', json_encode([
+            'checked_at' => now()->subHour()->toIso8601String(), 'ok' => true, 'failed' => [], 'checks' => [],
+            's2_latest' => now()->subDay()->toIso8601String(), 's1_latest' => now()->subDays(6)->toIso8601String(), 'hansen' => ['version' => 'v1.13', 'last_year' => 2025],
+        ]));
+        $html = $this->get('/en/maps/deforestation')->getContent();
+        $this->assertStringContainsString('data-status--ok', $html);
+        $this->assertStringContainsString('Sentinel-1 · radar', $html);
+        $this->assertStringContainsString('v1.13 · to 2025', $html);
+        $this->assertStringContainsString('1 day ago', $html);
+
+        // fonte em falha: aviso honesto
+        Storage::disk('local')->put('fontes/vigilancia.json', json_encode(['checked_at' => now()->toIso8601String(), 'ok' => false, 'failed' => ['sentinel1_token'], 'checks' => [], 's2_latest' => now()->toIso8601String()]));
+        $this->assertStringContainsString('Uma fonte com falha', $this->get('/mapas/desmatamento')->getContent());
+
+        // uso do solo: exemplos de Moçambique; as outras ferramentas não têm esta secção
+        $lulc = $this->get('/mapas/uso-do-solo')->getContent();
+        $this->assertStringContainsString('/mapas/uso-do-solo?bbox=34.34,-18.96,34.60,-18.80', $lulc);
+        $this->assertStringNotContainsString('Sentinel-1 · radar', $lulc);
+        $this->assertStringNotContainsString('class="insights"', $this->get('/mapas/relevo')->getContent());
+    }
+
     public function test_hansen_bridge_passes_byte_ranges_only_for_valid_tiles(): void
     {
         Http::fake(['storage.googleapis.com/*' => fn (Request $req) => str_contains($req->url(), '80S_170W')

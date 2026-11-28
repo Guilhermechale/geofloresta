@@ -391,11 +391,14 @@
         </div>
     </div>
     @else
+    @if (in_array($tool, ['deforestation', 'lulc'], true))
+        @include('maps.partials.insights', ['tool' => $tool])
+    @endif
     @if ($tool === 'lulc' && config('geofloresta.lulc_video.id'))
         <x-tool-video :id="config('geofloresta.lulc_video.id')" cover="img/video-uso-do-solo.webp" />
     @endif
     @php
-        $learn = ['lulc' => $rfTutorialUrl, 'relief' => \App\Models\Tutorial::query()->published()->where('slug->pt', 'curvas-de-nivel-da-sua-area-em-2-minutos-gratis')->first()?->url()];
+        $learn = ['relief' => \App\Models\Tutorial::query()->published()->where('slug->pt', 'curvas-de-nivel-da-sua-area-em-2-minutos-gratis')->first()?->url()];
     @endphp
     @if (! empty($learn[$tool]))
     <div class="section section--tight">

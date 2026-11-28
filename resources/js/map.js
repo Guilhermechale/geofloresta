@@ -39,6 +39,16 @@ setupResizer();
 if (el && supported()) init();
 else if (el) el.querySelector('.map-loading')?.replaceChildren(document.createTextNode(el.dataset.noWebgl || ''));
 
+// «Como citar» por baixo do mapa: copiar a referência
+document.querySelectorAll('[data-cite-copy]').forEach((btn) => btn.addEventListener('click', async () => {
+    const box = btn.closest('[data-copy-label]');
+    try {
+        await navigator.clipboard.writeText(box.querySelector('[data-cite-text]').textContent.trim());
+        btn.textContent = box.dataset.copiedLabel;
+        setTimeout(() => { btn.textContent = box.dataset.copyLabel; }, 2000);
+    } catch { /* sem acesso à área de transferência: o texto continua visível para copiar à mão */ }
+}));
+
 function hoursAgo(iso) {
     return (Date.now() - Date.parse(iso)) / 36e5;
 }

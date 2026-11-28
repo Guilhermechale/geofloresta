@@ -114,8 +114,14 @@ class MapController extends Controller
         // Tutorial que explica o método (ligação no painel de uso do solo)
         $rfTutorial = Tutorial::query()->published()->where('slug->pt', 'classificacao-supervisionada-random-forest-google-earth-engine')->first();
 
+        // Pesquisa sobre o EUDR (ligação no bloco «Para investigadores» do monitor de desmatamento)
+        $eudr = in_array($tool, ['deforestation'], true)
+            ? \App\Models\Study::query()->published()->where('slug', 'perda-de-cobertura-arborea-agricultura-data-de-corte-eudr-2021-2024')->first() : null;
+
         return view('maps.index', [
             'rfTutorialUrl' => $rfTutorial?->url(app()->getLocale()),
+            'eudrUrl' => $eudr?->url(app()->getLocale()),
+            'sources' => in_array($tool, ['deforestation', 'lulc'], true) ? \App\Console\Commands\CheckSources::read() : null,
             'config' => $config + ['tool' => $tool],
             'tool' => $tool,
             'summary' => $summary,
