@@ -91,6 +91,20 @@ class CheckSources extends Command
             return $this->rangeRead(($s1['assets']['vh']['href'] ?? $s1['assets']['hv']['href']).'?'.$token);
         });
         $check('hansen_tiles', fn () => $this->rangeRead(str_replace('{tile}', '10S_030E', config('geofloresta.hansen.url'))));
+        // relevo (Terrain Tiles) e imagens diárias da NASA (GIBS)
+        $check('terrain_tiles', function () {
+            $r = Http::timeout(20)->retry(2, 2000)->get('https://elevation-tiles-prod.s3.amazonaws.com/terrarium/0/0/0.png');
+            throw_unless($r->successful() && str_starts_with($r->body(), "\x89PNG"), new \RuntimeException('HTTP '.$r->status()));
+
+            return 'ok';
+        });
+        $check('nasa_gibs', function () {
+            $day = now('UTC')->subDays(2)->toDateString();
+            $r = Http::timeout(20)->retry(2, 2000)->get("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{$day}/GoogleMapsCompatible_Level9/0/0/0.jpg");
+            throw_unless($r->successful() && str_starts_with($r->body(), "\xFF\xD8"), new \RuntimeException('HTTP '.$r->status()));
+
+            return 'ok';
+        });
 
         // Nova versão anual do Hansen? (ex.: GFC-2026-v1.14)
         $hansen = config('geofloresta.hansen');

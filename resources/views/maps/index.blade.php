@@ -333,7 +333,7 @@
     @if ($tool === 'fires')
     <div class="section section--tight">
         <div class="wrap grid">
-            <section class="span-6" aria-labelledby="by-prov">
+            <section class="span-7" aria-labelledby="by-prov">
                 @if (! $isMoz)
                     <h2 id="by-prov" class="h3">{{ $countryName }}</h2>
                     <p>{{ __('map.country_stats', ['country' => $countryName, 'n24' => format_number($stats['n24'] ?? 0), 'n7' => format_number($stats['n7'] ?? 0)]) }}</p>
@@ -376,35 +376,12 @@
                     <p class="muted">{{ __('map.no_data') }}</p>
                 @endif
             </section>
-            <section class="span-5 start-8" aria-labelledby="about-data">
-                <h2 id="about-data" class="h3">{{ __('map.about_title') }}</h2>
-                <p>{{ __('map.about_fires') }}</p>
-                <p>{{ __('map.about_imagery') }}</p>
-                <p>{{ __('map.about_relief') }}</p>
-                @if ($isMoz)
-                    <p><a class="link-arrow" href="{{ lroute('countries.show', ['iso' => 'moz']) }}">{{ __('map.kit_link', ['country' => $countryName]) }}</a></p>
-                @endif
-                @if ($fireDataset)
-                    <p><a class="link-arrow" href="{{ $fireDataset->url() }}">{{ __('map.history') }}</a></p>
-                @endif
-            </section>
         </div>
     </div>
-    @else
-    @if (in_array($tool, ['deforestation', 'lulc'], true))
-        @include('maps.partials.insights', ['tool' => $tool])
     @endif
+    @include('maps.partials.portal', ['tool' => $tool])
     @if ($tool === 'lulc' && config('geofloresta.lulc_video.id'))
         <x-tool-video :id="config('geofloresta.lulc_video.id')" cover="img/video-uso-do-solo.webp" />
-    @endif
-    @php
-        $learn = ['relief' => \App\Models\Tutorial::query()->published()->where('slug->pt', 'curvas-de-nivel-da-sua-area-em-2-minutos-gratis')->first()?->url()];
-    @endphp
-    @if (! empty($learn[$tool]))
-    <div class="section section--tight">
-        <div class="wrap"><p><a class="link-arrow" href="{{ $learn[$tool] }}">{{ $tool === 'lulc' ? __('map.lulc_learn') : __('map.tutorial_link') }}</a></p></div>
-    </div>
-    @endif
     @endif
     <x-service-cta compact />
 </x-layout>

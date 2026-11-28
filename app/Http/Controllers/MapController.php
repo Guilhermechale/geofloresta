@@ -118,10 +118,60 @@ class MapController extends Controller
         $eudr = in_array($tool, ['deforestation'], true)
             ? \App\Models\Study::query()->published()->where('slug', 'perda-de-cobertura-arborea-agricultura-data-de-corte-eudr-2021-2024')->first() : null;
 
+        $P = trans('map.portal');
+        $utc = fn ($iso, $time = false) => $iso ? \Illuminate\Support\Carbon::parse($iso)->utc()->format($time ? 'Y-m-d H:i' : 'Y-m-d').($time ? ' UTC' : '') : null;
+        $health = \App\Console\Commands\CheckSources::read();
+        $fresh = $health && \Illuminate\Support\Carbon::parse($health['checked_at'])->gt(now()->subHours(48));
+        $healthState = ! $fresh ? 'unknown' : ($health['ok'] ? 'ok' : 'degraded');
+        $checked = $health ? [$P['checked'], $utc($health['checked_at'], true)] : null;
+        $gibsLayer = fn (string $role) => $gibs['layers'][$role] ?? null;
+        $status = match ($tool) {
+            'deforestation' => ['state' => $healthState, 'items' => array_values(array_filter([
+                ! empty($health['s2_latest']) ? ['Sentinel-2 L2A', $utc($health['s2_latest'])] : null,
+                ! empty($health['s1_latest']) ? ['Sentinel-1 RTC', $utc($health['s1_latest'])] : null,
+                ! empty($health['hansen']) ? ['Hansen GFC', $health['hansen']['version'].' · 2001–'.$health['hansen']['last_year']] : null,
+                $checked,
+            ]))],
+            'lulc' => ['state' => $healthState, 'items' => array_values(array_filter([
+                ! empty($health['s2_latest']) ? ['Sentinel-2 L2A', $utc($health['s2_latest'])] : null,
+                ['Esri / IO LULC', '10 m · 2017–'.(now()->year - 1)],
+                $checked,
+            ]))],
+            'relief' => ['state' => $health ? (($health['checks']['terrain_tiles']['ok'] ?? true) && $fresh ? 'ok' : $healthState) : 'unknown', 'items' => array_values(array_filter([
+                ['Terrain Tiles', 'AWS Open Data · Terrarium'], $checked,
+            ]))],
+            'fires' => ['state' => ! empty($config['updatedAt']) && \Illuminate\Support\Carbon::parse($config['updatedAt'])->gt(now()->subHours(8)) ? 'ok' : (empty($config['updatedAt']) ? 'unknown' : 'degraded'),
+                'items' => array_values(array_filter([
+                    ! empty($config['updatedAt']) ? ['NASA FIRMS · VIIRS', $utc($config['updatedAt'], true)] : null,
+                    ($latest = $isMoz ? ($summary['latest_acq'] ?? null) : ($stats['latest'] ?? null)) ? [$P['latest_fire'], $utc($latest, true)] : null,
+                ]))],
+            'ndvi', 'satellite' => (function () use ($gibsLayer, $tool, $utc, $P) {
+                $l = $gibsLayer($tool === 'ndvi' ? 'ndvi' : 'truecolor');
+                if (! $l) {
+                    return ['state' => 'unknown', 'items' => []];
+                }
+                $age = now()->diffInDays($l['default_time'] ?? now(), true);
+
+                return ['state' => $age <= ($tool === 'ndvi' ? 24 : 4) ? 'ok' : 'degraded', 'items' => [
+                    [$P['layer'], str_replace('_', ' ', $l['id'])], ['NASA GIBS', $l['default_time'] ?? ''],
+                ]];
+            })(),
+            default => ['state' => 'unknown', 'items' => []],
+        };
+        $relief = $tool === 'relief' ? Tutorial::query()->published()->where('slug->pt', 'curvas-de-nivel-da-sua-area-em-2-minutos-gratis')->first() : null;
+        $links = array_values(array_filter([
+            $tool === 'deforestation' && $eudr ? [$P['eudr'], $eudr->url(app()->getLocale())] : null,
+            $tool === 'lulc' && $rfTutorial ? [__('map.lulc_learn'), $rfTutorial->url(app()->getLocale())] : null,
+            $relief ? [__('map.tutorial_link'), $relief->url(app()->getLocale())] : null,
+            $tool === 'fires' && $fireDataset ? [$P['history'], $fireDataset->url()] : null,
+            $tool === 'fires' ? [$P['kit'].' · '.$countryName, lroute('countries.show', ['iso' => strtolower($iso)])] : null,
+        ]));
+
         return view('maps.index', [
+            'status' => $status,
+            'links' => $links,
             'rfTutorialUrl' => $rfTutorial?->url(app()->getLocale()),
             'eudrUrl' => $eudr?->url(app()->getLocale()),
-            'sources' => in_array($tool, ['deforestation', 'lulc'], true) ? \App\Console\Commands\CheckSources::read() : null,
             'config' => $config + ['tool' => $tool],
             'tool' => $tool,
             'summary' => $summary,

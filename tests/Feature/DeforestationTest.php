@@ -36,39 +36,42 @@ class DeforestationTest extends TestCase
         $this->assertStringContainsString('data-only="deforestation" data-dist', $this->get('/mapas/uso-do-solo')->getContent());
     }
 
-    public function test_below_the_map_data_status_examples_steps_and_research_box(): void
+    public function test_below_the_map_status_examples_specifications_and_citation_on_every_tool(): void
     {
         Storage::fake('public');
         Storage::fake('local');
-        // sem verificação guardada: não mostra a faixa de estado (nada inventado)
+        // sem verificação guardada: sem barra de estado no monitor de desmatamento (nada inventado)
         $html = $this->get('/mapas/desmatamento')->assertOk()->getContent();
-        $this->assertStringNotContainsString('data-status', $html);
-        $this->assertStringContainsString('Experimente com um exemplo', $html);
+        $this->assertStringNotContainsString('portal-status', $html);
         $this->assertStringContainsString('/mapas/desmatamento?bbox=36.495,-16.555,36.555,-16.495', $html);
-        $this->assertStringContainsString('img/examples/chaco.webp', $html);
-        $this->assertStringContainsString('Para investigadores', $html);
+        $this->assertStringContainsString('16.52° S · 36.52° E', $html);
         $this->assertStringContainsString('GF-DIST 1.0', $html);
+        $this->assertStringContainsString('data-cite-copy', $html);
 
-        // com a vigilância diária: estado real das fontes
+        // com a vigilância diária: datas reais (AAAA-MM-DD, UTC)
         Storage::disk('local')->put('fontes/vigilancia.json', json_encode([
-            'checked_at' => now()->subHour()->toIso8601String(), 'ok' => true, 'failed' => [], 'checks' => [],
-            's2_latest' => now()->subDay()->toIso8601String(), 's1_latest' => now()->subDays(6)->toIso8601String(), 'hansen' => ['version' => 'v1.13', 'last_year' => 2025],
+            'checked_at' => '2026-11-28T04:40:00Z', 'ok' => true, 'failed' => [], 'checks' => ['terrain_tiles' => ['ok' => true]],
+            's2_latest' => '2026-11-27T07:54:43Z', 's1_latest' => '2026-11-22T15:59:42Z', 'hansen' => ['version' => 'v1.13', 'last_year' => 2025],
         ]));
+        $this->travelTo('2026-11-28 12:00:00');
         $html = $this->get('/en/maps/deforestation')->getContent();
-        $this->assertStringContainsString('data-status--ok', $html);
-        $this->assertStringContainsString('Sentinel-1 · radar', $html);
-        $this->assertStringContainsString('v1.13 · to 2025', $html);
-        $this->assertStringContainsString('1 day ago', $html);
+        $this->assertStringContainsString('portal-status--ok', $html);
+        $this->assertStringContainsString('<dt>Sentinel-1 RTC</dt><dd>2026-11-22</dd>', $html);
+        $this->assertStringContainsString('<dd>2026-11-28 04:40 UTC</dd>', $html);
+        $this->assertStringContainsString('v1.13 · 2001–2025', $html);
 
-        // fonte em falha: aviso honesto
+        // fonte em falha: estado honesto
         Storage::disk('local')->put('fontes/vigilancia.json', json_encode(['checked_at' => now()->toIso8601String(), 'ok' => false, 'failed' => ['sentinel1_token'], 'checks' => [], 's2_latest' => now()->toIso8601String()]));
-        $this->assertStringContainsString('Uma fonte com falha', $this->get('/mapas/desmatamento')->getContent());
+        $this->assertStringContainsString('Fonte com falha', $this->get('/mapas/desmatamento')->getContent());
 
-        // uso do solo: exemplos de Moçambique; as outras ferramentas não têm esta secção
-        $lulc = $this->get('/mapas/uso-do-solo')->getContent();
-        $this->assertStringContainsString('/mapas/uso-do-solo?bbox=34.34,-18.96,34.60,-18.80', $lulc);
-        $this->assertStringNotContainsString('Sentinel-1 · radar', $lulc);
-        $this->assertStringNotContainsString('class="insights"', $this->get('/mapas/relevo')->getContent());
+        // todas as ferramentas têm exemplos e especificações; sem frases de apresentação antigas
+        foreach (['uso-do-solo' => 'Esri / Impact Observatory', 'incendios' => 'VIIRS · S-NPP, NOAA-20, NOAA-21', 'vegetacao-ndvi' => 'NDVI, composição de 8 dias', 'relevo' => 'Terrain Tiles · SRTM', 'imagem-de-satelite' => 'Reflectância corrigida'] as $slug => $spec) {
+            $page = $this->get('/mapas/'.$slug)->assertOk()->getContent();
+            $this->assertStringContainsString('class="portal"', $page, $slug);
+            $this->assertStringContainsString($spec, $page, $slug);
+            $this->assertStringContainsString('/mapas/'.$slug.'?bbox=', $page, $slug);
+            $this->assertStringNotContainsString('Experimente com um exemplo', $page);
+        }
     }
 
     public function test_hansen_bridge_passes_byte_ranges_only_for_valid_tiles(): void
@@ -90,6 +93,7 @@ class DeforestationTest extends TestCase
 
     public function test_daily_source_check_mails_once_when_a_source_fails_and_when_it_recovers(): void
     {
+        Http::preventStrayRequests();
         Storage::fake('local');
         Mail::fake();
         $now = now('UTC')->subDay()->toIso8601String();
@@ -102,6 +106,8 @@ class DeforestationTest extends TestCase
             'planetarycomputer.microsoft.com/api/sas/*' => function () use (&$tokenDown) { return $tokenDown ? Http::response('down', 503) : Http::response(['token' => 'st=abc']); },
             'sentinel1euwestrtc.blob.core.windows.net/*' => $tiff,
             'storage.googleapis.com/*' => fn (Request $r) => str_contains($r->url(), 'download.html') ? Http::response('', 404) : $tiff(),
+            'elevation-tiles-prod.s3.amazonaws.com/*' => Http::response("\x89PNG....", 200),
+            'gibs.earthdata.nasa.gov/*' => Http::response("\xFF\xD8\xFF....", 200),
         ]);
         $this->artisan('geofloresta:check-sources')->assertSuccessful();
         Mail::assertNothingOutgoing();

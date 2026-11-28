@@ -111,7 +111,7 @@ class MapsTest extends TestCase
         // créditos curtos no mapa e no rodapé; o texto completo de agradecimento da NASA fica em «Dados e Licenças»
         $this->assertStringContainsString('NASA GIBS', $html);
         $this->assertStringContainsString('NASA FIRMS', $html);
-        $this->assertStringNotContainsString('We acknowledge the use of imagery', $html);
+        $this->assertStringNotContainsString('<p class="small muted" lang="en">We acknowledge the use of imagery', $html); // sem o parágrafo longo visível
         $this->assertStringContainsString('<option value="Sofala">Sofala</option>', $html);
         $this->assertStringNotContainsString('FIRMS_MAP_KEY', $html);
         $this->get('/en/maps/fires')->assertOk()->assertSee('Detections by province');
