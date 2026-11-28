@@ -189,7 +189,7 @@ return [
         'desc' => 'Guia em vídeo da ferramenta gratuita de classificação supervisionada do uso e cobertura do solo com Random Forest e imagens Sentinel-2, no navegador.',
     ],
     'tools_short' => [
-        'deforestation' => 'Desmatamento',
+        'deforestation' => 'Perda florestal',
         'lulc' => 'Uso do solo',
         'fires' => 'Incêndios',
         'ndvi' => 'NDVI',

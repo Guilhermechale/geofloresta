@@ -121,7 +121,7 @@ return [
         'sitemap' => 'Plan du site',
         'cookie_prefs' => 'Préférences de cookies',
         'credits_title' => 'Crédits des données',
-        'credits' => 'Fond de carte : OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Image satellite : NASA GIBS. Foyers d’incendie : NASA FIRMS. Sources et licences de chaque jeu de données sur la page Données et licences.',
+        'credits' => 'Fond de carte : OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Image satellite : NASA GIBS. Foyers d’incendie : NASA FIRMS. Sentinel-1 et Sentinel-2 : Copernicus (ESA). Relief : Terrain Tiles. Sources et licences de chaque jeu de données sur la page Données et licences.',
         'rights' => '© :year GEOFLORESTA.',
     ],
     'home2' => [

@@ -190,7 +190,7 @@ return [
         'desc' => 'Guide vidéo de l’outil gratuit de classification supervisée de l’occupation du sol avec Random Forest et les images Sentinel-2, dans le navigateur.',
     ],
     'tools_short' => [
-        'deforestation' => 'Déforestation',
+        'deforestation' => 'Perte forestière',
         'lulc' => 'Occupation',
         'fires' => 'Incendies',
         'ndvi' => 'NDVI',

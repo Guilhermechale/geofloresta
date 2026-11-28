@@ -121,7 +121,7 @@ return [
         'sitemap' => 'Sitemap',
         'cookie_prefs' => 'Cookie preferences',
         'credits_title' => 'Data credits',
-        'credits' => 'Basemap: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Satellite imagery: NASA GIBS. Fire detections: NASA FIRMS. Sources and licences for each dataset on the Data and Licences page.',
+        'credits' => 'Basemap: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Satellite imagery: NASA GIBS. Fire detections: NASA FIRMS. Sentinel-1 and Sentinel-2: Copernicus (ESA). Terrain: Terrain Tiles. Sources and licences for each dataset on the Data and Licences page.',
         'rights' => '© :year GEOFLORESTA.',
     ],
     'home2' => [

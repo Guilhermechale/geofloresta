@@ -387,7 +387,6 @@
                 @if ($fireDataset)
                     <p><a class="link-arrow" href="{{ $fireDataset->url() }}">{{ __('map.history') }}</a></p>
                 @endif
-                <p class="small muted" lang="en">We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS). We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS). Basemap: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Relief: {{ $config['dem']['attribution'] }}</p>
             </section>
         </div>
     </div>
@@ -395,15 +394,14 @@
     @if ($tool === 'lulc' && config('geofloresta.lulc_video.id'))
         <x-tool-video :id="config('geofloresta.lulc_video.id')" cover="img/video-uso-do-solo.webp" />
     @endif
+    @php
+        $learn = ['lulc' => $rfTutorialUrl, 'relief' => \App\Models\Tutorial::query()->published()->where('slug->pt', 'curvas-de-nivel-da-sua-area-em-2-minutos-gratis')->first()?->url()];
+    @endphp
+    @if (! empty($learn[$tool]))
     <div class="section section--tight">
-        <div class="wrap">
-            @php
-                $learn = ['lulc' => $rfTutorialUrl, 'relief' => \App\Models\Tutorial::query()->published()->where('slug->pt', 'curvas-de-nivel-da-sua-area-em-2-minutos-gratis')->first()?->url()];
-            @endphp
-            @if (! empty($learn[$tool]))<p><a class="link-arrow" href="{{ $learn[$tool] }}">{{ $tool === 'lulc' ? __('map.lulc_learn') : __('map.tutorial_link') }}</a></p>@endif
-            <p class="small muted" lang="en">We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS). We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS). Basemap: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Relief: {{ $config['dem']['attribution'] }}</p>
-        </div>
+        <div class="wrap"><p><a class="link-arrow" href="{{ $learn[$tool] }}">{{ $tool === 'lulc' ? __('map.lulc_learn') : __('map.tutorial_link') }}</a></p></div>
     </div>
+    @endif
     @endif
     <x-service-cta compact />
 </x-layout>

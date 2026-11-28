@@ -38,6 +38,13 @@ return [
         'verified' => '2026-11-21',
     ],
     [
+        'key' => 'sentinel-1-rtc', 'name' => 'Copernicus Sentinel-1 RTC (radar, correcção do relevo; Microsoft Planetary Computer)', 'use' => 'forest-loss', 'status' => 'service',
+        'url' => 'https://planetarycomputer.microsoft.com/dataset/sentinel-1-rtc',
+        'licence' => 'CC-BY-4.0',
+        'attribution' => 'Contains modified Copernicus Sentinel-1 data [year], processed by ESA; radiometric terrain correction by Catalyst/Microsoft Planetary Computer.',
+        'verified' => '2026-11-28',
+    ],
+    [
         'key' => 'io-lulc', 'name' => 'Sentinel-2 10 m Land Use/Land Cover (Impact Observatory, Microsoft e Esri)', 'use' => 'land-cover', 'status' => 'service',
         'url' => 'https://livingatlas.arcgis.com/landcover/',
         'licence' => 'CC BY 4.0',
@@ -57,7 +64,7 @@ return [
         'verified' => null,
     ],
     [
-        'key' => 'hansen', 'name' => 'Hansen/UMD/Google/USGS/NASA Global Forest Change v1.12 (2000–2024)', 'use' => 'forest-loss', 'status' => 'hosted',
+        'key' => 'hansen', 'name' => 'Hansen/UMD/Google/USGS/NASA Global Forest Change v1.12 e v1.13 (2000–2025)', 'use' => 'forest-loss', 'status' => 'hosted',
         'url' => 'https://glad.earthengine.app/view/global-forest-change', 'licence' => 'CC-BY-4.0',
         'attribution' => 'Hansen, M. C., P. V. Potapov, R. Moore, M. Hancher, S. A. Turubanova, A. Tyukavina, D. Thau, S. V. Stehman, S. J. Goetz, T. R. Loveland, A. Kommareddy, A. Egorov, L. Chini, C. O. Justice, and J. R. G. Townshend. 2013. "High-Resolution Global Maps of 21st-Century Forest Cover Change." Science 342 (15 November): 850–53.',
         'verified' => null,

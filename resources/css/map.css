@@ -92,11 +92,11 @@
 .tool-tabs__short { display: none; }
 /* Telemóvel: as cinco ferramentas numa grelha de ícones com nomes curtos (sem deslizar nem cortar texto) */
 @media (max-width: 40em) {
-    .tool-tabs__row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .3rem; overflow: visible; padding-block: .5rem; }
-    .tool-tabs a { flex-direction: column; gap: .25rem; padding: .35rem .15rem .3rem; border-radius: 12px; font-size: .72rem; line-height: 1.15; text-align: center; white-space: normal; min-width: 0; }
-    .tool-tabs a img { width: 100%; max-width: 3rem; height: 1.75rem; border-radius: 8px; }
+    .tool-tabs__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; overflow: visible; padding-block: .5rem; }
+    .tool-tabs a { flex-direction: row; justify-content: flex-start; gap: .4rem; padding: .3rem .4rem; border-radius: 12px; font-size: .72rem; line-height: 1.15; text-align: left; white-space: normal; min-width: 0; }
+    .tool-tabs a img { width: 1.9rem; height: 1.4rem; flex: 0 0 auto; border-radius: 6px; }
     .tool-tabs__full { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
-    .tool-tabs__short { display: block; overflow-wrap: anywhere; }
+    .tool-tabs__short { display: block; overflow-wrap: normal; hyphens: none; }
 }
 .more-layers { margin-top: var(--s-1); }
 .more-layers summary { cursor: pointer; color: var(--c-muted); margin-bottom: .35rem; }
@@ -110,6 +110,9 @@
 /* Telemóvel: o guia «Como usar» já explica a ferramenta; a frase sob o título sai para o mapa ficar mais acima */
 @media (max-width: 40em) {
     .page-head--tool .lede { display: none; }
+}
+@media (min-width: 40.01em) {
+    .map-panel .panel-intro { display: none; }
 }
 
 /* Monitor de desmatamento */
@@ -135,3 +138,5 @@ table.dist-patches .sw { width: .7rem; height: .7rem; border-radius: 2px; displa
 table.dist-patches td:nth-child(3) { overflow-wrap: anywhere; }
 .dist-zoom { display: inline-grid; place-items: center; width: 1.9rem; height: 1.9rem; border: 1px solid var(--c-rule-strong); border-radius: 6px; background: transparent; color: var(--c-ink); cursor: pointer; }
 .dist-zoom:hover, .dist-zoom:focus-visible { background: var(--c-surface); }
+[data-dist] .lulc-fields { grid-template-columns: 1fr; }
+[data-dist] .lulc-fields select { width: 100%; }

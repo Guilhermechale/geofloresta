@@ -172,7 +172,9 @@ async function init() {
     if ('ResizeObserver' in window) new ResizeObserver(() => map.resize()).observe(el);
     map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
     // O estilo OpenFreeMap já traz a sua atribuição; aqui só se acrescentam as fontes NASA
-    map.addControl(new maplibregl.AttributionControl({ compact: false, customAttribution: cfg.attribution }), 'bottom-right');
+    map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: cfg.attribution }), 'bottom-right');
+    // créditos recolhidos no botão «i» desde o início (o MapLibre abre-os ao carregar)
+    map.once('load', () => el.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show'));
     el.querySelector('.map-loading')?.remove();
 
     // Os focos (alguns MB) só se descarregam no monitor de incêndios

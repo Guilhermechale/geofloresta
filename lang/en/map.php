@@ -190,7 +190,7 @@ return [
         'desc' => 'Video guide to the free supervised land cover classification tool with Random Forest and Sentinel-2 imagery, in the browser.',
     ],
     'tools_short' => [
-        'deforestation' => 'Deforestation',
+        'deforestation' => 'Forest loss',
         'lulc' => 'Land cover',
         'fires' => 'Fires',
         'ndvi' => 'NDVI',

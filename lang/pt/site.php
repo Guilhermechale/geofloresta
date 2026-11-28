@@ -120,7 +120,7 @@ return [
         'sitemap' => 'Mapa do site',
         'cookie_prefs' => 'Preferências de cookies',
         'credits_title' => 'Créditos de dados',
-        'credits' => 'Mapa de base: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Imagem de satélite: NASA GIBS. Focos de incêndio: NASA FIRMS. Fontes e licenças de cada conjunto de dados na página Dados e Licenças.',
+        'credits' => 'Mapa de base: OpenFreeMap © OpenMapTiles Data from OpenStreetMap. Imagem de satélite: NASA GIBS. Focos de incêndio: NASA FIRMS. Sentinel-1 e Sentinel-2: Copernicus (ESA). Relevo: Terrain Tiles. Fontes e licenças de cada conjunto de dados na página Dados e Licenças.',
         'rights' => '© :year GEOFLORESTA.',
     ],
     'home2' => [
