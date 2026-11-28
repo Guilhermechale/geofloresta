@@ -760,9 +760,9 @@ function setupDist(q, getAoi, map) {
                 + `<span class="lulc-bars__bar"><span style="width:${(100 * val(m) / max).toFixed(1)}%;background:#dc2626"></span></span></li>`).join('') + '</ul>';
         }
         if (shown.length) {
-            h += `<h4 class="lulc-sub">${esc(D.top)}</h4><table class="dist-patches small"><tbody>` + shown.slice(0, 8).map((p, k) => `<tr><td class="num">${haTxt(p.ha)} ha</td><td>${esc(p.first)}</td>`
-                + `<td><span class="sw ${p.status === 2 ? 'sw--conf' : 'sw--prov'}" title="${esc(p.status === 2 ? D.legend_conf : D.legend_prov)}"></span> ${esc(src(p.source))}</td>`
-                + `<td><button type="button" class="link-btn" data-zoom="${k}" aria-label="${esc(D.zoom)}: ${haTxt(p.ha)} ha">${esc(D.zoom)}</button></td></tr>`).join('') + '</tbody></table>';
+            h += `<h4 class="lulc-sub">${esc(D.top)}</h4><table class="dist-patches small"><tbody>` + shown.slice(0, 8).map((p, k) => `<tr><td class="num">${haTxt(p.ha)} ha</td><td class="nowrap">${esc(p.first)}</td>`
+                + `<td><span class="sw ${p.status === 2 ? 'sw--conf' : 'sw--prov'}" title="${esc(p.status === 2 ? D.legend_conf : D.legend_prov)}"></span> <span class="muted">${esc(src(p.source))}</span></td>`
+                + `<td><button type="button" class="dist-zoom" data-zoom="${k}" title="${esc(D.zoom)}" aria-label="${esc(D.zoom)}: ${haTxt(p.ha)} ha"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M11 8v6M8 11h6"/></svg></button></td></tr>`).join('') + '</tbody></table>';
         }
         result.innerHTML = h;
         result.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', () => {
@@ -849,8 +849,9 @@ function setupDist(q, getAoi, map) {
             'Fusion: confirmed = optical confirmed OR radar confirmed OR (optical provisional AND radar provisional).',
             `Forest only (baseline mean NBR >= ${P.optical.forestNbr}; without optical data, mean VH >= ${P.radar.forestVhDb} dB). Minimum mapping unit ${P.mmuHa} ha (FAO/EUDR forest definition).`,
             '',
-            'KNOWN ACCURACY (2024, against Hansen GFC v1.13 loss, 20 m tolerance): Mozambique miombo P 0.92 R 0.98; Cote d\'Ivoire P 0.95 R 0.81; Indonesia (Papua) P 0.93 R 0.96 with optical+radar.',
-            'Optical only: Brazil Amazon P 0.95 R 0.88; Paraguay Chaco P 1.00 R 0.78; Indonesia (Kalimantan) P 0.84 R 0.77.',
+            'KNOWN ACCURACY (browser version, year 2024, confirmed alerts vs Hansen GFC v1.13 loss 2024-2025, 20 m tolerance; precision P / recall R):',
+            'Mozambique (Zambezia, miombo) P 0.97 R 0.84; Brazil (Para, Amazon) P 0.99 R 0.90; Paraguay (Chaco, optical only) P 1.00 R 0.48; Cote d\'Ivoire P 0.98 R 0.82; Indonesia (Papua) P 0.98 R 0.97; Indonesia (Kalimantan) P 0.92 R 0.57.',
+            'Including provisional alerts, recall rises to 0.86-0.99 (precision 0.70-1.00, lower in very cloudy humid forest).',
             'LIMITATIONS: alerts are signals to verify, not legal proof. Persistent clouds reduce optical detections (radar compensates). In dry forests, dry-season clearings may only be detected at green-up. Tree cover loss is not always deforestation (e.g., fire with regrowth, plantation harvest).',
             '',
             'DATA AND LICENCES: Copernicus Sentinel-2 L2A (ESA) via Earth Search (Element 84, AWS Open Data); Copernicus Sentinel-1 RTC (ESA) via Microsoft Planetary Computer (CC BY 4.0); Hansen/UMD/Google/USGS/NASA Global Forest Change v1.13 (CC BY 4.0). Results: CC BY 4.0, GEOFLORESTA.',
